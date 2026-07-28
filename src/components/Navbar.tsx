@@ -142,11 +142,7 @@ export const Navbar: React.FC<NavbarProps> = ({
             <Scale className="w-6 h-6 stroke-[2.5]" />
           </div>
           <div>
-            <div className="flex items-center gap-1.5">
-              <span className="text-2xl font-black tracking-tight text-white font-serif">LAWPEX</span>
-              <span className="bg-yellow-400 text-neutral-950 text-[10px] font-black px-1.5 py-0.2 rounded uppercase">AI</span>
-            </div>
-            <p className="text-[10px] text-yellow-400 font-medium tracking-wide uppercase">Litigation & Legal Research</p>
+            <span className="text-2xl font-black tracking-tight text-white font-serif">LAWPEX</span>
           </div>
         </button>
 

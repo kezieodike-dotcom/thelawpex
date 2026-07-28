@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { FileText, Search, Sparkles, Copy, Check, ShieldCheck } from 'lucide-react';
 import { LEGAL_DRAFTS_DATA } from '../../data/legalData';
 import { LegalDraft } from '../../types';
@@ -8,10 +8,6 @@ interface AffidavitsViewProps {
 }
 
 export const AffidavitsView: React.FC<AffidavitsViewProps> = ({ onCustomizeDraft }) => {
-  const [selectedSubCat, setSelectedSubCat] = useState('Civil');
-
-  const categories = ['Civil', 'Criminal', 'Election', 'Probate', 'Corporate', 'Land', 'Employment', 'Family'];
-
   const affidavitTemplates = [
     {
       id: 'aff-01',
@@ -53,25 +49,8 @@ export const AffidavitsView: React.FC<AffidavitsViewProps> = ({ onCustomizeDraft
           </span>
           <h1 className="text-2xl sm:text-4xl font-black font-serif text-white mt-2">Affidavit Library</h1>
           <p className="text-xs sm:text-sm text-neutral-300 max-w-3xl mt-1">
-            Organized sworn affidavit templates complying strictly with the Oaths Act LFN 2004 and High Court Rules across Civil, Criminal, Probate, Election, Land, Corporate, and Family matters.
+            Organized sworn affidavit templates complying strictly with the Oaths Act LFN 2004 and the High Court Rules.
           </p>
-
-          {/* Categories */}
-          <div className="mt-6 flex flex-wrap gap-2 pt-2 border-t border-neutral-800">
-            {categories.map((cat) => (
-              <button
-                key={cat}
-                onClick={() => setSelectedSubCat(cat)}
-                className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition ${
-                  selectedSubCat === cat
-                    ? 'bg-yellow-400 text-neutral-950 shadow-md shadow-yellow-500/20'
-                    : 'bg-neutral-950 text-neutral-300 hover:bg-neutral-800'
-                }`}
-              >
-                {cat} Affidavits
-              </button>
-            ))}
-          </div>
         </div>
 
         {/* List */}

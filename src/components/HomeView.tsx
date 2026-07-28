@@ -66,11 +66,11 @@ const FAQS = [
   },
   {
     q: 'Do I need a Nigerian Bar Association number to register?',
-    a: 'No. Registration is open with role selection. NBA number verification is optional and unlocks a verified-counsel badge, while judges and magistrates can apply for verified access on the Judiciary tier.',
+    a: 'No. Registration is open with role selection. NBA number verification is optional and unlocks a verified-counsel badge.',
   },
   {
     q: 'What subscription plans are available?',
-    a: 'Free (limited searches, limited AI, selected articles), Professional (unlimited access, billed monthly/quarterly/yearly), Chambers (multi-seat with shared folders and collaboration) and Judiciary (dedicated verified access for judges, magistrates and judicial researchers).',
+    a: 'Free (limited searches, limited AI, selected articles), Professional (unlimited access, billed monthly/quarterly/yearly), Chambers (multi-seat with shared folders and collaboration) and Judiciary (dedicated access for judges, magistrates and judicial researchers).',
   },
   {
     q: 'Which courts and jurisdictions are covered?',
