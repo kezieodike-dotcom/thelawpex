@@ -1,0 +1,6 @@
+{
+  "name": "LAWPEX - AI Litigation & Legal Research",
+  "description": "Nigeria's Premier AI-Powered Litigation, Legal Research, Court Rules, Case Law & Drafting Platform",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
