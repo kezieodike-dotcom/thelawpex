@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64" role="img" aria-label="LAWPEX">
+  <title>LAWPEX</title>
+
+  <!-- Brand plate -->
+  <rect width="64" height="64" rx="14" fill="#facc15" />
+
+  <g fill="#171717">
+    <!-- Finial and upright of the balance -->
+    <circle cx="32" cy="13" r="3.6" />
+    <rect x="30.4" y="15" width="3.2" height="33" />
+
+    <!-- Beam -->
+    <rect x="9" y="22" width="46" height="3.2" rx="1.6" />
+
+    <!-- Hangers -->
+    <rect x="15.3" y="24" width="1.6" height="3" />
+    <rect x="47.1" y="24" width="1.6" height="3" />
+
+    <!-- Pans -->
+    <path d="M9 26.6 Q16.1 37.6 23.2 26.6 Z" />
+    <path d="M40.8 26.6 Q47.9 37.6 55 26.6 Z" />
+
+    <!-- Plinth -->
+    <rect x="21" y="47" width="22" height="3.6" rx="1.8" />
+    <rect x="17.5" y="52.4" width="29" height="3.2" rx="1.6" />
+  </g>
+</svg>

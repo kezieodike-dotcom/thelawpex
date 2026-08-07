@@ -478,7 +478,7 @@ export const LANDMARK_CASES: CaseLaw[] = [
   {
     id: 'case-001',
     title: 'Amaechi v. Independent National Electoral Commission (INEC) & Ors',
-    citation: '(2008) 5 NWLR (Pt. 1080) 227',
+    citation: '(2008) LP e-LR (SC) pt 1001',
     suitNumber: 'SC.252/2007',
     court: 'Supreme Court of Nigeria',
     year: 2008,
@@ -533,7 +533,7 @@ This appeal touches on the rule of law and statutory compliance in electoral nom
   {
     id: 'case-002',
     title: 'Salu v. Egeibon',
-    citation: '(1994) 6 NWLR (Pt. 348) 23',
+    citation: '(1994) LP e-LR (SC) pt 1002',
     suitNumber: 'SC.114/1989',
     court: 'Supreme Court of Nigeria',
     year: 1994,
@@ -565,7 +565,7 @@ RATIO DECIDENDI:
   {
     id: 'case-003',
     title: 'Madukolu & Ors v. Nkemdilim',
-    citation: '(1962) 2 SCNLR 341',
+    citation: '(1962) LP e-LR (SC) pt 1003',
     suitNumber: 'F.S.C. 344/1961',
     court: 'Supreme Court of Nigeria',
     year: 1962,
@@ -588,7 +588,7 @@ RATIO DECIDENDI:
   {
     id: 'case-004',
     title: 'Inakoju v. Adeleke & Ors',
-    citation: '(2007) 4 NWLR (Pt. 1025) 423',
+    citation: '(2007) LP e-LR (SC) pt 1004',
     suitNumber: 'SC.272/2006',
     court: 'Supreme Court of Nigeria',
     year: 2007,
@@ -611,7 +611,7 @@ RATIO DECIDENDI:
   {
     id: 'case-005',
     title: 'Kubor v. Dickson',
-    citation: '(2013) 4 NWLR (Pt. 1345) 534',
+    citation: '(2013) LP e-LR (SC) pt 1005',
     suitNumber: 'SC.369/2012',
     court: 'Supreme Court of Nigeria',
     year: 2013,
@@ -635,7 +635,7 @@ RATIO DECIDENDI:
   {
     id: 'case-006',
     title: 'Military Governor of Lagos State v. Ojukwu',
-    citation: '(1986) 1 NWLR (Pt. 18) 621',
+    citation: '(1986) LP e-LR (SC) pt 1006',
     suitNumber: 'SC.241/1985',
     court: 'Supreme Court of Nigeria',
     year: 1986,
@@ -665,7 +665,7 @@ RATIO DECIDENDI:
   {
     id: 'case-007',
     title: 'Garba & Ors v. University of Maiduguri',
-    citation: '(1986) 1 NWLR (Pt. 18) 550',
+    citation: '(1986) LP e-LR (SC) pt 1007',
     suitNumber: 'SC.55/1985',
     court: 'Supreme Court of Nigeria',
     year: 1986,
@@ -693,7 +693,7 @@ RATIO DECIDENDI:
   {
     id: 'case-008',
     title: 'Ariori & Ors v. Elemo & Ors',
-    citation: '(1983) 1 SCNLR 1',
+    citation: '(1983) LP e-LR (SC) pt 1008',
     suitNumber: 'SC.80/1981',
     court: 'Supreme Court of Nigeria',
     year: 1983,
@@ -720,7 +720,7 @@ RATIO DECIDENDI:
   {
     id: 'case-009',
     title: 'Adegoke Motors Ltd v. Adesanya & Anor',
-    citation: '(1989) 3 NWLR (Pt. 109) 250',
+    citation: '(1989) LP e-LR (SC) pt 1009',
     suitNumber: 'SC.169/1987',
     court: 'Supreme Court of Nigeria',
     year: 1989,
@@ -749,7 +749,7 @@ RATIO DECIDENDI:
   {
     id: 'case-010',
     title: 'Fawehinmi v. Akilu & Anor',
-    citation: '(1987) 4 NWLR (Pt. 67) 797',
+    citation: '(1987) LP e-LR (SC) pt 1010',
     suitNumber: 'SC.43/1987',
     court: 'Supreme Court of Nigeria',
     year: 1987,
@@ -776,7 +776,7 @@ RATIO DECIDENDI:
   {
     id: 'case-011',
     title: 'General Sani Abacha & Ors v. Chief Gani Fawehinmi',
-    citation: '(2000) 6 NWLR (Pt. 660) 228',
+    citation: '(2000) LP e-LR (SC) pt 1011',
     suitNumber: 'SC.45/1997',
     court: 'Supreme Court of Nigeria',
     year: 2000,
@@ -803,7 +803,7 @@ RATIO DECIDENDI:
   {
     id: 'case-012',
     title: 'Idundun & Ors v. Okumagba & Ors',
-    citation: '(1976) 9-10 SC 227',
+    citation: '(1976) LP e-LR (SC) pt 1012',
     suitNumber: 'SC.309/1974',
     court: 'Supreme Court of Nigeria',
     year: 1976,
@@ -828,7 +828,7 @@ RATIO DECIDENDI:
   {
     id: 'case-013',
     title: 'Chief Obafemi Awolowo v. Alhaji Shehu Shagari & Ors',
-    citation: '(1979) 6-9 SC 51',
+    citation: '(1979) LP e-LR (SC) pt 1013',
     suitNumber: 'SC.62/1979',
     court: 'Supreme Court of Nigeria',
     year: 1979,
@@ -857,7 +857,7 @@ RATIO DECIDENDI:
   {
     id: 'case-014',
     title: 'Peter Obi v. Independent National Electoral Commission (INEC) & Ors',
-    citation: '(2007) 11 NWLR (Pt. 1046) 565',
+    citation: '(2007) LP e-LR (SC) pt 1014',
     suitNumber: 'SC.123/2007',
     court: 'Supreme Court of Nigeria',
     year: 2007,
@@ -883,7 +883,7 @@ RATIO DECIDENDI:
   {
     id: 'case-015',
     title: 'Ukeje & Anor v. Ukeje',
-    citation: '(2014) 11 NWLR (Pt. 1418) 384',
+    citation: '(2014) LP e-LR (SC) pt 1015',
     suitNumber: 'SC.224/2004',
     court: 'Supreme Court of Nigeria',
     year: 2014,
@@ -910,7 +910,7 @@ RATIO DECIDENDI:
   {
     id: 'case-016',
     title: 'Mojekwu v. Mojekwu',
-    citation: '(1997) 7 NWLR (Pt. 512) 283',
+    citation: '(1997) LP e-LR (CA) pt 1016',
     suitNumber: 'CA/E/85/94',
     court: 'Court of Appeal',
     year: 1997,
@@ -939,7 +939,7 @@ RATIO DECIDENDI:
   {
     id: 'case-017',
     title: 'Nafiu Rabiu v. The State',
-    citation: '(1981) 2 NCLR 293',
+    citation: '(1981) LP e-LR (SC) pt 1017',
     suitNumber: 'SC.13/1980',
     court: 'Supreme Court of Nigeria',
     year: 1981,
@@ -965,7 +965,7 @@ RATIO DECIDENDI:
   {
     id: 'case-018',
     title: 'Ransome-Kuti & Ors v. Attorney-General of the Federation & Ors',
-    citation: '(1985) 2 NWLR (Pt. 6) 211',
+    citation: '(1985) LP e-LR (SC) pt 1018',
     suitNumber: 'SC.123/1984',
     court: 'Supreme Court of Nigeria',
     year: 1985,
@@ -988,6 +988,124 @@ RATIO DECIDENDI:
       'State liable for rights violations by its agents.'
     ],
     relatedCaseIds: ['case-011'],
+    isLandmark: true,
+  },
+  {
+    id: 'case-019',
+    title: 'Mrs Theresa Udo v. Dr Peter Idundun & Anor',
+    citation: '(2022) LP e-LR (CA) pt 1043',
+    suitNumber: 'CA/AS/434/2017',
+    court: 'Court of Appeal',
+    judicialDivision: 'Asaba Judicial Division',
+    dateDelivered: 'Friday, 20 May 2022',
+    year: 2022,
+    presidingJudges: [
+      'Joseph Olubunmi Kayode Oyewole, JCA',
+      'Boloukuromo Moses Ugo, JCA',
+      'Sybil Onyeji Nwaka Gbagi, JCA'
+    ],
+    appearances: {
+      appellant: 'P. A. Oboreh Esq.',
+      respondent: 'Sir Victor E. Akpoguma'
+    },
+    areaOfLaw: 'Evidence, Land & Property Law',
+    subject: 'Wrongful Admission of Evidence, Proof of Title to Land and Appellate Interference with Findings of Fact',
+    catchwords: [
+      'Evidence',
+      'Wrongful admission or rejection of evidence',
+      'Proof of title to land',
+      'Family property',
+      'Findings of fact on appeal'
+    ],
+    proceduralHistory:
+      'Appeal from the judgment of the High Court of Delta State delivered on 20 June 2017 in Suit No. W/407/2014, where the trial court resolved the ownership dispute over Plot Nos. 23, 25 and 27 Ekpen Street, Okere, Warri in favour of the respondents.',
+    factsSummary:
+      'The appellant claimed that she was a member of the Idundun family through the Etsemaye gate and a joint owner of Plot Nos. 23, 25 and 27 Ekpen Street, Okere, Warri. The respondents accepted the family connection but maintained that Pa Idundun gifted the properties exclusively to the Edomi and Peter Ulionerajolo lineages, excluding Mene lineage through whom the appellant claimed. The trial court accepted the respondents\' traditional history and documentary evidence, dismissed the appellant\'s ownership claim, and made consequential orders on reimbursement and account of rents.',
+    reliefsClaimed: [
+      'Declaration that the appellant is a bona fide member of the Idundun family through the Etsemaye gate and a joint owner of the properties at Nos. 23, 25 and 27 Ekpen Street, Okere, Warri.',
+      'An order permitting the appellant to recover outstanding sums allegedly expended on the buildings on the disputed properties.',
+      'Perpetual injunction restraining harassment or intimidation of the appellant in relation to the properties.',
+      'Damages for alleged harassment and embarrassment arising from community and EFCC complaints.'
+    ],
+    issuesForDetermination: [
+      'Whether the lower court was right in holding from the evidence before it that the land comprising Plot Nos. 23, 25 and 27 Ekpen Street, Okere, Warri is the property of the Edomi/Peter Ulionerajolo lineages of the Idundun family, excluding the Mene lineage as claimed by the respondents.',
+      'Whether the lower court was right from the evidence before it in making the orders it made on the appellant\'s claim and the respondents\' counterclaim.'
+    ],
+    decisionSummary:
+      'The Court of Appeal dismissed the appeal. It affirmed the trial court\'s findings on ownership, upheld the orders made on the claim and counterclaim, and held that the appellant had not shown a basis for appellate interference with the findings of fact.',
+    ordersMade: [
+      'The appeal was dismissed in its entirety.',
+      'The findings and orders of the High Court of Delta State on both the claim and counterclaim were upheld.',
+      'Parties were ordered to bear their respective costs.'
+    ],
+    ratioDecidendi: [
+      'A wrongful admission or exclusion of evidence will not justify reversal on appeal unless the complaining party shows that the decision would have been different without the evidence complained of.',
+      'An appellate court will not interfere with findings of fact made by a trial court that saw and heard the witnesses unless the findings are unsupported by pleadings or evidence, perverse, or occasion a miscarriage of justice.',
+      'In a declaration of title dispute, traditional evidence, documents of title, acts of ownership, long possession, or possession of connected or adjacent land may establish ownership where the evidence is credible and sufficient.'
+    ],
+    authoritiesCited: [
+      'Ugbe & 4 Ors. v. Edigbe & Ors.',
+      'Nwadiogbu v. Nnadozie',
+      'Agbonifo v. Aiwereoba & Anor',
+      'Odofin v. Ayoola',
+      'Olanrewaju v. Governor of Oyo State & Ors',
+      'Idundun & Ors v. Okumagba & Ors'
+    ],
+    statutesConsidered: [
+      'Evidence Act, section 226(1)',
+      'Evidence Act, sections 58 and 73(2)',
+      'Evidence Act, section 45'
+    ],
+    practiceNotes: [
+      'When attacking admitted or rejected evidence on appeal, show materiality and demonstrate that the result would probably have changed.',
+      'On appeal against findings of fact, isolate perversity, absence of evidence, wrong evaluation, or miscarriage of justice; mere disagreement with the trial judge is insufficient.',
+      'For family land disputes, align pleadings, traditional history, acts of ownership, documents, rent collection, compensation records, and possession evidence.'
+    ],
+    fullJudgmentText: `MRS THERESA UDO v. DR. PETER IDUNDUN & ANOR
+(2022) LP e-LR (CA) pt 1043
+
+IN THE COURT OF APPEAL
+ASABA JUDICIAL DIVISION
+ON FRIDAY, THE 20TH DAY OF MAY, 2022
+SUIT NO: CA/AS/434/2017
+
+BEFORE THEIR LORDSHIPS:
+JOSEPH OLUBUNMI KAYODE OYEWOLE ..... JUSTICE OF THE COURT OF APPEAL
+BOLOUKUROMO MOSES UGO ..... JUSTICE OF THE COURT OF APPEAL
+SYBIL ONYEJI NWAKA GBAGI ..... JUSTICE OF THE COURT OF APPEAL
+
+BETWEEN:
+MRS THERESA UDO ................................ APPELLANT
+
+AND
+1. DR PETER IDUNDUN
+2. MRS PATRICIA NWANGORO
+(for themselves and on behalf of Etsemaye gate of Idundun family in Okere Warri) ..... RESPONDENTS
+
+SUMMARY OF JUDGMENT
+This appeal bordered on joint ownership of land. The appellant claimed that the disputed properties formed part of family property jointly owned through the Etsemaye gate of the Idundun family. The respondents contended that the properties were gifted exclusively to the Edomi and Peter Ulionerajolo lineages and did not belong to all branches of the gate.
+
+ISSUES
+1. Whether the lower court was right in holding that Plot Nos. 23, 25 and 27 Ekpen Street, Okere, Warri belonged to the Edomi/Peter Ulionerajolo lineages of the Idundun family, excluding the Mene lineage.
+2. Whether the lower court was right in the orders it made on the appellant's claim and the respondents' counterclaim.
+
+HELD
+The Court of Appeal dismissed the appeal and upheld the findings and orders of the High Court of Delta State.
+
+RATIO
+An appellate court normally respects findings of fact made by a trial judge who saw and heard the witnesses. Interference is justified only where the findings are unsupported by the pleadings or evidence, perverse, or have occasioned a miscarriage of justice.
+
+The judgment also affirmed the practical evidential lesson that a party complaining about admission or rejection of evidence on appeal must show that the decision would have been otherwise but for the evidence complained of.
+
+APPEARANCES:
+P. A. Oboreh Esq. for the Appellant.
+Sir Victor E. Akpoguma for the Respondents.`,
+    keyPrinciples: [
+      'Wrongful admission or rejection of evidence is not automatically fatal; the appellant must show that the decision would have been different.',
+      'Proof of title to land may be established through traditional evidence, documents of title, acts of ownership, long possession, or connected/adjacent possession.',
+      'Findings of fact by a trial court are rarely disturbed on appeal unless they are perverse, unsupported, or occasion a miscarriage of justice.'
+    ],
+    relatedCaseIds: ['case-012'],
     isLandmark: true,
   }
 ];

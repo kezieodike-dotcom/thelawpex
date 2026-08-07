@@ -1,304 +1,151 @@
 import React, { useState } from 'react';
-import {
-  Scale,
-  Search,
-  Bot,
-  BookOpen,
-  FileText,
-  Gavel,
-  ShieldCheck,
-  UserCheck,
-  Building,
-  User,
-  Sparkles,
-  CheckCircle2,
-  Menu,
-  X,
-  ChevronDown,
-  LayoutDashboard,
-  Zap,
-  GraduationCap
-} from 'lucide-react';
-import { UserRole, SubscriptionTier } from '../types';
+import { Link } from 'react-router-dom';
+import { LogOut, Menu, Search, User, X } from 'lucide-react';
+import { LogoMark } from './LogoMark';
+import { pathForTab } from '../routes';
 
 interface NavbarProps {
   activeTab: string;
-  setActiveTab: (tab: string) => void;
   openSearch: () => void;
   openAuthModal: () => void;
-  userRole: UserRole;
-  setUserRole: (role: UserRole) => void;
-  subscription: SubscriptionTier;
-  barNumber: string;
   isLoggedIn: boolean;
   onLogout: () => void;
 }
 
+const PRIMARY_NAV = [
+  { id: 'areas-of-law', label: 'Areas' },
+  { id: 'case-law', label: 'Cases' },
+  { id: 'court-rules', label: 'Rules' },
+  { id: 'drafts', label: 'Drafts' },
+  { id: 'appeals', label: 'Appeals' },
+];
+
+const MOBILE_NAV = [
+  { id: 'home', label: 'Home' },
+  { id: 'ai-assistant', label: 'AI Assistant', badge: 'New' },
+  { id: 'areas-of-law', label: 'Areas of Law' },
+  { id: 'case-law', label: 'Case Law' },
+  { id: 'court-rules', label: 'Court Rules' },
+  { id: 'laws', label: 'Nigerian Laws' },
+  { id: 'drafts', label: 'Draft Library' },
+  { id: 'affidavits', label: 'Affidavits' },
+  { id: 'practicals', label: 'Courtroom Procedures' },
+  { id: 'learn-litigation-ai', label: 'Learn Litigation with AI', badge: 'New' },
+  { id: 'compliance', label: 'Compliance' },
+  { id: 'learning', label: 'Learning' },
+  { id: 'pricing', label: 'Pricing' },
+];
+
 export const Navbar: React.FC<NavbarProps> = ({
   activeTab,
-  setActiveTab,
   openSearch,
   openAuthModal,
-  userRole,
-  setUserRole,
-  subscription,
-  barNumber,
   isLoggedIn,
-  onLogout
+  onLogout,
 }) => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [roleDropdownOpen, setRoleDropdownOpen] = useState(false);
-
-  const roleLabels: Record<UserRole, { title: string; badge: string; color: string }> = {
-    lawyer: { title: 'Legal Practitioner', badge: `Bar No: ${barNumber || 'SCN/10425'}`, color: 'bg-yellow-400 text-neutral-950' },
-    judge: { title: 'Judiciary / Judge', badge: 'Verified Judicial Officer', color: 'bg-amber-500 text-neutral-950' },
-    magistrate: { title: 'Magistrate Officer', badge: 'Verified Magistrate', color: 'bg-amber-400 text-neutral-950' },
-    law_firm: { title: 'Law Firm Chambers', badge: 'Multi-User Firm Account', color: 'bg-yellow-500 text-neutral-950' },
-    student: { title: 'Law Student / Scholar', badge: 'Academic Tier', color: 'bg-neutral-800 text-yellow-400 border border-yellow-400/40' },
-    compliance_officer: { title: 'Compliance Officer', badge: 'Corporate Legal', color: 'bg-neutral-800 text-yellow-400 border border-yellow-400/40' },
-    admin: { title: 'Super Admin', badge: 'System Admin', color: 'bg-red-500 text-white' }
-  };
-
-  const navItems = [
-    { id: 'home', label: 'Home' },
-    { id: 'ai-assistant', label: 'AI Assistant', badge: 'NEW' },
-    { id: 'areas-of-law', label: 'Areas of Law' },
-    { id: 'case-law', label: 'Case Law' },
-    { id: 'court-rules', label: 'Court Rules' },
-    { id: 'drafts', label: 'Draft Library' },
-    { id: 'appeals', label: 'Appeals' },
-    { id: 'laws', label: 'Nigerian Laws' },
-    { id: 'practicals', label: 'Court Practicals' },
-    { id: 'compliance', label: 'Compliance' },
-    { id: 'learning', label: 'Learning' },
-    { id: 'pricing', label: 'Pricing' }
-  ];
 
   return (
-    <header className="sticky top-0 z-40 w-full bg-neutral-950/95 backdrop-blur-md border-b border-yellow-500/20 text-white">
-      {/* Top Bar for Verification & Bar Status */}
-      <div className="bg-neutral-900 border-b border-neutral-800 text-xs py-1.5 px-4 sm:px-8 flex flex-wrap justify-between items-center text-neutral-300">
-        <div className="flex items-center gap-3">
-          <span className="flex items-center gap-1.5 text-yellow-400 font-medium">
-            <ShieldCheck className="w-3.5 h-3.5" />
-            Nigeria's Premier Legal AI Ecosystem
+    <header className="sticky top-0 z-40 border-b border-amber-200/80 bg-[#f8f5ee]/88 text-neutral-950 shadow-[0_1px_0_rgba(255,255,255,0.7)_inset] backdrop-blur-xl">
+      <div className="mx-auto flex h-16 max-w-7xl items-center justify-between gap-4 px-4 sm:px-6 lg:px-8">
+        <Link to="/" aria-label="LAWPEX home" className="lawpex-focus-ring flex items-center gap-3 rounded-xl">
+          <LogoMark className="h-10 w-10 rounded-xl border border-amber-300/80 shadow-sm" />
+          <span className="leading-none">
+            <span className="block text-xl font-black tracking-tight">LAWPEX</span>
+            <span className="hidden text-[10px] font-bold uppercase tracking-[0.16em] text-amber-800 sm:block">
+              Litigation workspace
+            </span>
           </span>
-          <span className="hidden md:inline text-neutral-600">|</span>
-          <span className="hidden md:inline text-neutral-400">
-            Includes Supreme Court, Court of Appeal, FHC, NICN & 36 States High Court Rules
-          </span>
-        </div>
+        </Link>
 
-        <div className="flex items-center gap-4">
-          {/* User Role Switcher Dropdown */}
-          <div className="relative">
-            <button
-              onClick={() => setRoleDropdownOpen(!roleDropdownOpen)}
-              className="flex items-center gap-1.5 bg-neutral-800 hover:bg-neutral-700 text-neutral-200 px-2.5 py-1 rounded text-xs transition border border-neutral-700"
-            >
-              <UserCheck className="w-3 h-3 text-yellow-400" />
-              <span>Role: <strong className="text-yellow-400">{roleLabels[userRole].title}</strong></span>
-              <ChevronDown className="w-3 h-3 text-neutral-400" />
-            </button>
-
-            {roleDropdownOpen && (
-              <div className="absolute right-0 mt-1 w-60 bg-neutral-900 border border-yellow-500/30 rounded-lg shadow-xl z-50 py-2">
-                <div className="px-3 py-1.5 text-[11px] font-semibold text-neutral-400 uppercase tracking-wider border-b border-neutral-800">
-                  Switch Role / View Context
-                </div>
-                {(Object.keys(roleLabels) as UserRole[]).map((r) => (
-                  <button
-                    key={r}
-                    onClick={() => {
-                      setUserRole(r);
-                      setRoleDropdownOpen(false);
-                    }}
-                    className={`w-full text-left px-3 py-2 text-xs flex items-center justify-between hover:bg-neutral-800 transition ${userRole === r ? 'text-yellow-400 font-bold bg-neutral-800/60' : 'text-neutral-300'}`}
-                  >
-                    <span>{roleLabels[r].title}</span>
-                    {userRole === r && <CheckCircle2 className="w-3.5 h-3.5 text-yellow-400" />}
-                  </button>
-                ))}
-              </div>
-            )}
-          </div>
-
-          {/* Subscription Status Tag */}
-          <span className="hidden sm:inline-flex items-center gap-1 px-2 py-0.5 rounded bg-yellow-500/10 text-yellow-400 border border-yellow-500/30 font-medium text-[11px]">
-            <Zap className="w-3 h-3" />
-            {subscription.toUpperCase()} PLAN
-          </span>
-        </div>
-      </div>
-
-      {/* Main Navbar */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-4">
-        {/* Brand Logo */}
-        <button
-          onClick={() => setActiveTab('home')}
-          className="flex items-center gap-2.5 group focus:outline-none text-left"
-        >
-          <div className="w-10 h-10 rounded-lg bg-yellow-400 flex items-center justify-center text-neutral-950 font-black shadow-lg shadow-yellow-500/20 group-hover:bg-yellow-300 transition-all">
-            <Scale className="w-6 h-6 stroke-[2.5]" />
-          </div>
-          <div>
-            <span className="text-2xl font-black tracking-tight text-white font-serif">LAWPEX</span>
-          </div>
-        </button>
-
-        {/* Global Search Bar Button */}
         <button
           onClick={openSearch}
-          className="hidden md:flex items-center gap-3 bg-neutral-900 hover:bg-neutral-800/90 text-neutral-400 border border-neutral-700/80 px-4 py-2 rounded-xl text-sm w-72 lg:w-96 transition text-left group hover:border-yellow-500/40"
+          className="lawpex-focus-ring hidden min-w-0 flex-1 items-center gap-3 rounded-2xl border border-amber-200 bg-white/78 px-4 py-2.5 text-left text-sm text-neutral-600 shadow-sm hover:border-amber-400 hover:bg-white md:flex lg:max-w-md"
         >
-          <Search className="w-4 h-4 text-yellow-400 group-hover:scale-110 transition-transform" />
-          <span className="flex-1 truncate">Search case law, statutes, court rules, drafts...</span>
-          <kbd className="hidden lg:inline bg-neutral-800 text-neutral-400 px-1.5 py-0.5 text-[10px] rounded border border-neutral-700">⌘K</kbd>
+          <Search className="h-4 w-4 shrink-0 text-amber-700" />
+          <span className="truncate">Search cases, statutes, rules and drafts</span>
+          <kbd className="ml-auto rounded-md border border-amber-200 bg-amber-50 px-1.5 py-0.5 text-[10px] font-bold text-neutral-500">
+            Ctrl K
+          </kbd>
         </button>
 
-        {/* Desktop Nav Items */}
-        <nav className="hidden lg:flex items-center gap-1">
-          <button
-            onClick={() => setActiveTab('ai-assistant')}
-            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition ${
-              activeTab === 'ai-assistant'
-                ? 'bg-yellow-400 text-neutral-950 shadow-md shadow-yellow-500/20'
-                : 'text-yellow-400 hover:bg-yellow-400/10'
-            }`}
-          >
-            <Bot className="w-4 h-4" />
-            AI Legal Assistant
-          </button>
-
-          <button
-            onClick={() => setActiveTab('areas-of-law')}
-            className={`px-3 py-1.5 rounded-lg text-xs font-medium transition ${
-              activeTab === 'areas-of-law' ? 'bg-neutral-800 text-yellow-400 font-semibold' : 'text-neutral-300 hover:text-white hover:bg-neutral-900'
-            }`}
-          >
-            Areas of Law
-          </button>
-
-          <button
-            onClick={() => setActiveTab('case-law')}
-            className={`px-3 py-1.5 rounded-lg text-xs font-medium transition ${
-              activeTab === 'case-law' ? 'bg-neutral-800 text-yellow-400 font-semibold' : 'text-neutral-300 hover:text-white hover:bg-neutral-900'
-            }`}
-          >
-            Case Law
-          </button>
-
-          <button
-            onClick={() => setActiveTab('court-rules')}
-            className={`px-3 py-1.5 rounded-lg text-xs font-medium transition ${
-              activeTab === 'court-rules' ? 'bg-neutral-800 text-yellow-400 font-semibold' : 'text-neutral-300 hover:text-white hover:bg-neutral-900'
-            }`}
-          >
-            Court Rules
-          </button>
-
-          <button
-            onClick={() => setActiveTab('drafts')}
-            className={`px-3 py-1.5 rounded-lg text-xs font-medium transition ${
-              activeTab === 'drafts' ? 'bg-neutral-800 text-yellow-400 font-semibold' : 'text-neutral-300 hover:text-white hover:bg-neutral-900'
-            }`}
-          >
-            Drafts
-          </button>
-
-          <button
-            onClick={() => setActiveTab('appeals')}
-            className={`px-3 py-1.5 rounded-lg text-xs font-medium transition ${
-              activeTab === 'appeals' ? 'bg-neutral-800 text-yellow-400 font-semibold' : 'text-neutral-300 hover:text-white hover:bg-neutral-900'
-            }`}
-          >
-            Appeals
-          </button>
-
-          <button
-            onClick={() => setActiveTab('dashboard')}
-            className={`flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-medium transition border ${
-              activeTab === 'dashboard'
-                ? 'bg-neutral-800 border-yellow-400 text-yellow-400'
-                : 'border-neutral-800 text-neutral-300 hover:text-white hover:border-neutral-700'
-            }`}
-          >
-            <LayoutDashboard className="w-3.5 h-3.5 text-yellow-400" />
-            Dashboard
-          </button>
+        <nav className="hidden items-center gap-1 lg:flex">
+          {PRIMARY_NAV.map((item) => (
+            <Link
+              key={item.id}
+              to={pathForTab(item.id)}
+              className={`lawpex-focus-ring rounded-xl px-3 py-2 text-xs font-extrabold ${
+                activeTab === item.id
+                  ? 'bg-[#181411] text-white'
+                  : 'text-neutral-700 hover:bg-white/80 hover:text-neutral-950'
+              }`}
+            >
+              {item.label}
+            </Link>
+          ))}
         </nav>
 
-        {/* Auth / Account Actions */}
         <div className="flex items-center gap-2">
           {isLoggedIn ? (
-            <div className="flex items-center gap-2">
-              <button
-                onClick={() => setActiveTab('dashboard')}
-                className="flex items-center gap-2 bg-neutral-900 hover:bg-neutral-800 text-white px-3 py-1.5 rounded-lg border border-yellow-500/30 text-xs transition"
-              >
-                <div className="w-6 h-6 rounded-full bg-yellow-400 text-neutral-950 font-bold flex items-center justify-center text-xs">
-                  {barNumber ? 'SCN' : 'ADV'}
-                </div>
-                <span className="hidden sm:inline font-medium">My Workspace</span>
-              </button>
-
-              <button
-                onClick={onLogout}
-                className="text-neutral-400 hover:text-white text-xs px-2 py-1"
-              >
-                Sign Out
-              </button>
-            </div>
+            <button
+              onClick={onLogout}
+              className="lawpex-focus-ring inline-flex items-center gap-2 rounded-xl border border-amber-200 bg-white/78 px-3 py-2 text-xs font-black text-neutral-800 hover:border-amber-400 hover:bg-white"
+            >
+              <LogOut className="h-4 w-4" />
+              <span className="hidden sm:inline">Sign Out</span>
+            </button>
           ) : (
             <button
               onClick={openAuthModal}
-              className="bg-yellow-400 hover:bg-yellow-300 text-neutral-950 font-bold text-xs px-4 py-2 rounded-lg shadow-md shadow-yellow-500/20 transition flex items-center gap-1.5"
+              className="lawpex-focus-ring inline-flex items-center gap-2 rounded-xl bg-[#e6ad22] px-3 py-2 text-xs font-black text-[#181411] shadow-sm hover:bg-[#f0bd3b]"
             >
-              <User className="w-3.5 h-3.5" />
-              Sign In / Verify Bar
+              <User className="h-4 w-4" />
+              <span className="hidden sm:inline">Sign In</span>
             </button>
           )}
 
-          {/* Mobile Hamburger Menu */}
           <button
-            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className="lg:hidden p-2 text-neutral-300 hover:text-yellow-400 transition"
+            onClick={() => setMobileMenuOpen((open) => !open)}
+            aria-label="Toggle navigation"
+            className="lawpex-focus-ring rounded-xl border border-amber-200 bg-white/78 p-2 text-neutral-800 hover:border-amber-400 lg:hidden"
           >
-            {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+            {mobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
           </button>
         </div>
       </div>
 
-      {/* Mobile Drawer */}
       {mobileMenuOpen && (
-        <div className="lg:hidden bg-neutral-950 border-b border-yellow-500/20 px-4 py-4 space-y-2">
+        <div className="border-t border-amber-200/80 bg-[#f8f5ee]/96 px-4 py-4 shadow-2xl backdrop-blur-xl lg:hidden">
           <button
-            onClick={openSearch}
-            className="w-full flex items-center gap-2 bg-neutral-900 text-neutral-400 p-2.5 rounded-lg text-xs border border-neutral-800"
+            onClick={() => {
+              openSearch();
+              setMobileMenuOpen(false);
+            }}
+            className="lawpex-focus-ring flex w-full items-center gap-2 rounded-2xl border border-amber-200 bg-white p-3 text-left text-xs font-bold text-neutral-600"
           >
-            <Search className="w-4 h-4 text-yellow-400" />
-            <span>Search LAWPEX Library...</span>
+            <Search className="h-4 w-4 text-amber-700" />
+            Search LAWPEX Library
           </button>
 
-          <div className="grid grid-cols-2 gap-2 pt-2">
-            {navItems.map((item) => (
-              <button
+          <div className="mt-3 grid grid-cols-1 gap-2 sm:grid-cols-2">
+            {MOBILE_NAV.map((item) => (
+              <Link
                 key={item.id}
-                onClick={() => {
-                  setActiveTab(item.id);
-                  setMobileMenuOpen(false);
-                }}
-                className={`text-left px-3 py-2 rounded-lg text-xs font-medium flex items-center justify-between ${
-                  activeTab === item.id ? 'bg-yellow-400 text-neutral-950 font-bold' : 'text-neutral-300 bg-neutral-900'
+                to={pathForTab(item.id)}
+                onClick={() => setMobileMenuOpen(false)}
+                className={`lawpex-focus-ring flex items-center justify-between rounded-xl px-3 py-2.5 text-xs font-bold ${
+                  activeTab === item.id
+                    ? 'bg-[#181411] text-white'
+                    : 'border border-amber-200 bg-white/76 text-neutral-700'
                 }`}
               >
                 <span>{item.label}</span>
                 {item.badge && (
-                  <span className="bg-yellow-500 text-neutral-950 text-[9px] px-1.5 py-0.5 rounded font-black">
+                  <span className="rounded-full bg-[#e6ad22] px-2 py-0.5 text-[9px] font-black uppercase text-[#181411]">
                     {item.badge}
                   </span>
                 )}
-              </button>
+              </Link>
             ))}
           </div>
         </div>

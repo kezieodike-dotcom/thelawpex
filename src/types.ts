@@ -31,6 +31,66 @@ export interface AreaOfLaw {
   caseCount: number;
 }
 
+/** A single sample process/draft offered inside an area of law. */
+export interface AreaDraftResource {
+  id: string;
+  title: string;
+  description: string;
+  /** Court-ready sample text with placeholders for parties, suit numbers and dates. */
+  sampleText: string;
+}
+
+/** A statute, rule or regulation governing an area of law. */
+export interface AreaGoverningLaw {
+  title: string;
+  citation: string;
+  kind: 'Act' | 'Rules' | 'Regulations' | 'Constitution';
+  note: string;
+}
+
+/** An explanatory article attached to an area of law. */
+export interface AreaArticle {
+  id: string;
+  title: string;
+  author: string;
+  readTimeMinutes: number;
+  excerpt: string;
+  /** Markdown-lite body: paragraphs separated by blank lines, `## ` for headings. */
+  body: string;
+}
+
+/** A courtroom practical walkthrough attached to an area of law. */
+export interface AreaPractical {
+  id: string;
+  title: string;
+  duration: string;
+  instructor: string;
+  summary: string;
+  /** Ordered walkthrough of what happens in the courtroom. */
+  steps: string[];
+}
+
+/**
+ * Everything offered when a user opens one area of law. Every area exposes the same
+ * eight features so the experience is identical across practice areas.
+ */
+export interface AreaResourceBundle {
+  /** What the initiating and responding parties are called in this area. */
+  partyLabels: { initiating: string; responding: string };
+  demandLetters: AreaDraftResource[];
+  /** Sample processes for the initiating party — capped at two. */
+  initiatingProcesses: AreaDraftResource[];
+  /** Sample processes for the responding party. */
+  respondingProcesses: AreaDraftResource[];
+  /** Likely preliminary objections and counter affidavits. */
+  preliminaryObjections: AreaDraftResource[];
+  governingLaws: AreaGoverningLaw[];
+  articles: AreaArticle[];
+  /** Ids into LANDMARK_CASES, plus free-standing summaries where no full case exists. */
+  caseIds: string[];
+  practicals: AreaPractical[];
+}
+
 export interface CaseLaw {
   id: string;
   title: string;
@@ -38,14 +98,27 @@ export interface CaseLaw {
   suitNumber: string;
   court: 'Supreme Court of Nigeria' | 'Court of Appeal' | 'Federal High Court' | 'National Industrial Court' | 'State High Court';
   year: number;
+  judicialDivision?: string;
+  dateDelivered?: string;
   presidingJudges: string[];
+  appearances?: {
+    appellant?: string;
+    respondent?: string;
+  };
   areaOfLaw: string;
   subject: string;
+  catchwords?: string[];
+  proceduralHistory?: string;
   factsSummary: string;
+  reliefsClaimed?: string[];
+  ordersMade?: string[];
   issuesForDetermination: string[];
   decisionSummary: string;
   ratioDecidendi: string[];
   obiterDicta?: string[];
+  authoritiesCited?: string[];
+  statutesConsidered?: string[];
+  practiceNotes?: string[];
   fullJudgmentText: string;
   keyPrinciples: string[];
   relatedCaseIds?: string[];
@@ -93,6 +166,97 @@ export interface LegalDraft {
   variables: string[];
   downloadCount: number;
   isCustomizableWithAI: boolean;
+}
+
+/** The families every affidavit in the library falls into. */
+export type AffidavitCategoryId =
+  | 'general'
+  | 'civil'
+  | 'interlocutory'
+  | 'criminal'
+  | 'land'
+  | 'matrimonial'
+  | 'probate'
+  | 'corporate'
+  | 'election'
+  | 'enforcement'
+  | 'appellate'
+  | 'administrative';
+
+/** One sworn process in the affidavit library. */
+export interface AffidavitTemplate {
+  id: string;
+  title: string;
+  category: AffidavitCategoryId;
+  /** One line on what the affidavit is for. */
+  description: string;
+  /** When a practitioner reaches for this affidavit. */
+  whenToUse: string;
+  /** Who ordinarily deposes to it. */
+  deponent: string;
+  /** The law under which it is sworn and any rule that requires it. */
+  statutoryBasis: string[];
+  /** Whether the deposition is filed under a court heading or sworn standalone. */
+  courtHeadingRequired: boolean;
+  /** Practice warnings — the defects that get affidavits struck out. */
+  practiceNotes: string[];
+  /** The full sworn text, with bracketed placeholders. */
+  sampleText: string;
+  /** Free-text search aids. */
+  keywords: string[];
+}
+
+/** One courtroom procedure: what happens, in the order it happens. */
+export interface CourtroomProcedure {
+  id: string;
+  title: string;
+  /** The proceeding this belongs to, e.g. "Civil trial", "Criminal trial". */
+  track: string;
+  court: string;
+  /** One line on what the procedure achieves. */
+  summary: string;
+  /** Roughly how long the step takes in real time. */
+  typicalDuration: string;
+  governingRules: string[];
+  /** The stages of the procedure, each with the steps inside it. */
+  stages: {
+    heading: string;
+    steps: string[];
+  }[];
+  /** What counsel actually says, in the register the court expects. */
+  saidInCourt: string[];
+  /** Where matters go wrong, and how to avoid it. */
+  pitfalls: string[];
+  keywords: string[];
+}
+
+/** One lesson in the "learn litigation with AI tools" curriculum. */
+export interface AiLitigationLesson {
+  id: string;
+  title: string;
+  /** The stage of litigation the lesson belongs to. */
+  stage:
+    | 'Case assessment'
+    | 'Pleadings & drafting'
+    | 'Research & authority'
+    | 'Evidence'
+    | 'Advocacy'
+    | 'Appeals'
+    | 'Practice management';
+  level: 'Foundation' | 'Intermediate' | 'Advanced';
+  durationMinutes: number;
+  /** What the practitioner will be able to do after the lesson. */
+  objective: string;
+  /** What the AI does well here, in plain terms. */
+  whatTheAiDoes: string;
+  /** The litigation skill the AI is assisting — the lesson body. */
+  body: string;
+  /** Ready-made prompts the learner can send to the LAWPEX assistant. */
+  prompts: { label: string; prompt: string }[];
+  /** What must be checked by hand before the output goes near a court. */
+  verificationSteps: string[];
+  /** A task the learner does themselves to fix the skill. */
+  exercise: string;
 }
 
 export interface AppealResource {

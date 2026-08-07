@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import {
   Bot,
   Send,
@@ -29,6 +30,21 @@ export const AILegalAssistantView: React.FC = () => {
   const [inputQuery, setInputQuery] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [copiedIndex, setCopiedIndex] = useState<number | null>(null);
+  const [searchParams, setSearchParams] = useSearchParams();
+
+  /**
+   * Lessons in "Learn litigation with AI tools" hand a prompt over as `?prompt=`.
+   * It is loaded into the box rather than sent, so the practitioner can replace the
+   * bracketed parts with the facts of their own matter first.
+   */
+  useEffect(() => {
+    const handedOver = searchParams.get('prompt');
+    if (!handedOver) return;
+
+    setInputQuery(handedOver);
+    searchParams.delete('prompt');
+    setSearchParams(searchParams, { replace: true });
+  }, [searchParams, setSearchParams]);
 
   const promptSuggestions = [
     'Draft a Motion on Notice for Interlocutory Injunction in Lagos High Court',
@@ -93,22 +109,22 @@ export const AILegalAssistantView: React.FC = () => {
   };
 
   return (
-    <div className="bg-neutral-950 text-white min-h-screen py-8">
+    <div className="bg-[#f8f5ee] text-neutral-900 min-h-screen py-8">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Title Header */}
-        <div className="bg-neutral-900 border border-yellow-500/30 rounded-2xl p-6 mb-6 flex flex-col md:flex-row md:items-center justify-between gap-4 shadow-xl">
+        <div className="lawpex-panel rounded-3xl p-6 mb-6 flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div className="flex items-center gap-4">
-            <div className="w-12 h-12 rounded-2xl bg-yellow-400 text-neutral-950 font-black flex items-center justify-center text-xl shadow-lg shadow-yellow-500/20">
+            <div className="w-12 h-12 rounded-2xl bg-[#181411] text-amber-300 font-black flex items-center justify-center text-xl shadow-lg">
               <Bot className="w-7 h-7 stroke-[2.5]" />
             </div>
             <div>
               <div className="flex items-center gap-2">
-                <h1 className="text-2xl font-black font-serif text-white">LAWPEX AI Litigation Assistant</h1>
-                <span className="bg-yellow-400 text-neutral-950 text-[10px] font-black px-2 py-0.5 rounded uppercase">
+                <h1 className="text-2xl font-black tracking-tight text-neutral-950">LAWPEX AI Litigation Assistant</h1>
+                <span className="bg-[#e6ad22] text-neutral-950 text-[10px] font-black px-2 py-0.5 rounded uppercase">
                   NIGERIAN LEGAL AI
                 </span>
               </div>
-              <p className="text-xs text-neutral-400 mt-1">
+              <p className="text-xs text-neutral-600 mt-1">
                 Generative Research & Drafting over Supreme Court Judgments, ACJA, CAMA, Evidence Act & Court Rules.
               </p>
             </div>
@@ -125,16 +141,16 @@ export const AILegalAssistantView: React.FC = () => {
                 }
               ])
             }
-            className="flex items-center gap-2 bg-neutral-950 hover:bg-neutral-800 text-neutral-300 px-3.5 py-2 rounded-xl border border-neutral-800 text-xs font-semibold transition"
+              className="lawpex-focus-ring flex items-center gap-2 bg-white hover:bg-amber-50 text-neutral-700 px-3.5 py-2 rounded-xl border border-amber-200 text-xs font-semibold"
           >
-            <RotateCcw className="w-3.5 h-3.5 text-yellow-400" />
+            <RotateCcw className="w-3.5 h-3.5 text-yellow-700" />
             <span>New Research Chat</span>
           </button>
         </div>
 
         {/* Prompt Suggestions Bar */}
         <div className="mb-6">
-          <div className="text-xs font-bold text-yellow-400 uppercase tracking-wider mb-2 flex items-center gap-1.5">
+          <div className="text-xs font-bold text-yellow-700 uppercase tracking-wider mb-2 flex items-center gap-1.5">
             <Sparkles className="w-3.5 h-3.5" />
             <span>Suggested Litigation Prompts</span>
           </div>
@@ -143,17 +159,17 @@ export const AILegalAssistantView: React.FC = () => {
               <button
                 key={idx}
                 onClick={() => handleSendMessage(prompt)}
-                className="bg-neutral-900 hover:bg-neutral-800/90 text-neutral-300 hover:text-yellow-400 text-left p-3 rounded-xl border border-neutral-800 hover:border-yellow-500/40 text-xs transition flex items-center justify-between group"
+                className="bg-yellow-100 hover:bg-yellow-200 text-neutral-700 hover:text-yellow-700 text-left p-3 rounded-xl border border-neutral-200 hover:border-yellow-500/80 text-xs transition flex items-center justify-between group"
               >
                 <span className="line-clamp-2">{prompt}</span>
-                <Sparkles className="w-3.5 h-3.5 text-yellow-400 opacity-0 group-hover:opacity-100 transition-opacity ml-2 shrink-0" />
+                <Sparkles className="w-3.5 h-3.5 text-yellow-700 opacity-0 group-hover:opacity-100 transition-opacity ml-2 shrink-0" />
               </button>
             ))}
           </div>
         </div>
 
         {/* Chat Conversation Window */}
-        <div className="bg-neutral-900 border border-neutral-800 rounded-2xl shadow-2xl overflow-hidden mb-6">
+        <div className="lawpex-card rounded-3xl overflow-hidden mb-6">
           <div className="p-4 sm:p-6 space-y-6 max-h-[550px] overflow-y-auto">
             {messages.map((msg, idx) => (
               <div
@@ -163,7 +179,7 @@ export const AILegalAssistantView: React.FC = () => {
                 }`}
               >
                 {msg.sender === 'ai' && (
-                  <div className="w-9 h-9 rounded-xl bg-yellow-400 text-neutral-950 font-black flex items-center justify-center shrink-0 text-xs shadow-md shadow-yellow-500/10">
+                  <div className="w-9 h-9 rounded-xl bg-yellow-400 text-neutral-950 font-black flex items-center justify-center shrink-0 text-xs shadow-md shadow-yellow-500/20">
                     AI
                   </div>
                 )}
@@ -171,8 +187,8 @@ export const AILegalAssistantView: React.FC = () => {
                 <div
                   className={`max-w-3xl rounded-2xl p-4 text-xs sm:text-sm leading-relaxed ${
                     msg.sender === 'user'
-                      ? 'bg-yellow-400 text-neutral-950 font-semibold rounded-tr-none'
-                      : 'bg-neutral-950 text-neutral-200 border border-neutral-800 rounded-tl-none font-sans'
+                      ? 'bg-[#181411] text-white font-semibold rounded-tr-none'
+                      : 'bg-white text-neutral-800 border border-amber-100 rounded-tl-none font-sans'
                   }`}
                 >
                   {/* Message Content */}
@@ -182,21 +198,21 @@ export const AILegalAssistantView: React.FC = () => {
 
                   {/* Sources tag if AI */}
                   {msg.sender === 'ai' && msg.sources && (
-                    <div className="mt-3 pt-3 border-t border-neutral-800/80 flex flex-wrap items-center justify-between gap-2 text-[11px] text-neutral-400">
-                      <div className="flex items-center gap-1 text-yellow-400/90">
-                        <BookOpen className="w-3 h-3 text-yellow-400" />
+                    <div className="mt-3 pt-3 border-t border-neutral-200 flex flex-wrap items-center justify-between gap-2 text-[11px] text-neutral-600">
+                      <div className="flex items-center gap-1 text-yellow-700/90">
+                        <BookOpen className="w-3 h-3 text-yellow-700" />
                         <span>Authorities Verified: {msg.sources.join(', ')}</span>
                       </div>
 
                       <div className="flex items-center gap-2">
                         <button
                           onClick={() => copyToClipboard(msg.text, idx)}
-                          className="flex items-center gap-1 hover:text-yellow-400 transition"
+                          className="flex items-center gap-1 hover:text-yellow-700 transition"
                         >
                           {copiedIndex === idx ? (
                             <>
-                              <Check className="w-3 h-3 text-green-400" />
-                              <span className="text-green-400">Copied!</span>
+                              <Check className="w-3 h-3 text-green-600" />
+                              <span className="text-green-600">Copied!</span>
                             </>
                           ) : (
                             <>
@@ -215,7 +231,7 @@ export const AILegalAssistantView: React.FC = () => {
                 </div>
 
                 {msg.sender === 'user' && (
-                  <div className="w-9 h-9 rounded-xl bg-neutral-800 text-yellow-400 font-bold flex items-center justify-center shrink-0 text-xs border border-neutral-700">
+                  <div className="w-9 h-9 rounded-xl bg-yellow-100 text-yellow-700 font-bold flex items-center justify-center shrink-0 text-xs border border-neutral-300">
                     SAN
                   </div>
                 )}
@@ -223,8 +239,8 @@ export const AILegalAssistantView: React.FC = () => {
             ))}
 
             {isLoading && (
-              <div className="flex gap-4 items-center text-xs text-yellow-400 animate-pulse bg-neutral-950 p-4 rounded-xl border border-neutral-800">
-                <div className="w-8 h-8 rounded-xl bg-yellow-400 text-neutral-950 font-bold flex items-center justify-center">
+              <div className="flex gap-4 items-center text-xs text-amber-800 animate-pulse bg-white p-4 rounded-xl border border-amber-100">
+                <div className="w-8 h-8 rounded-xl bg-[#e6ad22] text-neutral-950 font-bold flex items-center justify-center">
                   <Bot className="w-4 h-4 animate-spin" />
                 </div>
                 <span>LAWPEX AI is searching Nigerian Case Laws, LFN Statutes & Court Rules...</span>
@@ -233,7 +249,7 @@ export const AILegalAssistantView: React.FC = () => {
           </div>
 
           {/* Input Box */}
-          <div className="p-4 bg-neutral-950 border-t border-neutral-800">
+          <div className="p-4 bg-white border-t border-amber-100">
             <form
               onSubmit={(e) => {
                 e.preventDefault();
@@ -252,13 +268,13 @@ export const AILegalAssistantView: React.FC = () => {
                 }}
                 rows={2}
                 placeholder="Ask any legal question, request a court process draft, or cite a statute... (Press Enter to send)"
-                className="flex-1 bg-neutral-900 text-white placeholder-neutral-500 text-xs sm:text-sm p-3 rounded-xl border border-neutral-800 focus:outline-none focus:border-yellow-400 transition resize-none"
+                className="lawpex-focus-ring flex-1 bg-amber-50/50 text-neutral-900 placeholder-neutral-500 text-xs sm:text-sm p-3 rounded-xl border border-amber-100 focus:outline-none focus:border-amber-400 resize-none"
               />
 
               <button
                 type="submit"
                 disabled={isLoading || !inputQuery.trim()}
-                className="bg-yellow-400 hover:bg-yellow-300 disabled:opacity-50 text-neutral-950 font-black h-full px-5 py-3 rounded-xl text-xs transition shadow-lg shadow-yellow-500/20 flex items-center justify-center gap-1.5 shrink-0"
+                className="lawpex-focus-ring bg-[#e6ad22] hover:bg-[#f0bd3b] disabled:opacity-50 text-neutral-950 font-black h-full px-5 py-3 rounded-xl text-xs shadow-sm flex items-center justify-center gap-1.5 shrink-0"
               >
                 <span>Ask AI</span>
                 <Send className="w-4 h-4" />

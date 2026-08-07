@@ -1,22 +1,23 @@
 import React, { useState } from 'react';
 import {
-  LayoutDashboard,
+  Bell,
   Bookmark,
-  FileText,
-  Clock,
-  Download,
   Bot,
-  Zap,
+  Briefcase,
+  CalendarClock,
   CheckCircle2,
-  Users,
-  Search,
   ChevronRight,
-  Sparkles,
-  ExternalLink,
-  Trash2,
-  Award
+  Download,
+  FileText,
+  FolderOpen,
+  GraduationCap,
+  Search,
+  ShieldCheck,
+  Users,
+  Zap,
 } from 'lucide-react';
-import { UserRole, SubscriptionTier } from '../types';
+import { SubscriptionTier, UserRole } from '../types';
+import { NOTIFICATIONS, SUBSCRIPTION_USAGE } from '../data/platform';
 
 interface DashboardViewProps {
   userRole: UserRole;
@@ -26,321 +27,308 @@ interface DashboardViewProps {
   onOpenViewer: (item: any) => void;
 }
 
+type DashboardTab =
+  | 'overview'
+  | 'searches'
+  | 'bookmarks'
+  | 'drafts'
+  | 'ai'
+  | 'downloads'
+  | 'subscription'
+  | 'notifications'
+  | 'certificates'
+  | 'team';
+
+const savedCases = [
+  { id: 'case-001', title: 'Amaechi v. INEC & Ors', citation: '(2008) LP e-LR (SC) pt 1001', savedAt: '2026-07-22' },
+  { id: 'case-002', title: 'Salu v. Egeibon', citation: '(1994) LP e-LR (SC) pt 1002', savedAt: '2026-07-20' },
+  { id: 'case-005', title: 'Kubor v. Dickson', citation: '(2013) LP e-LR (SC) pt 1005', savedAt: '2026-07-18' },
+];
+
+const savedDrafts = [
+  { id: 'draft-001', title: 'Motion on Notice for Interlocutory Injunction', suitNo: 'SUIT NO: LD/10425/2026', court: 'High Court of Lagos State', updatedAt: '2 hours ago' },
+  { id: 'draft-003', title: 'Notice of Appeal (Court of Appeal)', suitNo: 'APPEAL NO: CA/L/410/2026', court: 'Court of Appeal, Lagos Division', updatedAt: 'Yesterday' },
+];
+
+const recentSearches = [
+  { query: 'locus standi in constitutional actions', scope: 'Case law + principles', time: 'Today, 09:12' },
+  { query: 'Order 25 summary judgment Federal High Court', scope: 'Court rules', time: 'Yesterday, 16:44' },
+  { query: 'leave to appeal out of time trinity prayers', scope: 'Appeals Centre', time: '22 July 2026' },
+];
+
+const aiConversations = [
+  { query: 'Draft a Motion on Notice for injunction under Lagos High Court Rules 2019', timestamp: 'Today at 09:15', tokensUsed: 420, status: 'Exportable' },
+  { query: 'Compare Madukolu v. Nkemdilim and Salu v. Egeibon on jurisdiction', timestamp: '22 July 2026', tokensUsed: 318, status: 'Saved' },
+  { query: 'Generate cross-examination questions for police IPO', timestamp: '18 July 2026', tokensUsed: 280, status: 'Needs verification' },
+];
+
+const downloads = [
+  { title: 'Written address on preliminary objection', type: 'Word', date: 'Today', matter: 'Prime Lands Realty Ltd' },
+  { title: 'Section 84 Evidence Act extract', type: 'PDF', date: 'Yesterday', matter: 'Commercial debt recovery' },
+  { title: 'Notice of Appeal draft', type: 'Word', date: '19 July 2026', matter: 'Jurisdiction appeal' },
+];
+
+const certificates = [
+  { title: 'Civil Litigation & Rules of Court', status: '74% complete', issued: 'Pending assessment' },
+  { title: 'AI-Assisted Legal Research', status: 'Completed', issued: 'Certificate ready' },
+];
+
 export const DashboardView: React.FC<DashboardViewProps> = ({
   userRole,
   subscription,
   barNumber,
   setActiveTab,
-  onOpenViewer
+  onOpenViewer,
 }) => {
-  const [activeSubTab, setActiveSubTab] = useState<'overview' | 'saved_cases' | 'saved_drafts' | 'ai_chats' | 'team'>('overview');
+  const [activeSubTab, setActiveSubTab] = useState<DashboardTab>('overview');
+  const usage = SUBSCRIPTION_USAGE[subscription];
 
-  const savedCases = [
-    {
-      id: 'case-001',
-      title: 'Amaechi v. INEC & Ors',
-      citation: '(2008) 5 NWLR (Pt. 1080) 227',
-      type: 'Case Law',
-      savedAt: '2026-07-22'
-    },
-    {
-      id: 'case-002',
-      title: 'Salu v. Egeibon',
-      citation: '(1994) 6 NWLR (Pt. 348) 23',
-      type: 'Case Law',
-      savedAt: '2026-07-20'
-    },
-    {
-      id: 'case-005',
-      title: 'Kubor v. Dickson',
-      citation: '(2013) 4 NWLR (Pt. 1345) 534',
-      type: 'Case Law',
-      savedAt: '2026-07-18'
-    }
-  ];
-
-  const savedDrafts = [
-    {
-      id: 'draft-001',
-      title: 'Motion on Notice for Interlocutory Injunction',
-      suitNo: 'SUIT NO: LD/10425/2026',
-      court: 'High Court of Lagos State',
-      updatedAt: '2 hours ago'
-    },
-    {
-      id: 'draft-003',
-      title: 'Notice of Appeal (Court of Appeal)',
-      suitNo: 'APPEAL NO: CA/L/410/2026',
-      court: 'Court of Appeal, Lagos Division',
-      updatedAt: 'Yesterday'
-    }
-  ];
-
-  const aiConversations = [
-    {
-      query: 'Draft a Motion on Notice for injunction under Lagos High Court Rules 2019',
-      timestamp: 'Today at 09:15 AM',
-      tokensUsed: 420
-    },
-    {
-      query: 'What are the exceptions to Foss v. Harbottle under CAMA 2020 S.343?',
-      timestamp: '22 July 2026',
-      tokensUsed: 280
-    }
+  const tabs: { id: DashboardTab; label: string; icon: React.ElementType }[] = [
+    { id: 'overview', label: 'Overview', icon: Briefcase },
+    { id: 'searches', label: 'Recent Searches', icon: Search },
+    { id: 'bookmarks', label: 'Bookmarks', icon: Bookmark },
+    { id: 'drafts', label: 'Saved Drafts', icon: FileText },
+    { id: 'ai', label: 'AI Chats', icon: Bot },
+    { id: 'downloads', label: 'Downloads', icon: Download },
+    { id: 'subscription', label: 'Subscription', icon: Zap },
+    { id: 'notifications', label: 'Notifications', icon: Bell },
+    { id: 'certificates', label: 'Certificates', icon: GraduationCap },
+    { id: 'team', label: 'Team Folder', icon: Users },
   ];
 
   return (
-    <div className="bg-neutral-950 text-white min-h-screen py-8">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Profile Header Banner */}
-        <div className="bg-gradient-to-r from-neutral-900 via-neutral-900 to-neutral-950 border border-yellow-500/30 rounded-2xl p-6 sm:p-8 mb-8 shadow-2xl relative overflow-hidden">
-          <div className="absolute top-0 right-0 w-80 h-80 bg-yellow-500/10 rounded-full blur-3xl pointer-events-none" />
-
-          <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
-            <div className="flex items-center gap-4">
-              <div className="w-16 h-16 rounded-2xl bg-yellow-400 text-neutral-950 font-black flex items-center justify-center text-2xl shadow-xl shadow-yellow-500/20">
+    <div className="min-h-screen bg-[#f8f5ee] py-8 text-neutral-900">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <section className="lawpex-panel overflow-hidden rounded-3xl p-6 sm:p-8">
+          <div className="flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
+            <div className="flex items-start gap-4">
+              <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl bg-[#181411] text-lg font-black text-amber-300">
                 SCN
               </div>
               <div>
-                <div className="flex items-center gap-2">
-                  <h1 className="text-2xl sm:text-3xl font-black font-serif text-white">Barr. O. J. Ademola, SAN</h1>
-                  <span className="bg-yellow-400 text-neutral-950 text-xs font-black px-2.5 py-0.5 rounded uppercase">
-                    VERIFIED
+                <div className="flex flex-wrap items-center gap-2">
+                  <h1 className="text-2xl font-black tracking-tight text-neutral-950 sm:text-3xl">
+                    Barr. O. J. Ademola, SAN
+                  </h1>
+                  <span className="inline-flex items-center gap-1 rounded-full bg-emerald-100 px-2.5 py-1 text-[10px] font-black uppercase text-emerald-800">
+                    <CheckCircle2 className="h-3 w-3" />
+                    Verified
                   </span>
                 </div>
-                <p className="text-xs text-neutral-400 mt-1">
-                  Supreme Court Enrollment Bar Number:{' '}
-                  <strong className="text-yellow-400 font-mono">{barNumber || 'SCN/084251'}</strong> | Chambers: Ademola & Co. Legal Practitioners
+                <p className="mt-2 text-xs leading-6 text-neutral-600">
+                  Role: <strong>{userRole.replace('_', ' ')}</strong> · Bar number:{' '}
+                  <strong className="font-mono text-amber-800">{barNumber || 'SCN/084251'}</strong> ·
+                  Chambers workspace active
                 </p>
               </div>
             </div>
 
-            {/* Plan Badge Card */}
-            <div className="bg-neutral-950 border border-yellow-500/30 rounded-xl p-4 flex items-center gap-4">
-              <div>
-                <div className="text-[10px] text-neutral-400 uppercase font-bold tracking-wider">Current Subscription</div>
-                <div className="text-sm font-black text-yellow-400 flex items-center gap-1.5">
-                  <Zap className="w-4 h-4 fill-yellow-400" />
-                  {subscription.toUpperCase()} PLAN
-                </div>
-                <p className="text-[10px] text-neutral-500">Unlimited AI Legal Research & Drafts</p>
-              </div>
-              <button
-                onClick={() => setActiveTab('pricing')}
-                className="bg-yellow-400 hover:bg-yellow-300 text-neutral-950 font-bold text-xs px-3 py-2 rounded-lg transition"
-              >
-                Upgrade
-              </button>
+            <div className="grid grid-cols-2 gap-2 rounded-2xl border border-amber-200 bg-white/70 p-3 text-xs sm:grid-cols-4">
+              <Usage label="Searches" value={usage.searches} />
+              <Usage label="AI" value={usage.ai} />
+              <Usage label="Downloads" value={usage.downloads} />
+              <Usage label="Seats" value={usage.seats} />
             </div>
           </div>
 
-          {/* Sub Navigation */}
-          <div className="mt-8 flex flex-wrap gap-2 border-t border-neutral-800 pt-4">
-            {[
-              { id: 'overview', label: 'Overview & Recent' },
-              { id: 'saved_cases', label: `Saved Cases (${savedCases.length})` },
-              { id: 'saved_drafts', label: `Custom Drafts (${savedDrafts.length})` },
-              { id: 'ai_chats', label: 'AI Search History' },
-              { id: 'team', label: 'Chambers Team Folder' }
-            ].map((st) => (
-              <button
-                key={st.id}
-                onClick={() => setActiveSubTab(st.id as any)}
-                className={`px-4 py-2 rounded-xl text-xs font-bold transition ${
-                  activeSubTab === st.id
-                    ? 'bg-yellow-400 text-neutral-950 shadow-md shadow-yellow-500/20'
-                    : 'bg-neutral-900 text-neutral-300 hover:bg-neutral-800'
-                }`}
-              >
-                {st.label}
-              </button>
-            ))}
+          <div className="mt-7 flex gap-2 overflow-x-auto border-t border-amber-100 pt-4">
+            {tabs.map((tab) => {
+              const Icon = tab.icon;
+              return (
+                <button
+                  key={tab.id}
+                  onClick={() => setActiveSubTab(tab.id)}
+                  className={`lawpex-focus-ring inline-flex shrink-0 items-center gap-2 rounded-xl px-3 py-2 text-xs font-black ${
+                    activeSubTab === tab.id
+                      ? 'bg-[#181411] text-white'
+                      : 'border border-amber-200 bg-white/80 text-neutral-600 hover:border-amber-400 hover:text-neutral-950'
+                  }`}
+                >
+                  <Icon className="h-4 w-4" />
+                  {tab.label}
+                </button>
+              );
+            })}
           </div>
-        </div>
+        </section>
 
-        {/* Dashboard Subtabs Content */}
-        {activeSubTab === 'overview' && (
-          <div className="space-y-8">
-            {/* Metric Overview Cards */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-              <div className="bg-neutral-900 border border-neutral-800 p-5 rounded-2xl">
-                <div className="flex justify-between items-center mb-2">
-                  <span className="text-xs text-neutral-400 font-semibold">Saved Cases</span>
-                  <Bookmark className="w-4 h-4 text-yellow-400" />
+        <section className="mt-8">
+          {activeSubTab === 'overview' && (
+            <div className="grid grid-cols-1 gap-6 lg:grid-cols-[1.15fr_0.85fr]">
+              <Panel title="Matter command centre" subtitle="PRD workspace panels consolidated for daily litigation work.">
+                <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+                  <Metric icon={Bookmark} label="Saved cases" value={String(savedCases.length)} detail="Curated authority folders" />
+                  <Metric icon={FileText} label="Saved drafts" value={String(savedDrafts.length)} detail="Work-in-progress processes" />
+                  <Metric icon={Bot} label="AI conversations" value={String(aiConversations.length)} detail="Persistent assistant threads" />
+                  <Metric icon={Download} label="Downloads" value={String(downloads.length)} detail="Export audit trail" />
                 </div>
-                <div className="text-3xl font-black text-white font-serif">{savedCases.length}</div>
-                <p className="text-[11px] text-neutral-500 mt-1">Bookmarked for quick court reference</p>
-              </div>
+              </Panel>
 
-              <div className="bg-neutral-900 border border-neutral-800 p-5 rounded-2xl">
-                <div className="flex justify-between items-center mb-2">
-                  <span className="text-xs text-neutral-400 font-semibold">Saved Legal Drafts</span>
-                  <FileText className="w-4 h-4 text-yellow-400" />
+              <Panel title="Next best actions" subtitle="One-click continuation paths from the dashboard.">
+                <div className="space-y-2">
+                  <Action label="Resume case-law research" onClick={() => setActiveSubTab('searches')} />
+                  <Action label="Open draft library" onClick={() => setActiveTab('drafts')} />
+                  <Action label="Launch AI assistant" onClick={() => setActiveTab('ai-assistant')} />
+                  <Action label="Review subscription usage" onClick={() => setActiveSubTab('subscription')} />
                 </div>
-                <div className="text-3xl font-black text-white font-serif">{savedDrafts.length}</div>
-                <p className="text-[11px] text-neutral-500 mt-1">Writs, Motions & Addresses</p>
-              </div>
-
-              <div className="bg-neutral-900 border border-neutral-800 p-5 rounded-2xl">
-                <div className="flex justify-between items-center mb-2">
-                  <span className="text-xs text-neutral-400 font-semibold">AI Legal Queries</span>
-                  <Bot className="w-4 h-4 text-yellow-400" />
-                </div>
-                <div className="text-3xl font-black text-white font-serif">48</div>
-                <p className="text-[11px] text-neutral-500 mt-1">Research sessions this month</p>
-              </div>
-
-              <div className="bg-neutral-900 border border-neutral-800 p-5 rounded-2xl">
-                <div className="flex justify-between items-center mb-2">
-                  <span className="text-xs text-neutral-400 font-semibold">Downloads</span>
-                  <Download className="w-4 h-4 text-yellow-400" />
-                </div>
-                <div className="text-3xl font-black text-white font-serif">18</div>
-                <p className="text-[11px] text-neutral-500 mt-1">Word & PDF legal documents</p>
-              </div>
+              </Panel>
             </div>
+          )}
 
-            {/* Main Content Split */}
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-              {/* Left Column: Recent Activity */}
-              <div className="lg:col-span-2 space-y-6">
-                <div className="bg-neutral-900 border border-neutral-800 rounded-2xl p-6">
-                  <div className="flex justify-between items-center mb-4 border-b border-neutral-800 pb-3">
-                    <h2 className="text-base font-bold font-serif text-white flex items-center gap-2">
-                      <Clock className="w-4 h-4 text-yellow-400" />
-                      Recent Case Research & Bookmarks
-                    </h2>
-                    <button onClick={() => setActiveTab('case-law')} className="text-xs text-yellow-400 font-semibold hover:underline flex items-center gap-1">
-                      Browse All Case Law <ChevronRight className="w-3.5 h-3.5" />
-                    </button>
-                  </div>
-
-                  <div className="space-y-3">
-                    {savedCases.map((c) => (
-                      <div
-                        key={c.id}
-                        onClick={() => onOpenViewer(c)}
-                        className="p-4 bg-neutral-950 hover:bg-neutral-800/80 border border-neutral-800 hover:border-yellow-500/40 rounded-xl transition cursor-pointer flex justify-between items-center group"
-                      >
-                        <div>
-                          <h3 className="text-sm font-bold text-white group-hover:text-yellow-400 transition">{c.title}</h3>
-                          <p className="text-xs text-yellow-400/80 font-mono mt-0.5">{c.citation}</p>
-                          <span className="text-[10px] text-neutral-500 mt-1 inline-block">Saved on {c.savedAt}</span>
-                        </div>
-                        <ChevronRight className="w-4 h-4 text-neutral-500 group-hover:text-yellow-400 transition" />
-                      </div>
-                    ))}
-                  </div>
-                </div>
-
-                {/* Saved Custom Drafts */}
-                <div className="bg-neutral-900 border border-neutral-800 rounded-2xl p-6">
-                  <div className="flex justify-between items-center mb-4 border-b border-neutral-800 pb-3">
-                    <h2 className="text-base font-bold font-serif text-white flex items-center gap-2">
-                      <FileText className="w-4 h-4 text-yellow-400" />
-                      Saved Custom Drafts
-                    </h2>
-                    <button onClick={() => setActiveTab('drafts')} className="text-xs text-yellow-400 font-semibold hover:underline flex items-center gap-1">
-                      Draft Library <ChevronRight className="w-3.5 h-3.5" />
-                    </button>
-                  </div>
-
-                  <div className="space-y-3">
-                    {savedDrafts.map((d) => (
-                      <div
-                        key={d.id}
-                        onClick={() => setActiveTab('drafts')}
-                        className="p-4 bg-neutral-950 hover:bg-neutral-800/80 border border-neutral-800 hover:border-yellow-500/40 rounded-xl transition cursor-pointer flex justify-between items-center group"
-                      >
-                        <div>
-                          <h3 className="text-sm font-bold text-white group-hover:text-yellow-400 transition">{d.title}</h3>
-                          <p className="text-xs text-neutral-400 mt-0.5">{d.court} • <span className="text-yellow-400 font-mono">{d.suitNo}</span></p>
-                          <span className="text-[10px] text-neutral-500 mt-1 inline-block">Updated {d.updatedAt}</span>
-                        </div>
-                        <button className="bg-yellow-400 text-neutral-950 font-bold text-xs px-3 py-1.5 rounded-lg group-hover:bg-yellow-300 transition">
-                          Edit Process
-                        </button>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              </div>
-
-              {/* Right Column: AI Quick Tools */}
-              <div className="space-y-6">
-                <div className="bg-gradient-to-br from-neutral-900 via-neutral-900 to-neutral-950 border border-yellow-500/40 rounded-2xl p-6 shadow-xl">
-                  <div className="w-10 h-10 rounded-xl bg-yellow-400 text-neutral-950 font-bold flex items-center justify-center mb-4 shadow-lg shadow-yellow-500/20">
-                    <Bot className="w-6 h-6" />
-                  </div>
-                  <h3 className="text-base font-bold text-white font-serif">Quick AI Legal Assistant</h3>
-                  <p className="text-xs text-neutral-400 mt-1">
-                    Ask any question about Nigerian Law, SC Citations, ACJA 2015, or CAMA 2020.
-                  </p>
-
-                  <button
-                    onClick={() => setActiveTab('ai-assistant')}
-                    className="w-full mt-4 bg-yellow-400 hover:bg-yellow-300 text-neutral-950 font-black py-3 rounded-xl text-xs transition shadow-lg shadow-yellow-500/20 flex items-center justify-center gap-2"
-                  >
-                    <span>Launch AI Research Engine</span>
-                    <Sparkles className="w-4 h-4" />
-                  </button>
-                </div>
-
-                {/* Notifications & Digest */}
-                <div className="bg-neutral-900 border border-neutral-800 rounded-2xl p-6">
-                  <h3 className="text-sm font-bold text-white font-serif mb-3 border-b border-neutral-800 pb-2">
-                    Weekly Legal Updates
-                  </h3>
-                  <div className="space-y-3 text-xs text-neutral-300">
-                    <div className="p-3 bg-neutral-950 rounded-xl border border-neutral-800">
-                      <span className="text-yellow-400 font-bold text-[10px] uppercase">Supreme Court Judgment</span>
-                      <p className="font-semibold text-white mt-0.5">S.84 Evidence Act 2023 Amendment Guidelines</p>
-                      <p className="text-neutral-500 text-[11px] mt-1">Certified digital signatures now admissible without oral witness in commercial disputes.</p>
-                    </div>
-
-                    <div className="p-3 bg-neutral-950 rounded-xl border border-neutral-800">
-                      <span className="text-yellow-400 font-bold text-[10px] uppercase">High Court Practice Direction</span>
-                      <p className="font-semibold text-white mt-0.5">Lagos State High Court Virtual Hearing Rules 2026</p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        )}
-
-        {activeSubTab === 'saved_cases' && (
-          <div className="bg-neutral-900 border border-neutral-800 rounded-2xl p-6">
-            <h2 className="text-lg font-bold font-serif text-white mb-4">Bookmarked Case Law Judgments</h2>
-            <div className="space-y-3">
-              {savedCases.map((c) => (
-                <div key={c.id} className="p-4 bg-neutral-950 border border-neutral-800 rounded-xl flex justify-between items-center">
-                  <div>
-                    <h3 className="text-sm font-bold text-white">{c.title}</h3>
-                    <p className="text-xs text-yellow-400 font-mono mt-1">{c.citation}</p>
-                  </div>
-                  <button onClick={() => onOpenViewer(c)} className="bg-yellow-400 text-neutral-950 font-bold text-xs px-4 py-2 rounded-lg">
-                    Read Full Judgment
-                  </button>
-                </div>
+          {activeSubTab === 'searches' && (
+            <ListPanel title="Recent Searches" subtitle="One-click resumption of prior research threads.">
+              {recentSearches.map((item) => (
+                <Row key={item.query} title={item.query} meta={`${item.scope} · ${item.time}`} onClick={() => setActiveTab('case-law')} />
               ))}
-            </div>
-          </div>
-        )}
+            </ListPanel>
+          )}
 
-        {activeSubTab === 'team' && (
-          <div className="bg-neutral-900 border border-neutral-800 rounded-2xl p-8 text-center">
-            <Users className="w-12 h-12 text-yellow-400 mx-auto mb-4" />
-            <h2 className="text-xl font-bold font-serif text-white">Chambers & Law Firm Team Workspace</h2>
-            <p className="text-xs text-neutral-400 max-w-md mx-auto mt-2">
-              Collaborate with associates, share draft templates, and pool case research across your law firm.
-            </p>
-            <button onClick={() => setActiveTab('pricing')} className="mt-6 bg-yellow-400 text-neutral-950 font-bold text-xs px-6 py-3 rounded-xl">
-              Upgrade to Chambers Subscription
-            </button>
-          </div>
-        )}
+          {activeSubTab === 'bookmarks' && (
+            <ListPanel title="Bookmarks" subtitle="Unified bookmarks across cases, rules, statutes, articles and videos.">
+              {savedCases.map((item) => (
+                <Row key={item.id} title={item.title} meta={`${item.citation} · Saved ${item.savedAt}`} onClick={() => onOpenViewer(item)} />
+              ))}
+            </ListPanel>
+          )}
+
+          {activeSubTab === 'drafts' && (
+            <ListPanel title="Saved Drafts" subtitle="Work-in-progress court processes and agreements.">
+              {savedDrafts.map((item) => (
+                <Row key={item.id} title={item.title} meta={`${item.court} · ${item.suitNo} · Updated ${item.updatedAt}`} onClick={() => setActiveTab('drafts')} />
+              ))}
+            </ListPanel>
+          )}
+
+          {activeSubTab === 'ai' && (
+            <ListPanel title="Saved AI Conversations" subtitle="Persistent assistant threads retained per user and exportable.">
+              {aiConversations.map((item) => (
+                <Row key={item.query} title={item.query} meta={`${item.timestamp} · ${item.tokensUsed} tokens · ${item.status}`} onClick={() => setActiveTab('ai-assistant')} />
+              ))}
+            </ListPanel>
+          )}
+
+          {activeSubTab === 'downloads' && (
+            <ListPanel title="Download History" subtitle="Audit trail of every Word and PDF export.">
+              {downloads.map((item) => (
+                <Row key={`${item.title}-${item.date}`} title={item.title} meta={`${item.type} · ${item.matter} · ${item.date}`} onClick={() => undefined} />
+              ))}
+            </ListPanel>
+          )}
+
+          {activeSubTab === 'subscription' && (
+            <Panel title="Subscription Status" subtitle="Plan, renewal, seats, usage and upgrade path.">
+              <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
+                <Metric icon={Zap} label="Current plan" value={subscription.toUpperCase()} detail="Active subscription" />
+                <Metric icon={CalendarClock} label="Renewal" value="31 Aug" detail="Auto-renewal ready" />
+                <Metric icon={Users} label="Seats" value={usage.seats} detail="Firm allocation" />
+                <Metric icon={ShieldCheck} label="Verification" value="Passed" detail="Counsel badge active" />
+              </div>
+              <button onClick={() => setActiveTab('pricing')} className="lawpex-focus-ring mt-5 rounded-xl bg-[#e6ad22] px-5 py-3 text-xs font-black text-[#181411]">
+                Manage plan
+              </button>
+            </Panel>
+          )}
+
+          {activeSubTab === 'notifications' && (
+            <ListPanel title="Notifications" subtitle="Digest, new judgments, new laws, court-rule updates and AI tips.">
+              {NOTIFICATIONS.map((item) => (
+                <Row key={item.title} title={item.title} meta={`${item.type} · ${item.cadence} · ${item.channel} · ${item.detail}`} onClick={() => undefined} />
+              ))}
+            </ListPanel>
+          )}
+
+          {activeSubTab === 'certificates' && (
+            <ListPanel title="Certificates" subtitle="Learning Centre credentials stored on the user profile.">
+              {certificates.map((item) => (
+                <Row key={item.title} title={item.title} meta={`${item.status} · ${item.issued}`} onClick={() => setActiveTab('learning')} />
+              ))}
+            </ListPanel>
+          )}
+
+          {activeSubTab === 'team' && (
+            <Panel title="Chambers Team Folder" subtitle="Shared folders, team collaboration, internal notes and firm-level analytics.">
+              <div className="grid grid-cols-1 gap-3 md:grid-cols-3">
+                <Metric icon={FolderOpen} label="Shared folders" value="8" detail="Matter workspaces" />
+                <Metric icon={Users} label="Assigned seats" value="7 / 10" detail="Associates onboarded" />
+                <Metric icon={FileText} label="Internal notes" value="42" detail="Chambers annotations" />
+              </div>
+              <button onClick={() => setActiveTab('pricing')} className="lawpex-focus-ring mt-5 rounded-xl bg-[#181411] px-5 py-3 text-xs font-black text-white">
+                Upgrade team capacity
+              </button>
+            </Panel>
+          )}
+        </section>
       </div>
     </div>
   );
 };
+
+const Usage: React.FC<{ label: string; value: string }> = ({ label, value }) => (
+  <div>
+    <div className="font-black text-neutral-950">{value}</div>
+    <div className="mt-1 text-[10px] font-bold uppercase tracking-[0.12em] text-neutral-500">{label}</div>
+  </div>
+);
+
+const Panel: React.FC<{ title: string; subtitle: string; children: React.ReactNode }> = ({
+  title,
+  subtitle,
+  children,
+}) => (
+  <div className="lawpex-card rounded-3xl p-6">
+    <div className="mb-5 border-b border-amber-100 pb-4">
+      <h2 className="text-xl font-black tracking-tight text-neutral-950">{title}</h2>
+      <p className="mt-1 text-xs leading-6 text-neutral-600">{subtitle}</p>
+    </div>
+    {children}
+  </div>
+);
+
+const ListPanel: React.FC<{ title: string; subtitle: string; children: React.ReactNode }> = ({
+  title,
+  subtitle,
+  children,
+}) => (
+  <Panel title={title} subtitle={subtitle}>
+    <div className="space-y-2">{children}</div>
+  </Panel>
+);
+
+const Metric: React.FC<{
+  icon: React.ElementType;
+  label: string;
+  value: string;
+  detail: string;
+}> = ({ icon: Icon, label, value, detail }) => (
+  <div className="rounded-2xl border border-amber-100 bg-white p-4">
+    <div className="flex items-center justify-between gap-3">
+      <span className="text-xs font-bold text-neutral-600">{label}</span>
+      <Icon className="h-4 w-4 text-amber-700" />
+    </div>
+    <div className="mt-2 text-2xl font-black tracking-tight text-neutral-950">{value}</div>
+    <p className="mt-1 text-[11px] leading-5 text-neutral-500">{detail}</p>
+  </div>
+);
+
+const Row: React.FC<{ title: string; meta: string; onClick: () => void }> = ({ title, meta, onClick }) => (
+  <button
+    onClick={onClick}
+    className="group flex w-full items-center justify-between gap-4 rounded-2xl border border-amber-100 bg-white p-4 text-left hover:border-amber-400 hover:bg-amber-50"
+  >
+    <span>
+      <span className="block text-sm font-black text-neutral-950">{title}</span>
+      <span className="mt-1 block text-xs leading-5 text-neutral-500">{meta}</span>
+    </span>
+    <ChevronRight className="h-4 w-4 shrink-0 text-neutral-400 group-hover:text-amber-700" />
+  </button>
+);
+
+const Action: React.FC<{ label: string; onClick: () => void }> = ({ label, onClick }) => (
+  <button
+    onClick={onClick}
+    className="lawpex-focus-ring flex w-full items-center justify-between rounded-2xl border border-amber-100 bg-white px-4 py-3 text-left text-sm font-black text-neutral-800 hover:border-amber-400 hover:bg-amber-50"
+  >
+    {label}
+    <ChevronRight className="h-4 w-4 text-amber-700" />
+  </button>
+);

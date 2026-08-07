@@ -1,6 +1,21 @@
 import React, { useState } from 'react';
-import { X, ShieldCheck, CheckCircle2, Scale, User, Lock, Mail, Building, Award } from 'lucide-react';
+import {
+  Award,
+  Building2,
+  CheckCircle2,
+  KeyRound,
+  Lock,
+  Mail,
+  Phone,
+  ShieldCheck,
+  Smartphone,
+  Upload,
+  User,
+  X,
+} from 'lucide-react';
+import { LogoMark } from './LogoMark';
 import { UserRole } from '../types';
+import { AUTH_CAPABILITIES, USER_ROLE_OPTIONS } from '../data/platform';
 
 interface AuthModalProps {
   isOpen: boolean;
@@ -8,222 +23,269 @@ interface AuthModalProps {
   onSuccessLogin: (barNumber: string, role: UserRole) => void;
 }
 
+type AuthMode = 'login' | 'register' | 'forgot';
+
 export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onSuccessLogin }) => {
-  const [isRegister, setIsRegister] = useState(false);
+  const [mode, setMode] = useState<AuthMode>('login');
   const [selectedRole, setSelectedRole] = useState<UserRole>('lawyer');
   const [barNumber, setBarNumber] = useState('SCN/084251');
   const [email, setEmail] = useState('counsel@lawpex.ng');
-  const [password, setPassword] = useState('••••••••••••');
+  const [phone, setPhone] = useState('+234 803 458 0912');
+  const [password, setPassword] = useState('lawpex-demo-pass');
   const [fullName, setFullName] = useState('Barr. O. J. Ademola, SAN');
   const [firmName, setFirmName] = useState('Ademola & Co. Legal Practitioners');
-  const [isVerifyingBar, setIsVerifyingBar] = useState(false);
-  const [verifiedSuccess, setVerifiedSuccess] = useState(false);
+  const [otp, setOtp] = useState('428901');
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [success, setSuccess] = useState('');
 
   if (!isOpen) return null;
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    setIsVerifyingBar(true);
+  const selectedRoleMeta = USER_ROLE_OPTIONS.find((role) => role.id === selectedRole);
+
+  const handleSubmit = (event: React.FormEvent) => {
+    event.preventDefault();
+    setIsSubmitting(true);
 
     setTimeout(() => {
-      setIsVerifyingBar(false);
-      setVerifiedSuccess(true);
+      setIsSubmitting(false);
+      if (mode === 'forgot') {
+        setSuccess('Password reset link generated. Check email and SMS channels.');
+        return;
+      }
+
+      setSuccess(
+        mode === 'register'
+          ? 'Email verified, 2FA confirmed and role verification queued.'
+          : 'Session authenticated with device tracking and 2FA.',
+      );
       setTimeout(() => {
         onSuccessLogin(barNumber, selectedRole);
         onClose();
-      }, 1000);
-    }, 1200);
+      }, 850);
+    }, 900);
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
-      <div className="relative w-full max-w-md bg-neutral-900 border border-yellow-500/30 rounded-2xl shadow-2xl overflow-hidden text-white">
-        {/* Header */}
-        <div className="bg-neutral-950 p-6 border-b border-neutral-800 flex justify-between items-start">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/78 p-4 backdrop-blur-sm">
+      <div className="lawpex-card grid max-h-[92vh] w-full max-w-5xl grid-cols-1 overflow-hidden rounded-3xl text-neutral-900 lg:grid-cols-[0.9fr_1.1fr]">
+        <aside className="hidden bg-[#181411] p-7 text-white lg:block">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-lg bg-yellow-400 flex items-center justify-center text-neutral-950 font-black shadow-md shadow-yellow-500/20">
-              <Scale className="w-5 h-5 stroke-[2.5]" />
-            </div>
+            <LogoMark className="h-11 w-11 rounded-xl border border-amber-300/60" />
             <div>
-              <h2 className="text-xl font-black font-serif text-white">
-                {isRegister ? 'Create LAWPEX Account' : 'Sign In & Verify Bar'}
-              </h2>
-              <p className="text-xs text-yellow-400 font-medium">Supreme Court of Nigeria Roll Verification</p>
-            </div>
-          </div>
-          <button
-            onClick={onClose}
-            className="text-neutral-400 hover:text-white p-1 rounded-lg hover:bg-neutral-800 transition"
-          >
-            <X className="w-5 h-5" />
-          </button>
-        </div>
-
-        <div className="p-6">
-          {/* Role selector tabs */}
-          <div className="mb-6">
-            <label className="block text-xs font-semibold text-neutral-400 uppercase tracking-wider mb-2">
-              Select Practitioner Category
-            </label>
-            <div className="grid grid-cols-3 gap-2">
-              <button
-                type="button"
-                onClick={() => setSelectedRole('lawyer')}
-                className={`py-2 px-2 text-xs font-bold rounded-lg border text-center transition ${
-                  selectedRole === 'lawyer'
-                    ? 'bg-yellow-400 text-neutral-950 border-yellow-400'
-                    : 'bg-neutral-950 border-neutral-800 text-neutral-300 hover:border-neutral-700'
-                }`}
-              >
-                Lawyer / SAN
-              </button>
-              <button
-                type="button"
-                onClick={() => setSelectedRole('judge')}
-                className={`py-2 px-2 text-xs font-bold rounded-lg border text-center transition ${
-                  selectedRole === 'judge'
-                    ? 'bg-yellow-400 text-neutral-950 border-yellow-400'
-                    : 'bg-neutral-950 border-neutral-800 text-neutral-300 hover:border-neutral-700'
-                }`}
-              >
-                Judicial Officer
-              </button>
-              <button
-                type="button"
-                onClick={() => setSelectedRole('law_firm')}
-                className={`py-2 px-2 text-xs font-bold rounded-lg border text-center transition ${
-                  selectedRole === 'law_firm'
-                    ? 'bg-yellow-400 text-neutral-950 border-yellow-400'
-                    : 'bg-neutral-950 border-neutral-800 text-neutral-300 hover:border-neutral-700'
-                }`}
-              >
-                Chambers / Firm
-              </button>
+              <div className="text-xl font-black tracking-tight">LAWPEX</div>
+              <div className="text-[10px] font-bold uppercase tracking-[0.16em] text-amber-300">
+                Identity and access
+              </div>
             </div>
           </div>
 
-          <form onSubmit={handleSubmit} className="space-y-4">
-            {isRegister && (
-              <div>
-                <label className="block text-xs font-medium text-neutral-300 mb-1">Full Legal Name</label>
-                <div className="relative">
-                  <User className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-neutral-500" />
-                  <input
-                    type="text"
-                    required
-                    value={fullName}
-                    onChange={(e) => setFullName(e.target.value)}
-                    className="w-full bg-neutral-950 border border-neutral-800 rounded-lg py-2.5 pl-10 pr-3 text-xs text-white focus:outline-none focus:border-yellow-400"
-                    placeholder="e.g. Barr. O. J. Ademola, SAN"
-                  />
-                </div>
-              </div>
-            )}
+          <h2 className="mt-8 text-3xl font-black leading-tight tracking-tight">
+            Secure access for counsel, chambers and the Bench.
+          </h2>
+          <p className="mt-4 text-sm leading-7 text-white/64">
+            The PRD requires role-aware registration, verification, 2FA and firm seat readiness.
+            This flow models those states for the product.
+          </p>
 
-            {selectedRole === 'lawyer' && (
-              <div>
-                <label className="block text-xs font-medium text-yellow-400 mb-1 flex items-center gap-1">
-                  <ShieldCheck className="w-3.5 h-3.5 text-yellow-400" />
-                  Supreme Court Enrollment Bar Number (SCN)
-                </label>
-                <input
-                  type="text"
-                  required
-                  value={barNumber}
-                  onChange={(e) => setBarNumber(e.target.value)}
-                  className="w-full bg-neutral-950 border border-yellow-500/40 rounded-lg py-2.5 px-3 text-xs text-yellow-300 font-mono font-bold focus:outline-none focus:border-yellow-400"
-                  placeholder="e.g. SCN/084251"
-                />
-                <p className="text-[10px] text-neutral-400 mt-1">Authenticates status with Supreme Court of Nigeria database.</p>
+          <div className="mt-7 grid grid-cols-1 gap-2">
+            {AUTH_CAPABILITIES.map((capability) => (
+              <div key={capability.label} className="flex items-center justify-between rounded-xl border border-white/10 bg-white/[0.06] px-3 py-2 text-xs">
+                <span>{capability.label}</span>
+                <span className="rounded-full bg-amber-300 px-2 py-0.5 text-[10px] font-black text-[#181411]">
+                  {capability.priority}
+                </span>
               </div>
-            )}
+            ))}
+          </div>
+        </aside>
 
-            {selectedRole === 'law_firm' && (
+        <section className="flex min-h-0 flex-col bg-[#f8f5ee]">
+          <div className="flex items-start justify-between gap-4 border-b border-amber-100 bg-white p-5">
+            <div className="flex items-center gap-3">
+              <LogoMark className="h-10 w-10 rounded-xl border border-amber-200 lg:hidden" />
               <div>
-                <label className="block text-xs font-medium text-neutral-300 mb-1">Law Firm / Chambers Name</label>
-                <div className="relative">
-                  <Building className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-neutral-500" />
-                  <input
-                    type="text"
-                    required
-                    value={firmName}
-                    onChange={(e) => setFirmName(e.target.value)}
-                    className="w-full bg-neutral-950 border border-neutral-800 rounded-lg py-2.5 pl-10 pr-3 text-xs text-white focus:outline-none focus:border-yellow-400"
-                  />
-                </div>
-              </div>
-            )}
-
-            <div>
-              <label className="block text-xs font-medium text-neutral-300 mb-1">Email Address</label>
-              <div className="relative">
-                <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-neutral-500" />
-                <input
-                  type="email"
-                  required
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  className="w-full bg-neutral-950 border border-neutral-800 rounded-lg py-2.5 pl-10 pr-3 text-xs text-white focus:outline-none focus:border-yellow-400"
-                />
+                <p className="lawpex-kicker">
+                  {mode === 'login' ? 'Sign in' : mode === 'register' ? 'Register' : 'Password reset'}
+                </p>
+                <h2 className="mt-1 text-xl font-black tracking-tight text-neutral-950">
+                  {mode === 'login'
+                    ? 'Access your LAWPEX workspace'
+                    : mode === 'register'
+                    ? 'Create a verified account'
+                    : 'Recover account access'}
+                </h2>
               </div>
             </div>
+            <button onClick={onClose} className="lawpex-focus-ring rounded-xl bg-amber-50 p-2 text-neutral-600 hover:text-neutral-950">
+              <X className="h-5 w-5" />
+            </button>
+          </div>
 
-            <div>
-              <label className="block text-xs font-medium text-neutral-300 mb-1">Password</label>
-              <div className="relative">
-                <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-neutral-500" />
-                <input
-                  type="password"
-                  required
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  className="w-full bg-neutral-950 border border-neutral-800 rounded-lg py-2.5 pl-10 pr-3 text-xs text-white focus:outline-none focus:border-yellow-400"
-                />
-              </div>
+          <div className="min-h-0 overflow-y-auto p-5">
+            <div className="mb-5 grid grid-cols-3 gap-2 rounded-2xl border border-amber-200 bg-white p-1">
+              {[
+                ['login', 'Login'],
+                ['register', 'Register'],
+                ['forgot', 'Forgot'],
+              ].map(([id, label]) => (
+                <button
+                  key={id}
+                  onClick={() => {
+                    setMode(id as AuthMode);
+                    setSuccess('');
+                  }}
+                  className={`lawpex-focus-ring rounded-xl px-3 py-2 text-xs font-black ${
+                    mode === id ? 'bg-[#181411] text-white' : 'text-neutral-600 hover:bg-amber-50'
+                  }`}
+                >
+                  {label}
+                </button>
+              ))}
             </div>
 
-            {verifiedSuccess ? (
-              <div className="p-3 bg-green-500/10 border border-green-500/40 text-green-400 rounded-lg text-xs flex items-center gap-2">
-                <CheckCircle2 className="w-4 h-4 text-green-400" />
-                <span>Bar Verification Successful! Redirecting to Workspace...</span>
+            <form onSubmit={handleSubmit} className="space-y-4">
+              {mode !== 'forgot' && (
+                <div>
+                  <label className="mb-2 block text-xs font-black uppercase tracking-[0.12em] text-neutral-600">
+                    Practitioner category
+                  </label>
+                  <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
+                    {USER_ROLE_OPTIONS.map((role) => (
+                      <button
+                        type="button"
+                        key={role.id}
+                        onClick={() => setSelectedRole(role.id)}
+                        className={`lawpex-focus-ring rounded-2xl border p-3 text-left ${
+                          selectedRole === role.id
+                            ? 'border-amber-400 bg-amber-100 text-neutral-950'
+                            : 'border-amber-100 bg-white text-neutral-700 hover:border-amber-300'
+                        }`}
+                      >
+                        <span className="block text-xs font-black">{role.label}</span>
+                        <span className="mt-1 block text-[11px] leading-5 text-neutral-500">{role.description}</span>
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {mode === 'register' && (
+                <Field icon={User} label="Full legal name">
+                  <input value={fullName} onChange={(event) => setFullName(event.target.value)} className="auth-input" required />
+                </Field>
+              )}
+
+              <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+                <Field icon={Mail} label="Email address">
+                  <input type="email" value={email} onChange={(event) => setEmail(event.target.value)} className="auth-input" required />
+                </Field>
+                <Field icon={Phone} label="Phone number">
+                  <input value={phone} onChange={(event) => setPhone(event.target.value)} className="auth-input" required />
+                </Field>
               </div>
-            ) : (
+
+              {mode !== 'forgot' && (
+                <Field icon={Lock} label="Password">
+                  <input type="password" value={password} onChange={(event) => setPassword(event.target.value)} className="auth-input" required />
+                </Field>
+              )}
+
+              {mode !== 'forgot' && selectedRole === 'lawyer' && (
+                <Field icon={ShieldCheck} label="Supreme Court enrolment number">
+                  <input value={barNumber} onChange={(event) => setBarNumber(event.target.value)} className="auth-input font-mono font-black text-amber-800" required />
+                </Field>
+              )}
+
+              {mode !== 'forgot' && selectedRole === 'judge' && (
+                <div className="rounded-2xl border border-amber-200 bg-white p-4">
+                  <div className="flex items-start gap-3">
+                    <Upload className="mt-0.5 h-5 w-5 text-amber-700" />
+                    <div>
+                      <h3 className="text-sm font-black text-neutral-950">Judicial credential upload</h3>
+                      <p className="mt-1 text-xs leading-5 text-neutral-600">
+                        Manual admin review is required before judiciary-tier activation.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {mode !== 'forgot' && selectedRole === 'law_firm' && (
+                <Field icon={Building2} label="Law firm / chambers name">
+                  <input value={firmName} onChange={(event) => setFirmName(event.target.value)} className="auth-input" required />
+                </Field>
+              )}
+
+              {mode !== 'forgot' && (
+                <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+                  <Field icon={Smartphone} label="2FA code">
+                    <input value={otp} onChange={(event) => setOtp(event.target.value)} className="auth-input font-mono font-black" required />
+                  </Field>
+                  <div className="rounded-2xl border border-amber-200 bg-white p-4">
+                    <div className="flex items-center gap-2 text-xs font-black text-emerald-700">
+                      <CheckCircle2 className="h-4 w-4" />
+                      Email verification ready
+                    </div>
+                    <p className="mt-2 text-[11px] leading-5 text-neutral-500">
+                      Subscription activation is held until verification completes.
+                    </p>
+                  </div>
+                </div>
+              )}
+
+              {success && (
+                <div className="flex items-start gap-2 rounded-2xl border border-emerald-200 bg-emerald-50 p-3 text-xs font-semibold text-emerald-800">
+                  <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0" />
+                  {success}
+                </div>
+              )}
+
               <button
                 type="submit"
-                disabled={isVerifyingBar}
-                className="w-full bg-yellow-400 hover:bg-yellow-300 text-neutral-950 font-black py-3 rounded-xl text-xs transition shadow-lg shadow-yellow-500/20 flex items-center justify-center gap-2"
+                disabled={isSubmitting}
+                className="lawpex-focus-ring flex w-full items-center justify-center gap-2 rounded-2xl bg-[#e6ad22] px-4 py-3 text-sm font-black text-[#181411] hover:bg-[#f0bd3b] disabled:opacity-60"
               >
-                {isVerifyingBar ? (
+                {isSubmitting ? (
                   <>
-                    <div className="w-4 h-4 border-2 border-neutral-950 border-t-transparent rounded-full animate-spin" />
-                    <span>Verifying Nigerian Bar Registry...</span>
+                    <span className="h-4 w-4 rounded-full border-2 border-[#181411]/30 border-t-[#181411]" />
+                    Processing secure flow...
+                  </>
+                ) : mode === 'forgot' ? (
+                  <>
+                    <KeyRound className="h-4 w-4" />
+                    Send reset link
                   </>
                 ) : (
-                  <span>{isRegister ? 'Complete Verification & Register' : 'Authenticate & Sign In'}</span>
+                  <>
+                    <Award className="h-4 w-4" />
+                    {mode === 'register' ? 'Verify and register' : 'Authenticate session'}
+                  </>
                 )}
               </button>
-            )}
-          </form>
+            </form>
 
-          <div className="mt-4 pt-4 border-t border-neutral-800 text-center text-xs text-neutral-400">
-            {isRegister ? (
-              <p>
-                Already verified?{' '}
-                <button onClick={() => setIsRegister(false)} className="text-yellow-400 font-bold hover:underline">
-                  Sign In
-                </button>
-              </p>
-            ) : (
-              <p>
-                New Practitioner?{' '}
-                <button onClick={() => setIsRegister(true)} className="text-yellow-400 font-bold hover:underline">
-                  Register Account
-                </button>
+            {selectedRoleMeta && mode !== 'forgot' && (
+              <p className="mt-4 text-center text-xs leading-5 text-neutral-500">
+                Selected access path: <strong className="text-neutral-800">{selectedRoleMeta.description}</strong>
               </p>
             )}
           </div>
-        </div>
+        </section>
       </div>
     </div>
   );
 };
+
+const Field: React.FC<{
+  icon: React.ElementType;
+  label: string;
+  children: React.ReactNode;
+}> = ({ icon: Icon, label, children }) => (
+  <label className="block">
+    <span className="mb-1.5 block text-xs font-bold text-neutral-700">{label}</span>
+    <span className="relative block">
+      <Icon className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-amber-700" />
+      {children}
+    </span>
+  </label>
+);

@@ -50,7 +50,7 @@ async function startServer() {
         // Fallback response if key is missing
         return res.json({
           answer: `[LAWPEX Legal AI - Offline Mode]\n\nRegarding: "${prompt}"\n\nKey Principles of Nigerian Law:\n1. **Jurisdiction**: Locus standi and competence of court (Salu v. Egeibon 1994).\n2. **Statutory Reference**: Administration of Criminal Justice Act (ACJA 2015), CAMA 2020, Evidence Act 2011 (s.84 on electronic evidence).\n3. **Procedure**: Adhere to Order of Courts and Rules of Professional Conduct for Legal Practitioners (2023 amendment).\n\n*Note: Configure GEMINI_API_KEY in Secrets for real-time generative research.*`,
-          sources: ["ACJA 2015 s.221", "Evidence Act 2011 s.84", "Salu v. Egeibon (1994) 6 NWLR (Pt. 348) 23"],
+          sources: ["ACJA 2015 s.221", "Evidence Act 2011 s.84", "Salu v. Egeibon (1994) LP e-LR (SC) pt 1002"],
         });
       }
 
@@ -62,7 +62,13 @@ You are deeply authoritative in Nigerian Jurisprudence, including:
 - Statutes: CAMA 2020, Evidence Act 2011 (s.84, s.135, etc.), ACJA 2015, Electoral Act 2022, Criminal Code, Penal Code.
 - Drafting conventions: High Court court headings, Parties (Claimant/Defendant, Applicant/Respondent), Prayers, Affidavits, Written Addresses.
 
-Provide precise, direct, cited, and practical legal advice. Format in clean markdown with bolding, numbered lists, citations, and statutory references.`;
+Guardrails:
+- Every substantive assertion must be traceable to a Nigerian source, statute, rule, or case.
+- If Nigerian authority is absent or uncertain, say so plainly and suggest what the practitioner should verify.
+- Never fabricate citations, suit numbers, statutory sections, judges, dates, or quotations.
+- Mark the output as drafting/research assistance, not legal advice.
+
+Provide precise, direct, cited, and practical research assistance. Format in clean markdown with bolding, numbered lists, citations, and statutory references.`;
 
       const response = await ai.models.generateContent({
         model: AI_MODEL,
@@ -74,7 +80,7 @@ Provide precise, direct, cited, and practical legal advice. Format in clean mark
       });
 
       return res.json({
-        answer: response.text || "No response generated from AI.",
+        answer: `${response.text || "No response generated from AI."}\n\n*LAWPEX note: This is drafting and research assistance only. Verify every authority, rule, deadline and filing requirement before use.*`,
         sources: ["Supreme Court of Nigeria Judgments", "Laws of the Federation of Nigeria (LFN)", "State High Court Rules"],
       });
     } catch (error: any) {
@@ -111,13 +117,13 @@ Ensure full formal Nigerian court process formatting, including court heading, s
         model: AI_MODEL,
         contents: prompt,
         config: {
-          systemInstruction: "You are a Senior Advocate of Nigeria (SAN) master legal draftsman. Produce complete, formal, court-ready Nigerian legal processes.",
+          systemInstruction: "You are a Senior Advocate of Nigeria (SAN) master legal draftsman. Produce complete, formal Nigerian legal process drafts. Do not invent legal authorities. Mark the output as drafting assistance to be reviewed by counsel before filing.",
           temperature: 0.2,
         },
       });
 
       return res.json({
-        draftText: response.text || "Draft could not be generated.",
+        draftText: `${response.text || "Draft could not be generated."}\n\nNOTE: This LAWPEX output is drafting assistance and must be reviewed, settled and verified by counsel before filing.`,
       });
     } catch (error: any) {
       console.error("Error in /api/ai/draft:", error);
@@ -150,6 +156,11 @@ Ensure full formal Nigerian court process formatting, including court heading, s
     }
   });
 
+  // Unknown API paths must stay JSON 404s rather than falling through to the SPA shell.
+  app.use("/api", (req, res) => {
+    res.status(404).json({ error: `No API route for ${req.method} ${req.originalUrl}` });
+  });
+
   // Vite middleware in dev or static files in prod
   if (process.env.NODE_ENV !== "production") {
     const vite = await createViteServer({
@@ -160,6 +171,9 @@ Ensure full formal Nigerian court process formatting, including court heading, s
   } else {
     const distPath = path.join(process.cwd(), "dist");
     app.use(express.static(distPath));
+
+    // SPA fallback: every client-side route (/pricing, /case-law, ...) must return index.html
+    // so deep links and page refreshes work.
     app.get("*", (req, res) => {
       res.sendFile(path.join(distPath, "index.html"));
     });
