@@ -57,22 +57,23 @@ export const HeroSearch: React.FC<HeroSearchProps> = ({ onSearch, setActiveTab }
   };
 
   return (
-    <section className="relative isolate overflow-hidden border-b border-amber-200/80 bg-[#f8f5ee] text-[#181411]">
+    <section className="lawpex-hero-shell relative isolate overflow-hidden border-b border-amber-200/80 bg-[#f8f5ee] text-[#181411]">
       <div className="absolute inset-0 -z-10" aria-hidden="true">
         <img
-          src="/hero-justice.jpg"
+          src="/legal-tech.jpg"
           alt=""
           loading="eager"
           fetchPriority="high"
-          className="absolute right-0 top-0 h-full w-full object-cover object-center opacity-24"
+          className="absolute right-0 top-0 h-full w-full object-cover object-[68%_50%] opacity-[0.32]"
         />
-        <div className="absolute inset-0 bg-[linear-gradient(90deg,#f8f5ee_0%,rgba(248,245,238,0.94)_42%,rgba(248,245,238,0.68)_100%)]" />
+        <div className="absolute inset-0 bg-[linear-gradient(90deg,#fbf8f1_0%,rgba(251,248,241,0.96)_43%,rgba(251,248,241,0.74)_72%,rgba(251,248,241,0.52)_100%)]" />
+        <div className="absolute left-0 top-0 h-full w-1/2 bg-[radial-gradient(circle_at_20%_20%,rgba(217,162,29,0.22),transparent_24rem)]" />
         <div className="absolute inset-x-0 bottom-0 h-40 bg-gradient-to-t from-[#f8f5ee] to-transparent" />
       </div>
 
-      <div className="mx-auto grid max-w-7xl grid-cols-1 gap-10 px-4 py-10 sm:px-6 lg:grid-cols-[1.08fr_0.92fr] lg:px-8 lg:py-16">
+      <div className="mx-auto grid max-w-7xl grid-cols-1 gap-10 px-4 py-12 sm:px-6 lg:grid-cols-[1.08fr_0.92fr] lg:px-8 lg:py-20">
         <div className="max-w-3xl">
-          <div className="inline-flex items-center gap-2 rounded-full border border-amber-300/80 bg-white/70 px-3 py-1.5 text-[11px] font-extrabold uppercase tracking-[0.16em] text-amber-800 shadow-sm backdrop-blur">
+          <div className="inline-flex items-center gap-2 rounded-full border border-amber-300/80 bg-white/78 px-3 py-1.5 text-[11px] font-extrabold uppercase tracking-[0.16em] text-amber-800 shadow-sm backdrop-blur-xl">
             <Sparkles className="h-3.5 w-3.5" />
             Nigerian litigation intelligence
           </div>
@@ -88,7 +89,7 @@ export const HeroSearch: React.FC<HeroSearchProps> = ({ onSearch, setActiveTab }
 
           <form
             onSubmit={submitSearch}
-            className="mt-8 overflow-hidden rounded-2xl border border-amber-300/80 bg-white/88 p-2 shadow-[0_28px_80px_-48px_rgba(24,20,17,0.72)] backdrop-blur-xl"
+            className="lawpex-command mt-8 overflow-hidden rounded-[1.35rem] p-2"
           >
             <div className="flex flex-wrap gap-1 border-b border-amber-100 pb-2">
               {SEARCH_TABS.map((tab) => (
@@ -144,7 +145,7 @@ export const HeroSearch: React.FC<HeroSearchProps> = ({ onSearch, setActiveTab }
             ))}
           </div>
 
-          <div className="mt-8 grid max-w-xl grid-cols-3 divide-x divide-amber-200/80 border-y border-amber-200/80 py-4">
+          <div className="mt-8 grid max-w-xl grid-cols-3 divide-x divide-amber-200/80 border-y border-amber-200/80 bg-white/38 py-4 backdrop-blur">
             {METRICS.map((metric) => (
               <div key={metric.label} className="px-4 first:pl-0">
                 <div className="text-2xl font-black tracking-tight text-[#181411]">{metric.value}</div>
@@ -157,8 +158,8 @@ export const HeroSearch: React.FC<HeroSearchProps> = ({ onSearch, setActiveTab }
         </div>
 
         <aside className="lg:pt-8">
-          <div className="lawpex-panel rounded-3xl p-4 sm:p-5">
-            <div className="rounded-2xl bg-[#181411] p-5 text-white">
+          <div className="lawpex-panel rounded-[1.75rem] p-4 sm:p-5">
+            <div className="lawpex-dark-panel rounded-2xl p-5 text-white">
               <div className="flex items-center justify-between gap-3">
                 <div>
                   <p className="text-[11px] font-extrabold uppercase tracking-[0.16em] text-amber-300">
@@ -177,7 +178,7 @@ export const HeroSearch: React.FC<HeroSearchProps> = ({ onSearch, setActiveTab }
                   ['Rule', 'Order 39 motion requirements mapped'],
                   ['Draft', 'Affidavit facts aligned to prayers'],
                 ].map(([label, text]) => (
-                  <div key={label} className="flex items-start gap-3 rounded-xl border border-white/10 bg-white/7 p-3">
+                  <div key={label} className="flex items-start gap-3 rounded-xl border border-white/10 bg-white/[0.07] p-3">
                     <BadgeCheck className="mt-0.5 h-4 w-4 shrink-0 text-amber-300" />
                     <div>
                       <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-amber-200">{label}</p>
@@ -195,7 +196,7 @@ export const HeroSearch: React.FC<HeroSearchProps> = ({ onSearch, setActiveTab }
                   <button
                     key={item.id}
                     onClick={() => setActiveTab(item.id)}
-                    className="group rounded-2xl border border-amber-200/80 bg-white/84 p-4 text-left hover:border-amber-400 hover:bg-amber-50"
+                    className="group rounded-2xl border border-amber-200/80 bg-white/84 p-4 text-left hover:-translate-y-0.5 hover:border-amber-400 hover:bg-amber-50"
                   >
                     <Icon className="h-5 w-5 text-amber-700 transition-transform group-hover:-translate-y-0.5" />
                     <h3 className="mt-3 text-sm font-black text-neutral-950">{item.title}</h3>
