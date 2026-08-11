@@ -50,7 +50,7 @@ async function startServer() {
         // Fallback response if key is missing
         return res.json({
           answer: `[LAWPEX Legal AI - Offline Mode]\n\nRegarding: "${prompt}"\n\nKey Principles of Nigerian Law:\n1. **Jurisdiction**: Locus standi and competence of court (Salu v. Egeibon 1994).\n2. **Statutory Reference**: Administration of Criminal Justice Act (ACJA 2015), CAMA 2020, Evidence Act 2011 (s.84 on electronic evidence).\n3. **Procedure**: Adhere to Order of Courts and Rules of Professional Conduct for Legal Practitioners (2023 amendment).\n\n*Note: Configure GEMINI_API_KEY in Secrets for real-time generative research.*`,
-          sources: ["ACJA 2015 s.221", "Evidence Act 2011 s.84", "Salu v. Egeibon (1994) LP e-LR (SC) pt 1002"],
+          sources: ["ACJA 2015 s.221", "Evidence Act 2011 s.84", "Salu v. Egeibon (1994) LDLR (SC) pt 1002"],
         });
       }
 

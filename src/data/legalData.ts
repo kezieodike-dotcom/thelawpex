@@ -478,7 +478,7 @@ export const LANDMARK_CASES: CaseLaw[] = [
   {
     id: 'case-001',
     title: 'Amaechi v. Independent National Electoral Commission (INEC) & Ors',
-    citation: '(2008) LP e-LR (SC) pt 1001',
+    citation: '(2008) LDLR (SC) pt 1001',
     suitNumber: 'SC.252/2007',
     court: 'Supreme Court of Nigeria',
     year: 2008,
@@ -533,7 +533,7 @@ This appeal touches on the rule of law and statutory compliance in electoral nom
   {
     id: 'case-002',
     title: 'Salu v. Egeibon',
-    citation: '(1994) LP e-LR (SC) pt 1002',
+    citation: '(1994) LDLR (SC) pt 1002',
     suitNumber: 'SC.114/1989',
     court: 'Supreme Court of Nigeria',
     year: 1994,
@@ -565,7 +565,7 @@ RATIO DECIDENDI:
   {
     id: 'case-003',
     title: 'Madukolu & Ors v. Nkemdilim',
-    citation: '(1962) LP e-LR (SC) pt 1003',
+    citation: '(1962) LDLR (SC) pt 1003',
     suitNumber: 'F.S.C. 344/1961',
     court: 'Supreme Court of Nigeria',
     year: 1962,
@@ -588,7 +588,7 @@ RATIO DECIDENDI:
   {
     id: 'case-004',
     title: 'Inakoju v. Adeleke & Ors',
-    citation: '(2007) LP e-LR (SC) pt 1004',
+    citation: '(2007) LDLR (SC) pt 1004',
     suitNumber: 'SC.272/2006',
     court: 'Supreme Court of Nigeria',
     year: 2007,
@@ -611,7 +611,7 @@ RATIO DECIDENDI:
   {
     id: 'case-005',
     title: 'Kubor v. Dickson',
-    citation: '(2013) LP e-LR (SC) pt 1005',
+    citation: '(2013) LDLR (SC) pt 1005',
     suitNumber: 'SC.369/2012',
     court: 'Supreme Court of Nigeria',
     year: 2013,
@@ -635,7 +635,7 @@ RATIO DECIDENDI:
   {
     id: 'case-006',
     title: 'Military Governor of Lagos State v. Ojukwu',
-    citation: '(1986) LP e-LR (SC) pt 1006',
+    citation: '(1986) LDLR (SC) pt 1006',
     suitNumber: 'SC.241/1985',
     court: 'Supreme Court of Nigeria',
     year: 1986,
@@ -665,7 +665,7 @@ RATIO DECIDENDI:
   {
     id: 'case-007',
     title: 'Garba & Ors v. University of Maiduguri',
-    citation: '(1986) LP e-LR (SC) pt 1007',
+    citation: '(1986) LDLR (SC) pt 1007',
     suitNumber: 'SC.55/1985',
     court: 'Supreme Court of Nigeria',
     year: 1986,
@@ -693,7 +693,7 @@ RATIO DECIDENDI:
   {
     id: 'case-008',
     title: 'Ariori & Ors v. Elemo & Ors',
-    citation: '(1983) LP e-LR (SC) pt 1008',
+    citation: '(1983) LDLR (SC) pt 1008',
     suitNumber: 'SC.80/1981',
     court: 'Supreme Court of Nigeria',
     year: 1983,
@@ -720,7 +720,7 @@ RATIO DECIDENDI:
   {
     id: 'case-009',
     title: 'Adegoke Motors Ltd v. Adesanya & Anor',
-    citation: '(1989) LP e-LR (SC) pt 1009',
+    citation: '(1989) LDLR (SC) pt 1009',
     suitNumber: 'SC.169/1987',
     court: 'Supreme Court of Nigeria',
     year: 1989,
@@ -749,7 +749,7 @@ RATIO DECIDENDI:
   {
     id: 'case-010',
     title: 'Fawehinmi v. Akilu & Anor',
-    citation: '(1987) LP e-LR (SC) pt 1010',
+    citation: '(1987) LDLR (SC) pt 1010',
     suitNumber: 'SC.43/1987',
     court: 'Supreme Court of Nigeria',
     year: 1987,
@@ -776,7 +776,7 @@ RATIO DECIDENDI:
   {
     id: 'case-011',
     title: 'General Sani Abacha & Ors v. Chief Gani Fawehinmi',
-    citation: '(2000) LP e-LR (SC) pt 1011',
+    citation: '(2000) LDLR (SC) pt 1011',
     suitNumber: 'SC.45/1997',
     court: 'Supreme Court of Nigeria',
     year: 2000,
@@ -803,7 +803,7 @@ RATIO DECIDENDI:
   {
     id: 'case-012',
     title: 'Idundun & Ors v. Okumagba & Ors',
-    citation: '(1976) LP e-LR (SC) pt 1012',
+    citation: '(1976) LDLR (SC) pt 1012',
     suitNumber: 'SC.309/1974',
     court: 'Supreme Court of Nigeria',
     year: 1976,
@@ -828,7 +828,7 @@ RATIO DECIDENDI:
   {
     id: 'case-013',
     title: 'Chief Obafemi Awolowo v. Alhaji Shehu Shagari & Ors',
-    citation: '(1979) LP e-LR (SC) pt 1013',
+    citation: '(1979) LDLR (SC) pt 1013',
     suitNumber: 'SC.62/1979',
     court: 'Supreme Court of Nigeria',
     year: 1979,
@@ -857,7 +857,7 @@ RATIO DECIDENDI:
   {
     id: 'case-014',
     title: 'Peter Obi v. Independent National Electoral Commission (INEC) & Ors',
-    citation: '(2007) LP e-LR (SC) pt 1014',
+    citation: '(2007) LDLR (SC) pt 1014',
     suitNumber: 'SC.123/2007',
     court: 'Supreme Court of Nigeria',
     year: 2007,
@@ -883,7 +883,7 @@ RATIO DECIDENDI:
   {
     id: 'case-015',
     title: 'Ukeje & Anor v. Ukeje',
-    citation: '(2014) LP e-LR (SC) pt 1015',
+    citation: '(2014) LDLR (SC) pt 1015',
     suitNumber: 'SC.224/2004',
     court: 'Supreme Court of Nigeria',
     year: 2014,
@@ -910,7 +910,7 @@ RATIO DECIDENDI:
   {
     id: 'case-016',
     title: 'Mojekwu v. Mojekwu',
-    citation: '(1997) LP e-LR (CA) pt 1016',
+    citation: '(1997) LDLR (CA) pt 1016',
     suitNumber: 'CA/E/85/94',
     court: 'Court of Appeal',
     year: 1997,
@@ -939,7 +939,7 @@ RATIO DECIDENDI:
   {
     id: 'case-017',
     title: 'Nafiu Rabiu v. The State',
-    citation: '(1981) LP e-LR (SC) pt 1017',
+    citation: '(1981) LDLR (SC) pt 1017',
     suitNumber: 'SC.13/1980',
     court: 'Supreme Court of Nigeria',
     year: 1981,
@@ -965,7 +965,7 @@ RATIO DECIDENDI:
   {
     id: 'case-018',
     title: 'Ransome-Kuti & Ors v. Attorney-General of the Federation & Ors',
-    citation: '(1985) LP e-LR (SC) pt 1018',
+    citation: '(1985) LDLR (SC) pt 1018',
     suitNumber: 'SC.123/1984',
     court: 'Supreme Court of Nigeria',
     year: 1985,
@@ -993,7 +993,7 @@ RATIO DECIDENDI:
   {
     id: 'case-019',
     title: 'Mrs Theresa Udo v. Dr Peter Idundun & Anor',
-    citation: '(2022) LP e-LR (CA) pt 1043',
+    citation: '(2022) LDLR (CA) pt 1043',
     suitNumber: 'CA/AS/434/2017',
     court: 'Court of Appeal',
     judicialDivision: 'Asaba Judicial Division',
@@ -1062,7 +1062,7 @@ RATIO DECIDENDI:
       'For family land disputes, align pleadings, traditional history, acts of ownership, documents, rent collection, compensation records, and possession evidence.'
     ],
     fullJudgmentText: `MRS THERESA UDO v. DR. PETER IDUNDUN & ANOR
-(2022) LP e-LR (CA) pt 1043
+(2022) LDLR (CA) pt 1043
 
 IN THE COURT OF APPEAL
 ASABA JUDICIAL DIVISION

@@ -376,7 +376,7 @@ may be heard praying this Honourable Court for:
 
 3. Jurisdiction is a threshold issue which can be raised at any stage, and proceedings
    conducted without jurisdiction, however well conducted, amount to a nullity —
-   Madukolu v. Nkemdilim (1962) LP e-LR (SC) pt 1003.
+   Madukolu v. Nkemdilim (1962) LDLR (SC) pt 1003.
 
 DATED this ____ day of __________ 20____.
 
@@ -924,7 +924,7 @@ may be heard praying this Honourable Court for:
    action, namely [state, e.g. pre-action notice].
 
 5. Jurisdiction is threshold and may be raised at any time; proceedings conducted without
-   jurisdiction are a nullity however well conducted — Madukolu v. Nkemdilim (1962) LP e-LR (SC) pt 1003
+   jurisdiction are a nullity however well conducted — Madukolu v. Nkemdilim (1962) LDLR (SC) pt 1003
    341.
 
 DATED this ____ day of __________ 20____.

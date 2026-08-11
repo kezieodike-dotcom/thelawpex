@@ -481,7 +481,7 @@ ${JURAT}`,
     deponent: 'The applicant or an officer with knowledge of the facts',
     statutoryBasis: [
       'Order 39, High Court of Lagos State (Civil Procedure) Rules 2019',
-      'Kotoye v. CBN (1989) LP e-LR (SC) pt 1021',
+      'Kotoye v. CBN (1989) LDLR (SC) pt 1021',
       'Evidence Act 2011, sections 107–120',
     ],
     courtHeadingRequired: true,
@@ -661,7 +661,7 @@ ${JURAT}`,
     statutoryBasis: [
       'Constitution of the Federal Republic of Nigeria 1999 (as amended), sections 35(4) and 36(5)',
       'Administration of Criminal Justice Act 2015, sections 158–169',
-      'Bamaiyi v. State (2001) LP e-LR (SC) pt 1020',
+      'Bamaiyi v. State (2001) LDLR (SC) pt 1020',
     ],
     courtHeadingRequired: true,
     practiceNotes: [
@@ -1268,7 +1268,7 @@ ${JURAT}`,
     statutoryBasis: [
       'Court of Appeal Rules 2021, Order 6',
       'Vaswani Trading Co. v. Savalakh (1972) 12 SC 77 (special circumstances)',
-      'Martins v. Nicannar Food Co. Ltd (1988) LP e-LR (SC) pt 1022',
+      'Martins v. Nicannar Food Co. Ltd (1988) LDLR (SC) pt 1022',
     ],
     courtHeadingRequired: true,
     practiceNotes: [

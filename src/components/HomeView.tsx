@@ -15,8 +15,8 @@ import {
   Video,
 } from 'lucide-react';
 import { HeroSearch } from './HeroSearch';
+import { TestimonialsSection } from './ui/testimonial-v2';
 import { LANDMARK_CASES } from '../data/legalData';
-import { PLATFORM_STATS } from '../data/platform';
 
 interface HomeViewProps {
   setActiveTab: (tab: string) => void;
@@ -25,37 +25,16 @@ interface HomeViewProps {
 }
 
 const MODULES = [
-  { id: 'areas-of-law', title: 'Areas of Law', desc: 'Practice areas with drafts, principles, laws and checklists.', icon: BookOpen },
-  { id: 'case-law', title: 'Case Law', desc: 'Judgments structured by facts, issues, ratio and principles.', icon: Scale },
-  { id: 'court-rules', title: 'Court Rules', desc: 'Orders and rules across federal, appellate and state courts.', icon: Gavel },
-  { id: 'drafts', title: 'Draft Library', desc: 'Court processes and agreements prepared for editing.', icon: FileText },
-  { id: 'affidavits', title: 'Affidavits', desc: 'Sworn depositions with statutory basis and practice warnings.', icon: ShieldCheck },
-  { id: 'practicals', title: 'Courtroom Procedures', desc: 'Step-by-step proceedings and what counsel says in court.', icon: Video },
-  { id: 'appeals', title: 'Appeals Centre', desc: 'Notices, records, briefs, timelines and leave applications.', icon: Landmark },
-  { id: 'learn-litigation-ai', title: 'AI Litigation Training', desc: 'Prompt-led lessons for research, drafting and advocacy.', icon: Sparkles },
-  { id: 'articles', title: 'Legal Articles', desc: 'Practice notes and commentary for Nigerian practitioners.', icon: Newspaper },
-  { id: 'ai-assistant', title: 'AI Legal Assistant', desc: 'Ask, draft and summarise with Nigerian-law context.', icon: Bot },
-];
-
-const TESTIMONIALS = [
-  {
-    quote:
-      'The best part is not speed alone. LAWPEX gives juniors the structure of a proper written address before they start typing.',
-    name: 'Chinonso Okafor',
-    title: 'Legal Practitioner, Lagos',
-  },
-  {
-    quote:
-      'Facts, issues and ratio are separated cleanly. It reduces the noise when a court is checking an authority under pressure.',
-    name: 'Hon. Justice A. B. Mustapha',
-    title: 'High Court Judge',
-  },
-  {
-    quote:
-      'Our chambers uses it as a drafting checkpoint. The Word export alone saves time across motions, affidavits and notices.',
-    name: 'Amaka Eze',
-    title: 'Managing Partner, Eze & Associates',
-  },
+  { id: 'case-law', title: 'Case Law', desc: 'Structured reports with facts, issues, ratio and principles.', icon: Scale, tone: 'sky' },
+  { id: 'drafts', title: 'Draft Library', desc: 'Court processes and agreements prepared for editing.', icon: FileText, tone: 'yellow' },
+  { id: 'areas-of-law', title: 'Areas of Law', desc: 'Practice areas with drafts, principles, laws and checklists.', icon: BookOpen, tone: 'light' },
+  { id: 'court-rules', title: 'Court Rules', desc: 'Orders and rules across federal, appellate and state courts.', icon: Gavel, tone: 'light' },
+  { id: 'affidavits', title: 'Affidavits', desc: 'Sworn depositions with statutory basis and practice warnings.', icon: ShieldCheck, tone: 'light' },
+  { id: 'practicals', title: 'Courtroom Procedures', desc: 'Step-by-step proceedings and what counsel says in court.', icon: Video, tone: 'light' },
+  { id: 'appeals', title: 'Appeals Centre', desc: 'Notices, records, briefs, timelines and leave applications.', icon: Landmark, tone: 'light' },
+  { id: 'learn-litigation-ai', title: 'AI Litigation Training', desc: 'Prompt-led lessons for research, drafting and advocacy.', icon: Sparkles, tone: 'light' },
+  { id: 'articles', title: 'Legal Articles', desc: 'Practice notes and commentary for Nigerian practitioners.', icon: Newspaper, tone: 'light' },
+  { id: 'ai-assistant', title: 'AI Legal Assistant', desc: 'Ask, draft and summarise with Nigerian-law context.', icon: Bot, tone: 'sky' },
 ];
 
 const FAQS = [
@@ -81,41 +60,56 @@ const FaqItem: React.FC<{ q: string; a: string }> = ({ q, a }) => {
   const [open, setOpen] = useState(false);
 
   return (
-    <div className="border-b border-amber-200/80 py-4">
+    <div className="border-b border-[#181411]/10 py-5 last:border-b-0">
       <button
         onClick={() => setOpen((value) => !value)}
         className="lawpex-focus-ring flex w-full items-center justify-between gap-4 rounded-lg text-left"
       >
-        <span className="text-sm font-black text-neutral-950">{q}</span>
-        <ChevronDown className={`h-4 w-4 text-amber-700 ${open ? 'rotate-180' : ''}`} />
+        <span className="text-sm font-black text-[#181411]">{q}</span>
+        <ChevronDown className={`h-4 w-4 text-[#8a5f05] ${open ? 'rotate-180' : ''}`} />
       </button>
       {open && <p className="mt-3 max-w-3xl text-sm leading-7 text-neutral-700">{a}</p>}
     </div>
   );
 };
 
+const moduleClass = (tone: string, isWide: boolean) => {
+  const base =
+    'group relative overflow-hidden rounded-[1.4rem] p-5 text-left shadow-[inset_0_1px_0_rgba(255,255,255,0.35),0_24px_70px_-52px_rgba(24,20,17,0.55)] hover:-translate-y-1';
+  const span = isWide ? 'sm:col-span-2' : '';
+  if (tone === 'yellow') {
+    return `${base} ${span} border border-[#d9a21d]/40 bg-[#facc15] text-[#181411]`;
+  }
+  if (tone === 'sky') {
+    return `${base} ${span} border border-sky-200 bg-sky-50 text-[#181411] hover:border-sky-300 hover:bg-white`;
+  }
+  return `${base} ${span} border border-amber-200/80 bg-white/82 text-[#181411] hover:border-amber-400 hover:bg-white`;
+};
+
 export const HomeView: React.FC<HomeViewProps> = ({ setActiveTab, onOpenSearch, onOpenViewer }) => {
   const latestCases = [...LANDMARK_CASES].sort((a, b) => b.year - a.year).slice(0, 5);
+  const primaryCase = latestCases[0];
+  const secondaryCases = latestCases.slice(1);
 
   return (
-    <div>
+    <div className="overflow-hidden">
       <HeroSearch onSearch={() => onOpenSearch()} setActiveTab={setActiveTab} />
 
-      <section className="mx-auto grid max-w-7xl grid-cols-1 gap-6 px-4 py-14 sm:px-6 lg:grid-cols-[0.85fr_1.15fr] lg:px-8">
-        <div>
+      <section className="relative mx-auto grid max-w-7xl grid-cols-1 gap-8 px-4 py-16 sm:px-6 lg:grid-cols-[0.76fr_1.24fr] lg:px-8 lg:py-20">
+        <div className="lg:sticky lg:top-24 lg:self-start">
           <p className="lawpex-kicker">Platform map</p>
-          <h2 className="mt-3 max-w-md text-3xl font-black tracking-tight text-neutral-950 sm:text-4xl">
-            Built around how litigation work actually moves.
+          <h2 className="mt-3 max-w-md text-3xl font-black leading-tight tracking-tight text-[#181411] sm:text-4xl">
+            A brighter way to move through Nigerian legal work.
           </h2>
           <p className="mt-4 max-w-md text-sm leading-7 text-neutral-700">
-            Start with the legal issue, open the governing law, test it against authorities, then
-            move into drafting and courtroom preparation without changing tools.
+            Start from an issue, confirm the governing law, test it against authorities, then move
+            into drafting and appearance preparation without losing context.
           </p>
           <button
-            onClick={() => setActiveTab('ai-assistant')}
-            className="lawpex-focus-ring mt-6 inline-flex items-center gap-2 rounded-xl bg-[#181411] px-5 py-3 text-sm font-black text-white hover:bg-[#2a2118]"
+            onClick={onOpenSearch}
+            className="lawpex-focus-ring mt-7 inline-flex items-center gap-2 rounded-full bg-[#181411] px-5 py-3 text-xs font-black uppercase tracking-[0.12em] text-amber-200 hover:bg-[#2a2118]"
           >
-            Try AI assistant
+            Open universal search
             <ArrowRight className="h-4 w-4" />
           </button>
         </div>
@@ -123,88 +117,78 @@ export const HomeView: React.FC<HomeViewProps> = ({ setActiveTab, onOpenSearch, 
         <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
           {MODULES.map((item, index) => {
             const Icon = item.icon;
-            const isWide = index === 0 || index === 3 || index === 9;
+            const isWide = index === 0 || index === 1 || index === 9;
+            const accentColor = item.tone === 'sky' ? 'text-sky-700' : 'text-[#8a5f05]';
             return (
               <button
                 key={item.id}
                 onClick={() => setActiveTab(item.id)}
-                className={`group lawpex-card rounded-2xl p-5 text-left hover:-translate-y-0.5 hover:border-amber-400 hover:bg-white ${
-                  isWide ? 'sm:col-span-2' : ''
-                }`}
+                className={moduleClass(item.tone, isWide)}
               >
+                <div className="absolute right-4 top-4 text-5xl font-black leading-none opacity-[0.045]">
+                  {String(index + 1).padStart(2, '0')}
+                </div>
                 <div className="flex items-start justify-between gap-4">
-                  <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-amber-100 text-amber-800 ring-1 ring-amber-200">
+                  <span className={`flex h-11 w-11 items-center justify-center rounded-2xl bg-white/72 ring-1 ring-black/5 ${accentColor}`}>
                     <Icon className="h-5 w-5" />
                   </span>
-                  <ArrowRight className="h-4 w-4 text-neutral-400 opacity-0 transition group-hover:translate-x-0.5 group-hover:opacity-100" />
+                  <ArrowRight className="h-4 w-4 opacity-0 transition group-hover:translate-x-1 group-hover:opacity-100" />
                 </div>
-                <h3 className="mt-4 text-base font-black text-neutral-950">{item.title}</h3>
-                <p className="mt-1 text-xs leading-6 text-neutral-600">{item.desc}</p>
+                <h3 className="mt-5 text-lg font-black tracking-tight">{item.title}</h3>
+                <p className="mt-2 max-w-md text-xs leading-6 text-neutral-700">
+                  {item.desc}
+                </p>
               </button>
             );
           })}
         </div>
       </section>
 
-      <section className="border-y border-amber-200/80 bg-white/70 py-8">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="mb-5 flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
-            <div>
-              <p className="lawpex-kicker">Live statistics band</p>
-              <h2 className="mt-2 text-2xl font-black tracking-tight text-neutral-950">
-                Platform depth at a glance
-              </h2>
-            </div>
-            <p className="max-w-xl text-sm leading-6 text-neutral-600">
-              Counters mirror the PRD credibility layer: legal depth, practical utility, active
-              users and commercial traction.
+      <section className="bg-[#f8fcff] py-16 text-[#181411] lg:py-20">
+        <div className="mx-auto grid max-w-7xl grid-cols-1 gap-8 px-4 sm:px-6 lg:grid-cols-[0.95fr_1.05fr] lg:px-8">
+          <div className="rounded-[1.75rem] border border-sky-200 bg-white p-6 shadow-[inset_0_1px_0_rgba(255,255,255,0.9),0_24px_70px_-54px_rgba(14,116,144,0.38)]">
+            <p className="text-[11px] font-extrabold uppercase tracking-[0.16em] text-sky-700">
+              Latest structured report
             </p>
-          </div>
-
-          <div className="grid grid-cols-2 gap-3 md:grid-cols-3 xl:grid-cols-6">
-            {PLATFORM_STATS.map((stat) => (
-              <div key={stat.label} className="lawpex-card rounded-2xl p-4">
-                <div className="text-2xl font-black tracking-tight text-neutral-950">{stat.value}</div>
-                <div className="mt-1 text-xs font-black text-neutral-800">{stat.label}</div>
-                <div className="mt-1 text-[11px] leading-5 text-neutral-500">{stat.detail}</div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      <section className="border-y border-amber-200/80 bg-[#181411] py-14 text-white">
-        <div className="mx-auto grid max-w-7xl grid-cols-1 gap-8 px-4 sm:px-6 lg:grid-cols-[0.72fr_1.28fr] lg:px-8">
-          <div>
-            <p className="text-[11px] font-extrabold uppercase tracking-[0.16em] text-amber-300">Freshly structured</p>
             <h2 className="mt-3 text-3xl font-black tracking-tight sm:text-4xl">Latest Case Laws</h2>
-            <p className="mt-4 max-w-md text-sm leading-7 text-white/68">
-              Open a judgment for principles of law, ratio decidendi and full text, then copy the
-              relevant note directly into Word.
+            <p className="mt-4 max-w-md text-sm leading-7 text-neutral-700">
+              Open a judgment for principles of law, ratio decidendi and full text, then carry the
+              relevant note directly into drafting.
             </p>
-            <button
-              onClick={() => setActiveTab('case-law')}
-              className="lawpex-focus-ring mt-6 inline-flex items-center gap-2 rounded-xl bg-amber-300 px-5 py-3 text-sm font-black text-[#181411] hover:bg-amber-200"
-            >
-              View all cases
-              <ArrowRight className="h-4 w-4" />
-            </button>
+
+            {primaryCase && (
+              <button
+                onClick={() => onOpenViewer(primaryCase)}
+                className="lawpex-focus-ring mt-8 w-full rounded-[1.4rem] border border-amber-300 bg-[#facc15] p-5 text-left text-[#181411] hover:-translate-y-1 hover:bg-[#fde047]"
+              >
+                <div className="flex items-start justify-between gap-4">
+                  <div>
+                    <p className="text-[10px] font-black uppercase tracking-[0.16em] text-[#6e4b04]">
+                      {primaryCase.court} / {primaryCase.year}
+                    </p>
+                    <h3 className="mt-2 text-xl font-black tracking-tight">{primaryCase.title}</h3>
+                    <p className="mt-2 text-xs font-bold text-[#5d4308]">{primaryCase.citation}</p>
+                  </div>
+                  <BadgeCheck className="h-5 w-5 shrink-0" />
+                </div>
+              </button>
+            )}
           </div>
 
           <div className="grid grid-cols-1 gap-3">
-            {latestCases.map((item, index) => (
+            {secondaryCases.map((item, index) => (
               <button
                 key={item.id}
                 onClick={() => onOpenViewer(item)}
-                className="group rounded-2xl border border-white/10 bg-white/[0.06] p-4 text-left hover:border-amber-300/70 hover:bg-white/[0.09]"
+                className="group rounded-[1.2rem] border border-sky-200 bg-white p-4 text-left shadow-[0_18px_55px_-48px_rgba(14,116,144,0.42)] hover:-translate-y-0.5 hover:border-amber-300 hover:bg-yellow-50"
               >
                 <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
                   <div>
-                    <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-amber-300">
-                      {String(index + 1).padStart(2, '0')} / {item.court} / {item.year}
+                    <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-sky-700">
+                      {String(index + 2).padStart(2, '0')} / {item.court} / {item.year}
                     </p>
-                    <h3 className="mt-1 text-sm font-black text-white group-hover:text-amber-200">{item.title}</h3>
-                    <p className="mt-1 text-xs font-semibold text-white/55">{item.citation}</p>
+                    <h3 className="mt-1 text-sm font-black text-[#181411] group-hover:text-amber-800">{item.title}</h3>
+                    <p className="mt-1 text-xs font-semibold text-neutral-500">{item.citation}</p>
                   </div>
                   {item.isLandmark && (
                     <span className="inline-flex w-fit items-center gap-1 rounded-full bg-amber-300 px-2 py-1 text-[10px] font-black uppercase text-[#181411]">
@@ -219,29 +203,19 @@ export const HomeView: React.FC<HomeViewProps> = ({ setActiveTab, onOpenSearch, 
         </div>
       </section>
 
-      <section className="mx-auto max-w-7xl px-4 py-14 sm:px-6 lg:px-8">
-        <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
-          {TESTIMONIALS.map((item) => (
-            <figure key={item.name} className="lawpex-card rounded-2xl p-6">
-              <blockquote className="text-sm leading-7 text-neutral-800">"{item.quote}"</blockquote>
-              <figcaption className="mt-5 border-t border-amber-100 pt-4">
-                <div className="font-black text-neutral-950">{item.name}</div>
-                <div className="mt-1 text-xs font-semibold text-amber-800">{item.title}</div>
-              </figcaption>
-            </figure>
-          ))}
-        </div>
-      </section>
+      <TestimonialsSection />
 
-      <section className="mx-auto max-w-4xl px-4 pb-16 sm:px-6 lg:px-8">
-        <div className="lawpex-panel rounded-3xl p-6 sm:p-8">
+      <section className="mx-auto grid max-w-7xl grid-cols-1 gap-8 px-4 pb-16 sm:px-6 lg:grid-cols-[0.84fr_1.16fr] lg:px-8">
+        <div>
           <p className="lawpex-kicker">Answers</p>
-          <h2 className="mt-3 text-3xl font-black tracking-tight text-neutral-950">Frequently asked questions</h2>
-          <div className="mt-4">
-            {FAQS.map((faq) => (
-              <FaqItem key={faq.q} q={faq.q} a={faq.a} />
-            ))}
-          </div>
+          <h2 className="mt-3 max-w-md text-3xl font-black tracking-tight text-[#181411]">
+            Questions counsel usually ask first.
+          </h2>
+        </div>
+        <div className="rounded-[1.7rem] border border-amber-200/80 bg-white/82 p-5 shadow-[inset_0_1px_0_rgba(255,255,255,0.9),0_24px_70px_-56px_rgba(24,20,17,0.55)] sm:p-7">
+          {FAQS.map((faq) => (
+            <FaqItem key={faq.q} q={faq.q} a={faq.a} />
+          ))}
         </div>
       </section>
     </div>

@@ -25,7 +25,7 @@ const RESOURCE_LINKS = [
 ];
 
 export const Footer: React.FC = () => (
-  <footer className="border-t border-amber-200/80 bg-[#181411] text-white">
+  <footer className="border-t border-amber-200 bg-[#fffdf6] text-[#181411]">
     <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
       <div className="grid grid-cols-1 gap-10 lg:grid-cols-[1.15fr_0.8fr_0.8fr_1fr]">
         <div>
@@ -33,24 +33,24 @@ export const Footer: React.FC = () => (
             <LogoMark className="h-11 w-11 rounded-xl border border-amber-300/60" />
             <span>
               <span className="block text-2xl font-black tracking-tight">LAWPEX</span>
-              <span className="text-[10px] font-bold uppercase tracking-[0.16em] text-amber-300">
+              <span className="text-[10px] font-bold uppercase tracking-[0.16em] text-amber-700">
                 Nigerian legal intelligence
               </span>
             </span>
           </Link>
 
-          <p className="mt-5 max-w-sm text-sm leading-7 text-white/68">
+          <p className="mt-5 max-w-sm text-sm leading-7 text-neutral-700">
             Litigation research, court processes, authorities, statutes, rules and AI drafting
             support for Nigerian legal work.
           </p>
 
-          <div className="mt-5 space-y-2 text-xs text-white/62">
+          <div className="mt-5 space-y-2 text-xs text-neutral-600">
             <p className="flex gap-2">
-              <MapPin className="mt-0.5 h-4 w-4 shrink-0 text-amber-300" />
+              <MapPin className="mt-0.5 h-4 w-4 shrink-0 text-amber-700" />
               Abuja FCT and Lagos, Nigeria
             </p>
             <p className="flex gap-2">
-              <Mail className="mt-0.5 h-4 w-4 shrink-0 text-amber-300" />
+              <Mail className="mt-0.5 h-4 w-4 shrink-0 text-amber-700" />
               support@lawpex.ng
             </p>
           </div>
@@ -59,7 +59,7 @@ export const Footer: React.FC = () => (
         <FooterLinkGroup title="Litigation" links={LITIGATION_LINKS} />
         <FooterLinkGroup title="Resources" links={RESOURCE_LINKS} />
 
-        <div className="lawpex-panel rounded-2xl p-5 text-[#181411]">
+        <div className="rounded-2xl border border-amber-300 bg-[#facc15] p-5 text-[#181411] shadow-[inset_0_1px_0_rgba(255,255,255,0.42),0_24px_70px_-52px_rgba(180,126,18,0.55)]">
           <div className="flex items-start gap-3">
             <ShieldCheck className="mt-0.5 h-5 w-5 shrink-0 text-amber-700" />
             <div>
@@ -81,7 +81,7 @@ export const Footer: React.FC = () => (
             </label>
             <button
               onClick={() => alert('Thank you for subscribing to the LAWPEX Weekly Legal Digest.')}
-              className="lawpex-focus-ring inline-flex w-full items-center justify-center gap-2 rounded-xl bg-[#e6ad22] px-4 py-3 text-xs font-black text-[#181411] hover:bg-[#f0bd3b]"
+              className="lawpex-focus-ring inline-flex w-full items-center justify-center gap-2 rounded-xl bg-[#181411] px-4 py-3 text-xs font-black text-yellow-200 hover:bg-[#2a2118]"
             >
               Subscribe
               <ArrowRight className="h-3.5 w-3.5" />
@@ -90,7 +90,7 @@ export const Footer: React.FC = () => (
         </div>
       </div>
 
-      <div className="mt-10 flex flex-col gap-3 border-t border-white/10 pt-6 text-[11px] text-white/48 md:flex-row md:items-center md:justify-between">
+      <div className="mt-10 flex flex-col gap-3 border-t border-amber-200 pt-6 text-[11px] text-neutral-500 md:flex-row md:items-center md:justify-between">
         <p>Copyright 2026 LAWPEX Legal AI Technologies. Developed by MVPXLAB.</p>
         <div className="flex flex-wrap gap-4">
           <span>Terms</span>
@@ -108,11 +108,11 @@ const FooterLinkGroup: React.FC<{
   links: { id: string; label: string }[];
 }> = ({ title, links }) => (
   <div>
-    <h3 className="text-[11px] font-extrabold uppercase tracking-[0.16em] text-amber-300">{title}</h3>
-    <ul className="mt-4 space-y-2.5 text-sm text-white/68">
+    <h3 className="text-[11px] font-extrabold uppercase tracking-[0.16em] text-amber-700">{title}</h3>
+    <ul className="mt-4 space-y-2.5 text-sm text-neutral-600">
       {links.map((link) => (
         <li key={link.id}>
-          <Link to={pathForTab(link.id)} className="lawpex-focus-ring rounded-md hover:text-white">
+          <Link to={pathForTab(link.id)} className="lawpex-focus-ring rounded-md hover:text-[#181411]">
             {link.label}
           </Link>
         </li>

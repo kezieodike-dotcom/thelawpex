@@ -712,7 +712,7 @@ AND
 4.1.1 My Lords, it is settled beyond argument that jurisdiction is the lifeblood of
       adjudication, and that proceedings conducted without jurisdiction, however well
       conducted, amount to a nullity. We respectfully rely on MADUKOLU v. NKEMDILIM
-      (1962) LP e-LR (SC) pt 1003.
+      (1962) LDLR (SC) pt 1003.
 
 4.1.2 It is equally settled that jurisdiction is determined by the claim of the
       plaintiff as endorsed on the originating process, and not by the defence.
@@ -748,7 +748,7 @@ STATUTES
 2. Evidence Act 2011 — Sections 83, 84.
 
 CASES
-1. Madukolu & Ors v. Nkemdilim (1962) LP e-LR (SC) pt 1003.
+1. Madukolu & Ors v. Nkemdilim (1962) LDLR (SC) pt 1003.
 2. [Add the authorities relied upon, with full citations.]
 
 ${SIGN_OFF("Counsel to the Appellant")}
@@ -1037,7 +1037,7 @@ PARTICULARS OF ERROR
 (b) The pre-action notice required by Section ____ of the ______________ Act was never
     served on the Appellant.
 (c) A defect in competence is fatal, and proceedings conducted without competence are a
-    nullity ab initio — MADUKOLU v. NKEMDILIM (1962) LP e-LR (SC) pt 1003.
+    nullity ab initio — MADUKOLU v. NKEMDILIM (1962) LDLR (SC) pt 1003.
 
 GROUND TWO — ERROR IN LAW
 The learned Justices of the Court of Appeal erred in law in holding that the Appellant's
@@ -1136,7 +1136,7 @@ AND
 
 4.1.1 My Lords, jurisdiction is the foundation of adjudication. Where a court proceeds
       without it, the entire proceedings, however brilliantly conducted, amount to a
-      nullity: MADUKOLU v. NKEMDILIM (1962) LP e-LR (SC) pt 1003.
+      nullity: MADUKOLU v. NKEMDILIM (1962) LDLR (SC) pt 1003.
 
 4.1.2 The Appellant respectfully submits that service of the statutory pre-action notice
       was a condition precedent, and that no such notice was served — a fact the
@@ -1178,7 +1178,7 @@ STATUTES
 2. Evidence Act 2011 — Section 84.
 
 CASES
-1. Madukolu & Ors v. Nkemdilim (1962) LP e-LR (SC) pt 1003.
+1. Madukolu & Ors v. Nkemdilim (1962) LDLR (SC) pt 1003.
 2. [Add the authorities relied upon, with full citations.]
 
 ${SIGN_OFF("Counsel to the Appellant")}
