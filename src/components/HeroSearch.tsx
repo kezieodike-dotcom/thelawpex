@@ -184,7 +184,7 @@ export const HeroSearch: React.FC<HeroSearchProps> = ({ onSearch }) => {
             Nigerian litigation intelligence
           </div>
 
-          <p className="mt-4 max-w-[21rem] text-base font-black leading-6 text-[#181411] sm:mt-6 sm:max-w-2xl sm:text-xl sm:leading-8">
+          <p className="mt-4 max-w-[21rem] font-serif text-lg font-black italic leading-7 text-[#181411] sm:mt-6 sm:max-w-2xl sm:text-2xl sm:leading-9">
             Research Nigerian law, prepare stronger arguments, and draft with confidence.
           </p>
         </div>
