@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import {
   ArrowRight,
   BookOpen,
@@ -30,6 +30,7 @@ import { AI_LITIGATION_LESSONS } from '../data/litigationAI';
 
 interface UniversalSearchModalProps {
   isOpen: boolean;
+  initialQuery?: string;
   onClose: () => void;
   onSelectItem: (item: any) => void;
 }
@@ -244,11 +245,16 @@ const buildSearchIndex = (): SearchRecord[] => [
 
 export const UniversalSearchModal: React.FC<UniversalSearchModalProps> = ({
   isOpen,
+  initialQuery = '',
   onClose,
   onSelectItem,
 }) => {
   const [query, setQuery] = useState('');
   const [filterType, setFilterType] = useState<SearchKind>('all');
+
+  useEffect(() => {
+    if (isOpen) setQuery(initialQuery);
+  }, [initialQuery, isOpen]);
 
   const index = useMemo(buildSearchIndex, []);
   const needle = query.trim().toLowerCase();
@@ -275,57 +281,65 @@ export const UniversalSearchModal: React.FC<UniversalSearchModalProps> = ({
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-start justify-center bg-black/78 px-4 pt-14 backdrop-blur-sm">
-      <div className="lawpex-card flex max-h-[86vh] w-full max-w-5xl flex-col overflow-hidden rounded-3xl text-neutral-900">
-        <div className="flex items-center gap-3 border-b border-amber-100 bg-white p-4">
-          <Search className="h-5 w-5 shrink-0 text-amber-700" />
+    <div className="fixed inset-0 z-50 flex items-start justify-center bg-[#181411]/84 px-3 pt-6 backdrop-blur-md sm:px-4 sm:pt-10">
+      <div className="flex max-h-[90dvh] w-full max-w-5xl flex-col overflow-hidden rounded-[1.35rem] border border-amber-200 bg-[#fffdf6] text-neutral-900 shadow-[0_32px_90px_-44px_rgba(0,0,0,0.72)] sm:rounded-[1.8rem]">
+        <div className="flex items-center gap-3 border-b border-amber-200 bg-white px-3 py-3 sm:px-5 sm:py-4">
+          <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-amber-100 text-amber-800">
+            <Search className="h-5 w-5" />
+          </span>
           <input
             type="text"
             autoFocus
             value={query}
             onChange={(event) => setQuery(event.target.value)}
             placeholder="Search all LAWPEX resources: cases, statutes, rules, affidavits, videos, articles..."
-            className="w-full bg-transparent text-sm font-semibold text-neutral-900 placeholder:text-neutral-500 focus:outline-none"
+            className="min-w-0 w-full bg-transparent text-sm font-bold text-neutral-950 placeholder:text-neutral-500 focus:outline-none sm:text-base"
           />
-          <button onClick={onClose} className="lawpex-focus-ring rounded-xl bg-amber-50 p-2 text-neutral-600 hover:text-neutral-950">
+          <button
+            onClick={onClose}
+            aria-label="Close search"
+            className="lawpex-focus-ring rounded-2xl bg-amber-50 p-2.5 text-neutral-700 hover:bg-amber-100 hover:text-neutral-950"
+          >
             <X className="h-5 w-5" />
           </button>
         </div>
 
-        <div className="flex gap-2 overflow-x-auto border-b border-amber-100 bg-[#f8f5ee] px-4 py-3 text-xs">
+        <div className="flex gap-2 overflow-x-auto border-b border-amber-200 bg-[#fff8df] px-3 py-3 text-xs shadow-[inset_0_-1px_0_rgba(180,126,18,0.12)] sm:px-5">
           {FILTERS.map((filter) => (
             <button
               key={filter.id}
               onClick={() => setFilterType(filter.id)}
-              className={`lawpex-focus-ring shrink-0 rounded-full px-3 py-1.5 font-black ${
+              className={`lawpex-focus-ring shrink-0 rounded-full px-3.5 py-2 font-black transition active:scale-[0.98] ${
                 filterType === filter.id
-                  ? 'bg-[#181411] text-white'
-                  : 'border border-amber-200 bg-white/80 text-neutral-600 hover:border-amber-400 hover:text-neutral-950'
+                  ? 'bg-[#181411] text-yellow-100 shadow-[inset_0_1px_0_rgba(255,255,255,0.12)]'
+                  : 'border border-amber-300 bg-white text-neutral-700 hover:border-amber-500 hover:text-neutral-950'
               }`}
             >
-              {filter.label} <span className="opacity-60">{counts[filter.id]}</span>
+              {filter.label} <span className={filterType === filter.id ? 'text-yellow-300' : 'text-amber-700'}>{counts[filter.id]}</span>
             </button>
           ))}
         </div>
 
-        <div className="grid min-h-0 flex-1 grid-cols-1 lg:grid-cols-[0.72fr_1.28fr]">
-          <aside className="hidden border-r border-amber-100 bg-white/60 p-5 lg:block">
+        <div className="grid min-h-0 flex-1 grid-cols-1 bg-white lg:grid-cols-[0.66fr_1.34fr]">
+          <aside className="hidden border-r border-amber-200 bg-[#fffdf6] p-5 lg:block">
             <p className="lawpex-kicker">Search intelligence</p>
-            <h2 className="mt-2 text-xl font-black tracking-tight text-neutral-950">Faceted, ranked, cross-module.</h2>
-            <p className="mt-3 text-xs leading-6 text-neutral-600">
+            <h2 className="mt-2 text-xl font-black tracking-tight text-neutral-950">
+              Faceted, ranked, cross-module.
+            </h2>
+            <p className="mt-3 text-xs leading-6 text-neutral-700">
               Results are weighted toward court hierarchy, direct title matches and PRD-critical
               research assets. The same entry point covers every module listed in the PRD.
             </p>
             <div className="mt-5 space-y-2 text-xs text-neutral-700">
               {['Court hierarchy', 'Recency and title match', 'Full text and principles', 'Draft and export utility'].map((item) => (
-                <div key={item} className="rounded-xl border border-amber-100 bg-white p-3 font-semibold">
+                <div key={item} className="rounded-xl border border-amber-200 bg-white p-3 font-bold shadow-sm">
                   {item}
                 </div>
               ))}
             </div>
           </aside>
 
-          <div className="min-h-0 overflow-y-auto p-4">
+          <div className="min-h-0 overflow-y-auto bg-white p-3 sm:p-4">
             {results.length === 0 ? (
               <div className="rounded-2xl border border-amber-200 bg-white p-8 text-center">
                 <h3 className="text-lg font-black text-neutral-950">No matching authority found</h3>
@@ -344,9 +358,9 @@ export const UniversalSearchModal: React.FC<UniversalSearchModalProps> = ({
                         onSelectItem(record.item);
                         onClose();
                       }}
-                      className="group flex w-full items-start gap-3 rounded-2xl border border-amber-100 bg-white p-4 text-left hover:border-amber-400 hover:bg-amber-50/50"
+                      className="group flex w-full items-start gap-3 rounded-2xl border border-amber-200 bg-white p-4 text-left shadow-[0_18px_45px_-38px_rgba(120,82,20,0.46)] hover:border-amber-500 hover:bg-[#fffaf0]"
                     >
-                      <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-amber-100 text-amber-800">
+                      <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-amber-100 text-amber-800 ring-1 ring-amber-200">
                         <Icon className="h-5 w-5" />
                       </span>
                       <span className="min-w-0 flex-1">
@@ -354,16 +368,18 @@ export const UniversalSearchModal: React.FC<UniversalSearchModalProps> = ({
                           <span className="text-[10px] font-black uppercase tracking-[0.14em] text-amber-800">
                             {record.kind}
                           </span>
-                          <span className="rounded-full bg-neutral-100 px-2 py-0.5 text-[10px] font-bold text-neutral-500">
+                          <span className="rounded-full bg-amber-50 px-2 py-0.5 text-[10px] font-black text-neutral-600">
                             score {score}
                           </span>
                         </span>
-                        <span className="mt-1 block text-sm font-black text-neutral-950">{record.title}</span>
-                        <span className="mt-1 block truncate text-xs font-semibold text-neutral-500">
+                        <span className="mt-1.5 block text-sm font-black leading-snug text-neutral-950">
+                          {record.title}
+                        </span>
+                        <span className="mt-1 block truncate text-xs font-bold text-neutral-600">
                           {record.subtitle}
                         </span>
                       </span>
-                      <ArrowRight className="mt-3 h-4 w-4 shrink-0 text-neutral-400 opacity-0 group-hover:opacity-100" />
+                      <ArrowRight className="mt-3 h-4 w-4 shrink-0 text-amber-700 opacity-0 transition group-hover:translate-x-0.5 group-hover:opacity-100" />
                     </button>
                   );
                 })}

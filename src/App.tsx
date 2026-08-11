@@ -77,6 +77,7 @@ export function AppShell() {
   // Modals
   const [isAuthOpen, setIsAuthOpen] = useState<boolean>(false);
   const [isSearchOpen, setIsSearchOpen] = useState<boolean>(false);
+  const [searchInitialQuery, setSearchInitialQuery] = useState<string>('');
   const [viewingItem, setViewingItem] = useState<any | null>(null);
   const [customizingDraft, setCustomizingDraft] = useState<LegalDraft | null>(null);
 
@@ -96,7 +97,10 @@ export function AppShell() {
     [navigate],
   );
 
-  const openSearch = useCallback(() => setIsSearchOpen(true), []);
+  const openSearch = useCallback((query = '') => {
+    setSearchInitialQuery(query.trim());
+    setIsSearchOpen(true);
+  }, []);
   const openViewer = useCallback((item: any) => setViewingItem(item), []);
   const openAuthModal = useCallback(() => setIsAuthOpen(true), []);
 
@@ -131,7 +135,6 @@ export function AppShell() {
       {/* Universal Top Navigation */}
       <Navbar
         activeTab={activeTab}
-        openSearch={openSearch}
         openAuthModal={openAuthModal}
         isLoggedIn={isLoggedIn}
         onLogout={handleLogout}
@@ -249,6 +252,7 @@ export function AppShell() {
 
       <UniversalSearchModal
         isOpen={isSearchOpen}
+        initialQuery={searchInitialQuery}
         onClose={() => setIsSearchOpen(false)}
         onSelectItem={openViewer}
       />

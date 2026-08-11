@@ -1,12 +1,11 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { LogOut, Menu, Search, User, X } from 'lucide-react';
+import { LogOut, Menu, User, X } from 'lucide-react';
 import { LogoMark } from './LogoMark';
 import { pathForTab } from '../routes';
 
 interface NavbarProps {
   activeTab: string;
-  openSearch: () => void;
   openAuthModal: () => void;
   isLoggedIn: boolean;
   onLogout: () => void;
@@ -14,24 +13,28 @@ interface NavbarProps {
 
 const PRIMARY_NAV = [
   { id: 'areas-of-law', label: 'Areas' },
-  { id: 'case-law', label: 'Cases' },
   { id: 'court-rules', label: 'Rules' },
-  { id: 'drafts', label: 'Drafts' },
+  { id: 'case-law', label: 'Cases' },
+  { id: 'laws', label: 'Laws' },
+  { id: 'appeals', label: 'Appeals' },
+  { id: 'affidavits', label: 'Affidavits' },
+  { id: 'practicals', label: 'Procedures' },
+  { id: 'learn-litigation-ai', label: 'Learn AI' },
 ];
 
 const MOBILE_NAV = [
-  { id: 'home', label: 'Home' },
   { id: 'areas-of-law', label: 'Areas of Law' },
-  { id: 'case-law', label: 'Case Law' },
+  { id: 'court-rules', label: 'Rules' },
+  { id: 'case-law', label: 'Case Laws' },
   { id: 'laws', label: 'Nigerian Laws' },
-  { id: 'court-rules', label: 'Court Rules' },
-  { id: 'drafts', label: 'Draft Library' },
-  { id: 'appeals', label: 'Appeals Centre' },
+  { id: 'appeals', label: 'Appeals' },
+  { id: 'affidavits', label: 'All Affidavits' },
+  { id: 'practicals', label: 'Courtroom Procedures' },
+  { id: 'learn-litigation-ai', label: 'Learn Litigation with AI' },
 ];
 
 export const Navbar: React.FC<NavbarProps> = ({
   activeTab,
-  openSearch,
   openAuthModal,
   isLoggedIn,
   onLogout,
@@ -51,23 +54,12 @@ export const Navbar: React.FC<NavbarProps> = ({
           </span>
         </Link>
 
-        <button
-          onClick={openSearch}
-          className="lawpex-focus-ring hidden min-w-0 flex-1 items-center gap-3 rounded-full border border-amber-200 bg-yellow-50/80 px-4 py-2.5 text-left text-sm text-neutral-600 shadow-sm hover:-translate-y-0.5 hover:border-amber-400 hover:bg-white md:flex lg:max-w-md"
-        >
-          <Search className="h-4 w-4 shrink-0 text-amber-700" />
-          <span className="truncate">Search cases, statutes, rules and drafts</span>
-          <kbd className="ml-auto rounded-md border border-amber-200 bg-amber-50 px-1.5 py-0.5 text-[10px] font-bold text-neutral-500">
-            Ctrl K
-          </kbd>
-        </button>
-
-        <nav className="hidden items-center gap-1 lg:flex">
+        <nav className="hidden items-center gap-0.5 lg:flex">
           {PRIMARY_NAV.map((item) => (
             <Link
               key={item.id}
               to={pathForTab(item.id)}
-              className={`lawpex-focus-ring rounded-xl px-3 py-2 text-xs font-extrabold ${
+              className={`lawpex-focus-ring rounded-xl px-2.5 py-2 text-[11px] font-extrabold xl:px-3 xl:text-xs ${
                 activeTab === item.id
                   ? 'bg-[#facc15] text-[#181411] shadow-[inset_0_1px_0_rgba(255,255,255,0.38)]'
                   : 'text-neutral-700 hover:-translate-y-0.5 hover:bg-yellow-50 hover:text-neutral-950'
@@ -109,18 +101,7 @@ export const Navbar: React.FC<NavbarProps> = ({
 
       {mobileMenuOpen && (
         <div className="border-t border-amber-200 bg-white/96 px-4 py-4 shadow-2xl backdrop-blur-2xl lg:hidden">
-          <button
-            onClick={() => {
-              openSearch();
-              setMobileMenuOpen(false);
-            }}
-            className="lawpex-focus-ring flex w-full items-center gap-2 rounded-2xl border border-amber-200 bg-white p-3 text-left text-xs font-bold text-neutral-600"
-          >
-            <Search className="h-4 w-4 text-amber-700" />
-            Search LAWPEX Library
-          </button>
-
-          <div className="mt-3 grid grid-cols-1 gap-2 sm:grid-cols-2">
+          <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
             {MOBILE_NAV.map((item) => (
               <Link
                 key={item.id}

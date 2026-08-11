@@ -174,7 +174,7 @@ const CourtCaseList: React.FC<{ court: (typeof CASE_LAW_COURTS)[number] }> = ({ 
               type="text"
               value={query}
               onChange={(event) => setQuery(event.target.value)}
-              placeholder="Search cases, principles, catchwords, statutes, authorities or suit numbers..."
+              placeholder="Search case law/principles..."
               className="w-full bg-white text-xs sm:text-sm pl-11 pr-4 py-3.5 rounded-xl border border-neutral-200 text-neutral-900 focus:outline-none focus:border-yellow-400"
             />
           </div>
@@ -308,7 +308,7 @@ const CaseDetail: React.FC<{ judgment: CaseLaw }> = ({ judgment }) => {
           <TabButton
             active={tab === 'principles'}
             icon={Scale}
-            label="2. Principles of law"
+            label="2. Principles of law in this case"
             onClick={() => setTab('principles')}
           />
           {hasAuthorities && (
@@ -322,7 +322,7 @@ const CaseDetail: React.FC<{ judgment: CaseLaw }> = ({ judgment }) => {
           <TabButton
             active={tab === 'whole'}
             icon={BookOpen}
-            label={`${hasAuthorities ? '4' : '3'}. Read whole case`}
+            label={`${hasAuthorities ? '4' : '3'}. Read the whole case`}
             onClick={() => setTab('whole')}
           />
         </div>
@@ -436,14 +436,14 @@ const PrinciplesPanel: React.FC<{ judgment: CaseLaw }> = ({ judgment }) => {
   return (
     <div className="space-y-5">
       <Section
-        title="Law principles in this case"
+        title="Principles of law in this case"
         subtitle="The propositions this judgment stands for, in the form you would cite them in a written address."
       >
         <NumberedList items={judgment.keyPrinciples} />
 
         <DocumentActions
           className="mt-4"
-          html={buildWordList('Law principles in this case', citation, judgment.keyPrinciples)}
+          html={buildWordList('Principles of law in this case', citation, judgment.keyPrinciples)}
           filename={`${judgment.title} - principles of law`}
           hint="Copy these principles to MS Word."
         />

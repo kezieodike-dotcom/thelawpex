@@ -3,7 +3,6 @@ import {
   ArrowRight,
   BadgeCheck,
   BookOpen,
-  Bot,
   ChevronDown,
   FileText,
   Gavel,
@@ -20,21 +19,21 @@ import { LANDMARK_CASES } from '../data/legalData';
 
 interface HomeViewProps {
   setActiveTab: (tab: string) => void;
-  onOpenSearch: () => void;
+  onOpenSearch: (query?: string) => void;
   onOpenViewer: (item: any) => void;
 }
 
 const MODULES = [
+  { id: 'areas-of-law', title: 'Areas of Law', desc: 'Search practice areas and open the full workflow for each subject.', icon: BookOpen, tone: 'light' },
+  { id: 'court-rules', title: 'Court Rules', desc: 'Magistrate, High Court, NICN, Federal High Court, CA and Supreme Court rules.', icon: Gavel, tone: 'light' },
   { id: 'case-law', title: 'Case Law', desc: 'Structured reports with facts, issues, ratio and principles.', icon: Scale, tone: 'sky' },
+  { id: 'laws', title: 'Nigerian Laws & Statutes', desc: 'Federal laws and the laws of the 36 states and the FCT.', icon: Landmark, tone: 'light' },
+  { id: 'appeals', title: 'Appeals', desc: 'Rights of appeal, leave, timelines and appeal drafts across the court ladder.', icon: Newspaper, tone: 'light' },
   { id: 'drafts', title: 'Draft Library', desc: 'Court processes and agreements prepared for editing.', icon: FileText, tone: 'yellow' },
-  { id: 'areas-of-law', title: 'Areas of Law', desc: 'Practice areas with drafts, principles, laws and checklists.', icon: BookOpen, tone: 'light' },
-  { id: 'court-rules', title: 'Court Rules', desc: 'Orders and rules across federal, appellate and state courts.', icon: Gavel, tone: 'light' },
-  { id: 'affidavits', title: 'Affidavits', desc: 'Sworn depositions with statutory basis and practice warnings.', icon: ShieldCheck, tone: 'light' },
-  { id: 'practicals', title: 'Courtroom Procedures', desc: 'Step-by-step proceedings and what counsel says in court.', icon: Video, tone: 'light' },
-  { id: 'appeals', title: 'Appeals Centre', desc: 'Notices, records, briefs, timelines and leave applications.', icon: Landmark, tone: 'light' },
-  { id: 'learn-litigation-ai', title: 'AI Litigation Training', desc: 'Prompt-led lessons for research, drafting and advocacy.', icon: Sparkles, tone: 'light' },
+  { id: 'affidavits', title: 'All Manner of Affidavits', desc: 'Sworn depositions with statutory basis and practice warnings.', icon: ShieldCheck, tone: 'light' },
+  { id: 'practicals', title: 'Different Courtroom Procedures', desc: 'Courtroom steps and what counsel says in court.', icon: Video, tone: 'light' },
+  { id: 'learn-litigation-ai', title: 'Learn Litigation with AI Tools', desc: 'Prompt-led lessons for research, drafting and advocacy.', icon: Sparkles, tone: 'light' },
   { id: 'articles', title: 'Legal Articles', desc: 'Practice notes and commentary for Nigerian practitioners.', icon: Newspaper, tone: 'light' },
-  { id: 'ai-assistant', title: 'AI Legal Assistant', desc: 'Ask, draft and summarise with Nigerian-law context.', icon: Bot, tone: 'sky' },
 ];
 
 const FAQS = [
@@ -93,7 +92,7 @@ export const HomeView: React.FC<HomeViewProps> = ({ setActiveTab, onOpenSearch, 
 
   return (
     <div className="overflow-hidden">
-      <HeroSearch onSearch={() => onOpenSearch()} setActiveTab={setActiveTab} />
+      <HeroSearch onSearch={(query) => onOpenSearch(query)} />
 
       <section className="relative mx-auto grid max-w-7xl grid-cols-1 gap-8 px-4 py-16 sm:px-6 lg:grid-cols-[0.76fr_1.24fr] lg:px-8 lg:py-20">
         <div className="lg:sticky lg:top-24 lg:self-start">
@@ -106,7 +105,7 @@ export const HomeView: React.FC<HomeViewProps> = ({ setActiveTab, onOpenSearch, 
             into drafting and appearance preparation without losing context.
           </p>
           <button
-            onClick={onOpenSearch}
+            onClick={() => onOpenSearch()}
             className="lawpex-focus-ring mt-7 inline-flex items-center gap-2 rounded-full bg-[#181411] px-5 py-3 text-xs font-black uppercase tracking-[0.12em] text-amber-200 hover:bg-[#2a2118]"
           >
             Open universal search
