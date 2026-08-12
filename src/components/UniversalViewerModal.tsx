@@ -148,7 +148,7 @@ export const UniversalViewerModal: React.FC<UniversalViewerModalProps> = ({ item
         </div>
 
         {/* Scrollable Body */}
-        <div className="p-6 overflow-y-auto space-y-6 flex-1 text-xs sm:text-sm">
+        <div className="p-5 sm:p-6 overflow-y-auto space-y-6 flex-1 text-sm">
           {/* AI Summarize Button Banner */}
           {(readableJudgmentText || viewItem.fullJudgmentText) && !aiSummary && (
             <div className="bg-white border border-yellow-400/70 p-4 rounded-xl flex items-center justify-between gap-4">
@@ -176,7 +176,7 @@ export const UniversalViewerModal: React.FC<UniversalViewerModalProps> = ({ item
                 <Sparkles className="w-4 h-4" />
                 <span>LAWPEX AI Executive Summary</span>
               </div>
-              <div className="whitespace-pre-wrap text-neutral-800 text-xs font-sans leading-relaxed">
+              <div className="whitespace-pre-wrap text-neutral-800 text-sm font-sans leading-7">
                 {aiSummary}
               </div>
             </div>
@@ -187,7 +187,7 @@ export const UniversalViewerModal: React.FC<UniversalViewerModalProps> = ({ item
             <div className="bg-white border border-neutral-200 p-5 rounded-xl space-y-3">
               <h3 className="text-xs font-bold text-yellow-700 uppercase tracking-wider">Ratio Decidendi</h3>
               <p className="text-[11px] font-sans text-neutral-500">Quoted in the Justice's own words where supplied.</p>
-              <ul className="list-disc pl-5 space-y-1.5 text-neutral-700">
+              <ul className="list-disc pl-5 space-y-2 text-sm text-neutral-700 leading-7">
                 {viewItem.ratioDecidendi.map((r: string, idx: number) => (
                   <li key={idx}>{r}</li>
                 ))}
@@ -199,7 +199,7 @@ export const UniversalViewerModal: React.FC<UniversalViewerModalProps> = ({ item
           {viewItem.factsSummary && (
             <div className="bg-white border border-neutral-200 p-5 rounded-xl space-y-2">
               <h3 className="text-xs font-bold text-yellow-700 uppercase tracking-wider">Summary of Facts</h3>
-              <p className="text-neutral-700 leading-relaxed">{viewItem.factsSummary}</p>
+              <p className="text-sm text-neutral-700 leading-7">{viewItem.factsSummary}</p>
             </div>
           )}
 
@@ -207,13 +207,13 @@ export const UniversalViewerModal: React.FC<UniversalViewerModalProps> = ({ item
           <div className="bg-white border border-neutral-200 p-6 rounded-xl space-y-3 font-serif">
             <h3 className="text-xs font-bold text-yellow-700 font-sans uppercase tracking-wider">Full Text / Official Record</h3>
             {documentStatus === 'loading' ? (
-              <p className="font-sans text-xs font-semibold text-neutral-700">Loading the full judgment...</p>
+              <p className="font-sans text-sm font-semibold text-neutral-700">Loading the full judgment...</p>
             ) : documentStatus === 'error' ? (
-              <p className="font-sans text-xs font-semibold text-red-800">
+              <p className="font-sans text-sm font-semibold text-red-800">
                 The full judgment could not be loaded. Please refresh and try again.
               </p>
             ) : (
-              <pre className="whitespace-pre-wrap font-serif text-neutral-700 text-xs leading-relaxed font-normal">
+              <pre className="whitespace-pre-wrap font-serif text-neutral-700 text-sm sm:text-[15px] leading-7 font-normal">
                 {readableJudgmentText || viewItem.sampleText || viewItem.content || viewItem.description}
               </pre>
             )}

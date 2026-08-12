@@ -406,7 +406,7 @@ const DigestPanel: React.FC<{ judgment: CaseLaw }> = ({ judgment }) => {
             <MiniHeading icon={Users} label="Coram" />
             <ul className="space-y-2">
               {judgment.presidingJudges.map((judge) => (
-                <li key={judge} className="text-xs text-neutral-700 leading-relaxed flex gap-2">
+                <li key={judge} className="text-sm text-neutral-700 leading-7 flex gap-2">
                   <span className="mt-1.5 h-1.5 w-1.5 rounded-full bg-yellow-500 shrink-0" />
                   {judge}
                 </li>
@@ -416,7 +416,7 @@ const DigestPanel: React.FC<{ judgment: CaseLaw }> = ({ judgment }) => {
             {judgment.appearances && (
               <div className="border-t border-neutral-200 pt-4">
                 <MiniHeading icon={FileText} label="Appearances" />
-                <div className="mt-2 space-y-1.5 text-xs text-neutral-700">
+                <div className="mt-2 space-y-1.5 text-sm text-neutral-700 leading-7">
                   {judgment.appearances.appellant && <p>Appellant: {judgment.appearances.appellant}</p>}
                   {judgment.appearances.respondent && <p>Respondent: {judgment.appearances.respondent}</p>}
                 </div>
@@ -563,7 +563,7 @@ const WholeCasePanel: React.FC<{
   return (
     <div className="space-y-5">
       <Section title="Facts" subtitle="How the dispute arose and reached this court.">
-        <p className="text-xs text-neutral-700 leading-relaxed bg-white border border-neutral-200 rounded-xl p-4">
+        <p className="text-sm sm:text-[15px] text-neutral-700 leading-7 bg-white border border-neutral-200 rounded-xl p-4 sm:p-5">
           {judgment.factsSummary}
         </p>
       </Section>
@@ -573,7 +573,7 @@ const WholeCasePanel: React.FC<{
       </Section>
 
       <Section title="Decision" subtitle="What the court held, and the order it made.">
-        <p className="text-xs text-neutral-700 leading-relaxed bg-white border border-neutral-200 rounded-xl p-4">
+        <p className="text-sm sm:text-[15px] text-neutral-700 leading-7 bg-white border border-neutral-200 rounded-xl p-4 sm:p-5">
           {judgment.decisionSummary}
         </p>
       </Section>
@@ -583,11 +583,11 @@ const WholeCasePanel: React.FC<{
         subtitle="The judgment as delivered, paragraphed and page-numbered where the report provides it."
       >
         {isLoading ? (
-          <div className="rounded-xl border border-amber-200 bg-white p-5 text-xs font-semibold text-neutral-700">
+          <div className="rounded-xl border border-amber-200 bg-white p-5 text-sm font-semibold text-neutral-700">
             Loading the full judgment...
           </div>
         ) : status === 'error' ? (
-          <div className="rounded-xl border border-red-200 bg-red-50 p-5 text-xs font-semibold text-red-800">
+          <div className="rounded-xl border border-red-200 bg-red-50 p-5 text-sm font-semibold text-red-800">
             The full judgment could not be loaded. Please refresh and try again.
           </div>
         ) : judgment.judgmentPages?.length ? (
@@ -597,10 +597,10 @@ const WholeCasePanel: React.FC<{
                 <div className="mb-4 inline-flex items-center rounded-full bg-amber-100 px-3 py-1 text-[10px] font-black uppercase tracking-[0.18em] text-amber-800">
                   Page {page.page}
                 </div>
-                <div className="space-y-3 text-xs leading-relaxed text-neutral-800">
+                <div className="space-y-4 text-sm sm:text-[15px] leading-7 text-neutral-800">
                   {page.paragraphs.map((paragraph, index) => (
-                    <p key={`${page.page}-${index}`} className="grid grid-cols-[2rem_1fr] gap-2">
-                      <span className="font-mono text-[10px] font-bold text-amber-700">[{index + 1}]</span>
+                    <p key={`${page.page}-${index}`} className="grid grid-cols-[2.5rem_1fr] gap-2">
+                      <span className="font-mono text-xs font-bold text-amber-700">[{index + 1}]</span>
                       <span>{paragraph}</span>
                     </p>
                   ))}
@@ -609,7 +609,7 @@ const WholeCasePanel: React.FC<{
             ))}
           </div>
         ) : (
-          <pre className="bg-white border border-neutral-200 rounded-xl p-4 text-[11px] leading-relaxed text-neutral-800 whitespace-pre-wrap font-mono overflow-x-auto max-h-[40rem] overflow-y-auto">
+          <pre className="bg-white border border-neutral-200 rounded-xl p-4 sm:p-5 text-sm sm:text-[15px] leading-7 text-neutral-800 whitespace-pre-wrap font-mono overflow-x-auto max-h-[40rem] overflow-y-auto">
             {judgment.fullJudgmentText ?? 'Full judgment text is not available yet.'}
           </pre>
         )}
@@ -694,7 +694,7 @@ const DigestBlock: React.FC<{ title: string; body: string; tone?: 'strong' }> = 
     <h3 className={`text-[10px] font-black uppercase tracking-wider ${tone === 'strong' ? 'text-yellow-300' : 'text-yellow-700'}`}>
       {title}
     </h3>
-    <p className={`mt-2 text-xs leading-relaxed ${tone === 'strong' ? 'text-neutral-100' : 'text-neutral-700'}`}>
+    <p className={`mt-2 text-sm leading-7 ${tone === 'strong' ? 'text-neutral-100' : 'text-neutral-700'}`}>
       {body}
     </p>
   </div>
@@ -705,7 +705,7 @@ const NumberedList: React.FC<{ items: string[]; italic?: boolean }> = ({ items, 
     {items.map((item, index) => (
       <li
         key={`${item}-${index}`}
-        className={`bg-white border border-neutral-200 rounded-xl p-4 flex gap-3 text-xs text-neutral-800 leading-relaxed ${
+        className={`bg-white border border-neutral-200 rounded-xl p-4 flex gap-3 text-sm text-neutral-800 leading-7 ${
           italic ? 'italic' : ''
         }`}
       >
@@ -721,7 +721,7 @@ const SimpleList: React.FC<{ items: string[]; italic?: boolean }> = ({ items, it
     {items.map((item, index) => (
       <li
         key={`${item}-${index}`}
-        className={`bg-white border border-neutral-200 rounded-xl p-4 text-xs text-neutral-700 leading-relaxed ${
+        className={`bg-white border border-neutral-200 rounded-xl p-4 text-sm text-neutral-700 leading-7 ${
           italic ? 'italic' : ''
         }`}
       >
