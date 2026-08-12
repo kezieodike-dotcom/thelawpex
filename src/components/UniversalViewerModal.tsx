@@ -37,7 +37,7 @@ export const UniversalViewerModal: React.FC<UniversalViewerModalProps> = ({ item
   useEffect(() => {
     let isMounted = true;
 
-    if (!item?.hasFullJudgment || loadedDocument || documentStatus === 'loading') return undefined;
+    if (!item?.hasFullJudgment || loadedDocument) return undefined;
 
     setDocumentStatus('loading');
     loadCaseJudgmentDocument(item.id)
@@ -53,7 +53,7 @@ export const UniversalViewerModal: React.FC<UniversalViewerModalProps> = ({ item
     return () => {
       isMounted = false;
     };
-  }, [documentStatus, item?.hasFullJudgment, item?.id, loadedDocument]);
+  }, [item?.hasFullJudgment, item?.id, loadedDocument]);
 
   if (!item) return null;
 

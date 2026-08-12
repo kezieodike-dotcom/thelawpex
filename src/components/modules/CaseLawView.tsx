@@ -255,7 +255,7 @@ const CaseDetail: React.FC<{ judgment: CaseLaw }> = ({ judgment }) => {
   useEffect(() => {
     let isMounted = true;
 
-    if (!judgment.hasFullJudgment || document || documentStatus === 'loading') return undefined;
+    if (!judgment.hasFullJudgment || document) return undefined;
     if (tab !== 'whole') return undefined;
 
     setDocumentStatus('loading');
@@ -272,7 +272,7 @@ const CaseDetail: React.FC<{ judgment: CaseLaw }> = ({ judgment }) => {
     return () => {
       isMounted = false;
     };
-  }, [document, documentStatus, judgment.hasFullJudgment, judgment.id, tab]);
+  }, [document, judgment.hasFullJudgment, judgment.id, tab]);
 
   const related = (judgment.relatedCaseIds ?? [])
     .map((id) => LANDMARK_CASES.find((item) => item.id === id))
