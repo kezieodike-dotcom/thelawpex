@@ -164,22 +164,22 @@ export const HeroSearch: React.FC<HeroSearchProps> = ({ onSearch }) => {
   };
 
   return (
-    <section className="relative isolate overflow-hidden border-b border-amber-200 bg-[#fffdf6] text-[#181411]">
+    <section className="relative isolate overflow-hidden border-b border-amber-300 bg-[#fff7cf] text-[#181411]">
       <div className="absolute inset-0 -z-10" aria-hidden="true">
         <img
           src="/hero-justice.jpg"
           alt=""
           loading="eager"
           fetchPriority="high"
-          className="absolute inset-0 h-full w-full scale-[1.05] object-cover object-[56%_42%] opacity-[0.46] sm:object-[62%_45%] lg:opacity-[0.58]"
+          className="absolute inset-0 h-full w-full scale-[1.05] object-cover object-[56%_42%] opacity-[0.42] sm:object-[62%_45%] lg:opacity-[0.54]"
         />
-        <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(255,253,246,0.9)_0%,rgba(255,253,246,0.72)_42%,rgba(255,253,246,0.96)_100%)]" />
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_22%,rgba(250,204,21,0.46),transparent_24rem),radial-gradient(circle_at_82%_18%,rgba(125,211,252,0.18),transparent_22rem)]" />
+        <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(255,247,207,0.94)_0%,rgba(255,226,88,0.58)_45%,rgba(255,248,214,0.98)_100%)]" />
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_22%,rgba(250,204,21,0.72),transparent_26rem),radial-gradient(circle_at_82%_18%,rgba(245,158,11,0.34),transparent_24rem)]" />
       </div>
 
       <div className="mx-auto flex min-h-[calc(100dvh-4rem)] max-w-7xl flex-col items-center justify-center px-3 pb-10 pt-28 text-center sm:px-6 sm:py-14 lg:px-8">
         <div className="-translate-y-14 sm:translate-y-0">
-          <div className="inline-flex items-center gap-2 rounded-full border border-amber-300 bg-white/82 px-3 py-1.5 text-[11px] font-extrabold uppercase tracking-[0.16em] text-amber-800 shadow-sm backdrop-blur-xl">
+          <div className="inline-flex items-center gap-2 rounded-full border border-amber-500 bg-yellow-300/88 px-3 py-1.5 text-[11px] font-extrabold uppercase tracking-[0.16em] text-[#5f4104] shadow-sm backdrop-blur-xl">
             <Sparkles className="h-3.5 w-3.5" />
             Nigerian litigation intelligence
           </div>
@@ -191,7 +191,7 @@ export const HeroSearch: React.FC<HeroSearchProps> = ({ onSearch }) => {
 
         <form
           onSubmit={submitSearch}
-          className="mt-7 w-full max-w-4xl rounded-[1.45rem] border border-amber-200 bg-white/94 p-1.5 text-left shadow-[inset_0_1px_0_rgba(255,255,255,0.9),0_34px_90px_-58px_rgba(180,126,18,0.72)] backdrop-blur-2xl sm:mt-7 sm:rounded-[1.7rem] sm:p-2"
+          className="mt-7 w-full max-w-4xl rounded-[1.45rem] border border-amber-400 bg-yellow-50/96 p-1.5 text-left shadow-[inset_0_1px_0_rgba(255,255,255,0.9),0_34px_90px_-54px_rgba(180,126,18,0.92)] backdrop-blur-2xl sm:mt-7 sm:rounded-[1.7rem] sm:p-2"
         >
           <div className="grid grid-cols-[minmax(0,1fr)_3rem_3rem] items-center gap-1.5 sm:flex sm:gap-2 sm:items-center">
             <label className="relative min-w-0 flex-1">
@@ -201,7 +201,7 @@ export const HeroSearch: React.FC<HeroSearchProps> = ({ onSearch }) => {
                 value={searchQuery}
                 onChange={(event) => setSearchQuery(event.target.value)}
                 placeholder="Ask a legal question, search a citation, statute, rule or draft..."
-                className="lawpex-focus-ring min-h-12 w-full rounded-[1.05rem] border border-transparent bg-amber-50/70 py-3 pl-10 pr-2 text-[13px] font-medium text-neutral-900 placeholder:text-neutral-500 focus:border-amber-300 focus:bg-white focus:outline-none sm:min-h-14 sm:rounded-2xl sm:py-4 sm:pl-13 sm:pr-4 sm:text-base"
+                className="lawpex-focus-ring min-h-12 w-full rounded-[1.05rem] border border-transparent bg-yellow-100/80 py-3 pl-10 pr-2 text-[13px] font-medium text-neutral-900 placeholder:text-neutral-500 focus:border-amber-400 focus:bg-white focus:outline-none sm:min-h-14 sm:rounded-2xl sm:py-4 sm:pl-13 sm:pr-4 sm:text-base"
               />
             </label>
 
@@ -247,14 +247,14 @@ export const HeroSearch: React.FC<HeroSearchProps> = ({ onSearch }) => {
               onClick={() => {
                 setSearchQuery(prompt.label);
               }}
-              className="lawpex-focus-ring shrink-0 rounded-full border border-amber-200 bg-white/82 px-3 py-1.5 text-[11px] font-semibold text-neutral-700 shadow-sm backdrop-blur hover:border-amber-400 hover:bg-yellow-50 hover:text-neutral-950"
+              className="lawpex-focus-ring shrink-0 rounded-full border border-amber-300 bg-yellow-100/88 px-3 py-1.5 text-[11px] font-bold text-[#5f4104] shadow-sm backdrop-blur hover:border-amber-500 hover:bg-yellow-200 hover:text-neutral-950"
             >
               {prompt.label}
             </button>
           ))}
         </div>
 
-        <div className="mt-6 grid w-full max-w-2xl grid-cols-3 divide-x divide-amber-200 overflow-hidden rounded-2xl border border-amber-200 bg-white/58 py-3 backdrop-blur sm:mt-8 sm:rounded-none sm:border-x-0 sm:py-4">
+        <div className="mt-6 grid w-full max-w-2xl grid-cols-3 divide-x divide-amber-300 overflow-hidden rounded-2xl border border-amber-300 bg-yellow-100/72 py-3 backdrop-blur sm:mt-8 sm:rounded-none sm:border-x-0 sm:py-4">
           {METRICS.map((metric) => (
             <div key={metric.label} className="px-3">
               <div className="text-xl font-black tracking-tight text-[#181411] sm:text-2xl">

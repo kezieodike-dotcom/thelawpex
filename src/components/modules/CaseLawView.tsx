@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import {
   Search,
@@ -17,6 +17,7 @@ import {
   Landmark,
 } from 'lucide-react';
 import { LANDMARK_CASES } from '../../data/legalData';
+import { CaseJudgmentDocument, loadCaseJudgmentDocument, mergeCaseJudgmentDocument } from '../../data/judgmentLoader';
 import { CaseLaw } from '../../types';
 import { DocumentActions } from '../DocumentActions';
 import { buildWordDraft, buildWordList, buildWordSection } from '../../lib/copyToWord';
@@ -238,6 +239,11 @@ const CourtCaseList: React.FC<{ court: (typeof CASE_LAW_COURTS)[number] }> = ({ 
 };
 
 const CaseDetail: React.FC<{ judgment: CaseLaw }> = ({ judgment }) => {
+  const [document, setDocument] = useState<CaseJudgmentDocument | null>(null);
+  const [documentStatus, setDocumentStatus] = useState<'idle' | 'loading' | 'ready' | 'error'>(
+    judgment.hasFullJudgment ? 'idle' : 'ready',
+  );
+  const fullJudgment = useMemo(() => mergeCaseJudgmentDocument(judgment, document), [document, judgment]);
   const court = CASE_LAW_COURTS.find((item) => item.name === judgment.court);
   const hasAuthorities =
     Boolean(judgment.authoritiesCited?.length) ||
@@ -245,6 +251,28 @@ const CaseDetail: React.FC<{ judgment: CaseLaw }> = ({ judgment }) => {
     Boolean(judgment.practiceNotes?.length) ||
     Boolean(judgment.appearances);
   const [tab, setTab] = useState<'digest' | 'principles' | 'authorities' | 'whole'>('digest');
+
+  useEffect(() => {
+    let isMounted = true;
+
+    if (!judgment.hasFullJudgment || document || documentStatus === 'loading') return undefined;
+    if (tab !== 'whole') return undefined;
+
+    setDocumentStatus('loading');
+    loadCaseJudgmentDocument(judgment.id)
+      .then((loaded) => {
+        if (!isMounted) return;
+        setDocument(loaded);
+        setDocumentStatus(loaded ? 'ready' : 'error');
+      })
+      .catch(() => {
+        if (isMounted) setDocumentStatus('error');
+      });
+
+    return () => {
+      isMounted = false;
+    };
+  }, [document, documentStatus, judgment.hasFullJudgment, judgment.id, tab]);
 
   const related = (judgment.relatedCaseIds ?? [])
     .map((id) => LANDMARK_CASES.find((item) => item.id === id))
@@ -330,7 +358,7 @@ const CaseDetail: React.FC<{ judgment: CaseLaw }> = ({ judgment }) => {
         {tab === 'digest' && <DigestPanel judgment={judgment} />}
         {tab === 'principles' && <PrinciplesPanel judgment={judgment} />}
         {tab === 'authorities' && <AuthoritiesPanel judgment={judgment} />}
-        {tab === 'whole' && <WholeCasePanel judgment={judgment} />}
+        {tab === 'whole' && <WholeCasePanel judgment={fullJudgment} status={documentStatus} />}
 
         {related.length > 0 && (
           <div className="mt-6 bg-yellow-100 border border-neutral-200 rounded-2xl p-6">
@@ -449,7 +477,7 @@ const PrinciplesPanel: React.FC<{ judgment: CaseLaw }> = ({ judgment }) => {
         />
       </Section>
 
-      <Section title="Ratio decidendi" subtitle="The reasoning that decided the case, and which binds the courts below.">
+      <Section title="Ratio decidendi" subtitle="Quoted in the Justice's own words for authentication, citation and argument.">
         <NumberedList items={judgment.ratioDecidendi} italic />
 
         <DocumentActions
@@ -513,8 +541,24 @@ const AuthoritiesPanel: React.FC<{ judgment: CaseLaw }> = ({ judgment }) => {
   );
 };
 
-const WholeCasePanel: React.FC<{ judgment: CaseLaw }> = ({ judgment }) => {
+const getJudgmentTextForCopy = (judgment: CaseLaw): string => {
+  if (!judgment.judgmentPages?.length) return judgment.fullJudgmentText ?? '';
+
+  return judgment.judgmentPages
+    .map((page) => [
+      `PAGE ${page.page}`,
+      ...page.paragraphs.map((paragraph, index) => `[${index + 1}] ${paragraph}`),
+    ].join('\n\n'))
+    .join('\n\n');
+};
+
+const WholeCasePanel: React.FC<{
+  judgment: CaseLaw;
+  status?: 'idle' | 'loading' | 'ready' | 'error';
+}> = ({ judgment, status = 'ready' }) => {
   const citation = `${judgment.title} ${judgment.citation}`;
+  const judgmentText = getJudgmentTextForCopy(judgment);
+  const isLoading = status === 'idle' || status === 'loading';
 
   return (
     <div className="space-y-5">
@@ -536,18 +580,48 @@ const WholeCasePanel: React.FC<{ judgment: CaseLaw }> = ({ judgment }) => {
 
       <Section
         title="The whole case"
-        subtitle="The judgment as delivered, with the coram, the parties and the reasoning."
+        subtitle="The judgment as delivered, paragraphed and page-numbered where the report provides it."
       >
-        <pre className="bg-white border border-neutral-200 rounded-xl p-4 text-[11px] leading-relaxed text-neutral-800 whitespace-pre-wrap font-mono overflow-x-auto max-h-[40rem] overflow-y-auto">
-          {judgment.fullJudgmentText}
-        </pre>
+        {isLoading ? (
+          <div className="rounded-xl border border-amber-200 bg-white p-5 text-xs font-semibold text-neutral-700">
+            Loading the full judgment...
+          </div>
+        ) : status === 'error' ? (
+          <div className="rounded-xl border border-red-200 bg-red-50 p-5 text-xs font-semibold text-red-800">
+            The full judgment could not be loaded. Please refresh and try again.
+          </div>
+        ) : judgment.judgmentPages?.length ? (
+          <div className="max-h-[40rem] overflow-y-auto rounded-xl border border-amber-200 bg-white">
+            {judgment.judgmentPages.map((page) => (
+              <article key={page.page} className="border-b border-amber-100 last:border-b-0 p-4 sm:p-5">
+                <div className="mb-4 inline-flex items-center rounded-full bg-amber-100 px-3 py-1 text-[10px] font-black uppercase tracking-[0.18em] text-amber-800">
+                  Page {page.page}
+                </div>
+                <div className="space-y-3 text-xs leading-relaxed text-neutral-800">
+                  {page.paragraphs.map((paragraph, index) => (
+                    <p key={`${page.page}-${index}`} className="grid grid-cols-[2rem_1fr] gap-2">
+                      <span className="font-mono text-[10px] font-bold text-amber-700">[{index + 1}]</span>
+                      <span>{paragraph}</span>
+                    </p>
+                  ))}
+                </div>
+              </article>
+            ))}
+          </div>
+        ) : (
+          <pre className="bg-white border border-neutral-200 rounded-xl p-4 text-[11px] leading-relaxed text-neutral-800 whitespace-pre-wrap font-mono overflow-x-auto max-h-[40rem] overflow-y-auto">
+            {judgment.fullJudgmentText ?? 'Full judgment text is not available yet.'}
+          </pre>
+        )}
 
-        <DocumentActions
-          className="mt-4"
-          html={buildWordDraft('Judgment', citation, judgment.fullJudgmentText)}
-          filename={`${judgment.title} - full judgment`}
-          hint="Copy the whole case to MS Word."
-        />
+        {judgmentText && (
+          <DocumentActions
+            className="mt-4"
+            html={buildWordDraft('Judgment', citation, judgmentText)}
+            filename={`${judgment.title} - full judgment`}
+            hint="Copy the whole case to MS Word."
+          />
+        )}
       </Section>
 
       <Section title="The case in one document" subtitle="Facts, issues, decision, ratio and principles together.">

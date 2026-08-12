@@ -95,6 +95,7 @@ export interface CaseLaw {
   id: string;
   title: string;
   citation: string;
+  sourceUrl?: string;
   suitNumber: string;
   court: 'Supreme Court of Nigeria' | 'Court of Appeal' | 'Federal High Court' | 'National Industrial Court' | 'State High Court';
   year: number;
@@ -114,12 +115,18 @@ export interface CaseLaw {
   ordersMade?: string[];
   issuesForDetermination: string[];
   decisionSummary: string;
+  /** Exact judicial words containing the ratio; do not summarise. */
   ratioDecidendi: string[];
   obiterDicta?: string[];
   authoritiesCited?: string[];
   statutesConsidered?: string[];
   practiceNotes?: string[];
-  fullJudgmentText: string;
+  hasFullJudgment?: boolean;
+  fullJudgmentText?: string;
+  judgmentPages?: {
+    page: string;
+    paragraphs: string[];
+  }[];
   keyPrinciples: string[];
   relatedCaseIds?: string[];
   isLandmark?: boolean;
