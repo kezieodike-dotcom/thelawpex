@@ -20,6 +20,15 @@ interface UniversalViewerModalProps {
   onClose: () => void;
 }
 
+const PARAGRAPH_LABELS = ['A', 'B', 'C', 'D', 'E', 'F', 'G'];
+
+const paragraphLabel = (index: number) => PARAGRAPH_LABELS[index % PARAGRAPH_LABELS.length];
+
+const SOURCE_PARAGRAPH_LABEL = /^([A-G])\t(.+)/i;
+
+const usesSourceParagraphLabels = (pages: { page: string; paragraphs: string[] }[]) =>
+  pages.some((page) => page.paragraphs.some((paragraph) => SOURCE_PARAGRAPH_LABEL.test(paragraph)));
+
 export const UniversalViewerModal: React.FC<UniversalViewerModalProps> = ({ item, onClose }) => {
   const [copied, setCopied] = useState(false);
   const [bookmarked, setBookmarked] = useState(false);
@@ -59,21 +68,28 @@ export const UniversalViewerModal: React.FC<UniversalViewerModalProps> = ({ item
 
   const viewItem = {
     ...item,
+    preserveSourceFormatting: loadedDocument?.preserveSourceFormatting ?? item.preserveSourceFormatting,
     fullJudgmentText: loadedDocument?.fullJudgmentText ?? item.fullJudgmentText,
     judgmentPages: loadedDocument?.judgmentPages ?? item.judgmentPages,
   };
 
-  const readableJudgmentText =
-    viewItem.judgmentPages?.length
-      ? viewItem.judgmentPages
-          .map((page: { page: string; paragraphs: string[] }) =>
-            [
-              `PAGE ${page.page}`,
-              ...page.paragraphs.map((paragraph, index) => `[${index + 1}] ${paragraph}`),
-            ].join('\n\n')
-          )
-          .join('\n\n')
-      : viewItem.fullJudgmentText;
+  const judgmentPages =
+    viewItem.judgmentPages?.filter((page: { page: string }) => page.page.toLowerCase() !== 'headnote') ?? [];
+  const totalJudgmentPages = Math.max(judgmentPages.length, 1);
+  const hasSourceLabels = usesSourceParagraphLabels(judgmentPages);
+
+  const readableJudgmentText = judgmentPages.length
+    ? judgmentPages
+        .map((page: { page: string; paragraphs: string[] }, pageIndex: number) =>
+          [
+            `page (${pageIndex + 1}) of (${totalJudgmentPages})`,
+            ...page.paragraphs.map((paragraph, index) =>
+              hasSourceLabels ? paragraph : `${paragraphLabel(index)} ${paragraph}`,
+            ),
+          ].join('\n\n')
+        )
+        .join('\n\n')
+    : viewItem.fullJudgmentText;
 
   const handleCopy = () => {
     const textToCopy = readableJudgmentText || viewItem.sampleText || viewItem.content || viewItem.description || '';

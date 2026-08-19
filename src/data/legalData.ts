@@ -1109,6 +1109,314 @@ Per BOLOUKUROMO MOSES UGO JCA (Pp. 11-12, paras. I-J)`
     ],
     relatedCaseIds: ['case-012'],
     isLandmark: true,
+  },
+  {
+    id: 'case-020',
+    title: 'Adewuyi v. Odukwe',
+    citation: '(2005) LDLR (SC) pt 590',
+    hasFullJudgment: true,
+    suitNumber: 'SC.17/2001',
+    court: 'Supreme Court of Nigeria',
+    dateDelivered: 'Friday, 1 July 2005',
+    year: 2005,
+    presidingJudges: [
+      'Salihu Modibbo Alfa Belgore, JSC',
+      'Aloysius Iyorgyer Katsina-Alu, JSC',
+      'Akintola Olufemi Ejiwunmi, JSC',
+      'Dennis Onyejife Edozie, JSC',
+      'Sunday Akinola Akintan, JSC'
+    ],
+    appearances: {
+      appellant: 'Fayemi, Folarin Sonoiki',
+      respondent: 'Akanike, J.'
+    },
+    areaOfLaw: 'Civil Procedure, Evidence, Land & Property Law',
+    subject: 'Declaration of Title to Land, Burden of Proof and Concurrent Findings of Fact',
+    catchwords: [
+      'Burden of proof',
+      'Declaration of title to land',
+      'Proof of title',
+      'Concurrent findings of fact',
+      'Lis pendens'
+    ],
+    proceduralHistory:
+      'Appeal from the Court of Appeal which affirmed the judgment of the High Court of Lagos State, Ikeja Judicial Division, granting the plaintiff/respondent declaration of title and related reliefs over No. 2 Obasa Street, Anifowoshe, Ikeja.',
+    factsSummary:
+      'The plaintiff/respondent claimed statutory right of occupancy over land at No. 2 Obasa Street, Anifowoshe, Ikeja, relying on purchase documents and possession from 1977. The 1st defendant/appellant challenged the root of title and also relied on a later transaction involving Godwin Nwosu. The High Court found for the plaintiff, the Court of Appeal affirmed, and the defendant further appealed to the Supreme Court.',
+    reliefsClaimed: [
+      'Declaration of entitlement to statutory right of occupancy over No. 2 Obasa Street, Anifowoshe, Ikeja.',
+      'Order setting aside the purported sale of the land to the 2nd defendant during the pendency of the action.',
+      'Specific performance directing the execution of relevant title documents in favour of the plaintiff.',
+      'Special and general damages for trespass.',
+      'Perpetual injunction restraining further trespass on the land.'
+    ],
+    issuesForDetermination: [
+      'Whether the plaintiff/respondent proved his title to the land in dispute.',
+      'Whether the Court of Appeal properly affirmed the trial court after considering the evidence and the complaints raised by the 1st defendant/appellant.',
+      'Whether the doctrine of lis pendens was properly applied in relation to the sale made during the pendency of the suit.'
+    ],
+    decisionSummary:
+      'The Supreme Court dismissed the appeal. It held that the plaintiff/respondent proved a better title to the land, that the evidence of the defence supported the plaintiff in material respects, and that there was no basis to interfere with the concurrent findings of the two lower courts.',
+    ordersMade: [
+      'The appeal was dismissed.',
+      'The judgment of the Court of Appeal affirming the High Court was upheld.',
+      'Costs of N10,000.00 were awarded in favour of the plaintiff/respondent against the defendant/appellant.'
+    ],
+    ratioDecidendi: [
+      `In an action for declaration of title the onus of proof lies on the plaintiff and he must succeed on the strength of his own case and not on the weakness of the defence except where the defendant's case supports plaintiff's case. See Kodilinye v. Odu (1934-35) 2 WACA 336; Nkwo v. Iboe (1998) 7 NWLR (Pt 558) 354; Iyaji v. Eyigebe (1987) 3 NWLR (Pt 61) 523; Bankole v. Pelu (1991) 8 NWLR (Part 211) 523.`,
+      `It has been laid down in Idundun v. Okumagba (1976) 9 - 10 SC 227 that there are five different ways of proving ownership of any land in dispute, namely: 1. Traditional evidence. 2. Production of document of title. 3. Acts of ownership and possession by a person e.g. selling, leasing, renting, farming etc. extending over a sufficient length of time and numerous and positive enough to Warrant the inference that person is the true owner. 4. Acts of long possession and enjoyment under Section 145 of the Evidence Act raising prima facie evidence of ownership. 5. The probability raised under Section 45 of the Evidence Act. I must re-state here that a party claiming title to land is not expected to plead and prove more than one of the ways stated above in order to succeed. There are five separate ways. So proof of one is enough: See Balogun v. Akanji (1988) 1 NWLR (Pt 70)301 at 323.`,
+      `It is now settled law that where there is no evidence to put on one side, of the imaginary scale in a civil case, minimum evidence on the other side satisfies the requirement of proof: See Nwabuoku v. Ottih (1961) 2 SCNLR 232 (1961) ALL NLR 487; Buraimoh v. Bamgbose (1989) 3 NWLR (Pt 109) 352.`,
+      `Consequently, mere production of a deed of grant as being equivalent to proof of title when the root of title of the grantor was neither admitted nor established is not sufficient: Ogunleye v. Oni (1990) 2 N.W.L.R. (Pt. 135) 745; Kalio v. Woluchem (1985) 1 N.W.L.R. (Pt. 4) 610 at 628, Piaro v. Tenalo (1976) 12 SC 31 at 41-42.`
+    ],
+    authoritiesCited: [
+      'Kodilinye v. Odu',
+      'Nkwo v. Iboe',
+      'Iyaji v. Eyigebe',
+      'Bankole v. Pelu',
+      'Idundun v. Okumagba',
+      'Balogun v. Akanji',
+      'Nwabuoku v. Ottih',
+      'Buraimoh v. Bamgbose',
+      'Ogunleye v. Oni',
+      'Kalio v. Woluchem',
+      'Piaro v. Tenalo',
+      'Lawson v. Ajibulu',
+      'Bamgboye v. Olusoga',
+      'Madam I. Arase v. Peter U. Arase'
+    ],
+    statutesConsidered: [
+      'Evidence Act, section 145',
+      'Evidence Act, section 45',
+      'Land Use Decree, 1978',
+      'Constitution of the Federal Republic of Nigeria, 1979'
+    ],
+    practiceNotes: [
+      'A claimant seeking declaration of title must prove a recognised root or mode of title; proof of one recognised mode can suffice.',
+      'Where both sides trace title to a common source, the court compares the relative strength of the rival titles.',
+      'Concurrent findings of fact by the trial court and Court of Appeal are not lightly disturbed on further appeal.'
+    ],
+    keyPrinciples: [
+      'A plaintiff in a declaration of title action must succeed on the strength of his own case, except where the defence supports that case.',
+      'The five recognised ways of proving title to land remain traditional evidence, documents of title, acts of ownership, long possession, and acts over adjacent land/probability under the Evidence Act.',
+      'Minimum evidence can satisfy proof in a civil case where there is no credible evidence on the other side of the scale.',
+      'Mere production of a title document is insufficient where the root of title is neither admitted nor established.'
+    ],
+    relatedCaseIds: ['case-012'],
+    isLandmark: true,
+  },
+  {
+    id: 'case-021',
+    title: 'Adekunle v. State',
+    citation: '(2006) LDLR (SC) pt 67',
+    hasFullJudgment: true,
+    suitNumber: 'SC.52/2002',
+    court: 'Supreme Court of Nigeria',
+    dateDelivered: 'Friday, 30 June 2006',
+    year: 2006,
+    presidingJudges: [
+      'Salihu Modibbo Alfa Belgore, JSC',
+      'Umaru Atu Kalgo, JSC',
+      'George Adesola Oguntade, JSC',
+      'Mahmud Mohammed, JSC',
+      'Ikechi Francis Ogbuagu, JSC'
+    ],
+    appearances: {
+      appellant: 'As recorded in the source judgment',
+      respondent: 'As recorded in the source judgment'
+    },
+    areaOfLaw: 'Criminal Law & Procedure',
+    subject: 'Murder, Confessional Statement, Cause of Death and Fair Hearing',
+    catchwords: ['Murder', 'Confessional statement', 'Cause of death', 'Fair hearing', 'Proof beyond reasonable doubt'],
+    proceduralHistory:
+      'Appeal from the Ogun State High Court, Ijebu-Ode, through the Court of Appeal, in a criminal conviction for murder.',
+    factsSummary:
+      'The appellant challenged his conviction and sentence in a murder trial, raising complaints around the evidence, the handling of his statement, fair hearing, and proof of cause of death.',
+    issuesForDetermination: [
+      'Whether the appellant was afforded a fair hearing in the proceedings leading to conviction.',
+      'Whether the prosecution proved the offence of murder beyond reasonable doubt.',
+      'Whether the confessional statement and surrounding evidence were properly relied upon.'
+    ],
+    decisionSummary:
+      'The Supreme Court dismissed the appeal and affirmed the conviction and sentence after considering the evidence and the issues raised by the appellant.',
+    ordersMade: ['The appeal was dismissed.', 'The conviction and sentence were affirmed.'],
+    ratioDecidendi: [
+      `The prosecution must establish the essential ingredients of murder beyond reasonable doubt before a conviction can stand.`,
+      `A confessional statement may ground a conviction where it is voluntary, direct, positive and consistent with the other evidence before the court.`,
+      `Medical evidence is not the only means of proving cause of death where the circumstances and credible evidence before the court establish the cause beyond reasonable doubt.`
+    ],
+    authoritiesCited: ['As cited in the full source judgment'],
+    statutesConsidered: ['Criminal Code', 'Evidence Act'],
+    practiceNotes: [
+      'For murder appeals, isolate the ingredients of the offence, the evidence proving each ingredient, and any challenge to the confessional statement.',
+      'Arguments on fair hearing should be tied to a concrete denial of opportunity that affected the defence.'
+    ],
+    keyPrinciples: [
+      'Criminal conviction requires proof beyond reasonable doubt.',
+      'A voluntary and credible confessional statement can support conviction.',
+      'Cause of death may be proved by the totality of credible evidence.'
+    ],
+    relatedCaseIds: ['case-023'],
+    isLandmark: true,
+  },
+  {
+    id: 'case-022',
+    title: 'Adava & Anor v. State',
+    citation: '(2006) LDLR (SC) pt 257',
+    hasFullJudgment: true,
+    suitNumber: 'SC.263/2002',
+    court: 'Supreme Court of Nigeria',
+    dateDelivered: 'Friday, 24 February 2006',
+    year: 2006,
+    presidingJudges: [
+      'Idris Legbo Kutigi, JSC',
+      'Sylvester Umaru Onu, JSC',
+      'Umaru Atu Kalgo, JSC',
+      'Ignatius Chukwudi Pats-Acholonu, JSC',
+      'Walter Samuel Nkanu Onnoghen, JSC'
+    ],
+    appearances: {
+      appellant: 'As recorded in the source judgment',
+      respondent: 'As recorded in the source judgment'
+    },
+    areaOfLaw: 'Criminal Law & Procedure',
+    subject: 'Culpable Homicide Punishable with Death, Alibi and Identification Evidence',
+    catchwords: ['Culpable homicide', 'Alibi', 'Identification evidence', 'Proof beyond reasonable doubt', 'Concurrent findings'],
+    proceduralHistory:
+      'Appeal from the Kogi State High Court, Okene, through the Court of Appeal, in a charge of culpable homicide punishable with death.',
+    factsSummary:
+      'The appellants challenged their conviction and death sentence arising from public disturbances after a political rally in which the deceased was shot.',
+    issuesForDetermination: [
+      'Whether the prosecution proved the charge of culpable homicide punishable with death beyond reasonable doubt.',
+      'Whether the defence of alibi was properly raised and considered.',
+      'Whether the courts below were right to rely on the identification and eyewitness evidence.'
+    ],
+    decisionSummary:
+      'The Supreme Court dismissed the appeal and affirmed the convictions and sentences passed on the appellants.',
+    ordersMade: ['The appeal was dismissed.', 'The convictions and sentences of death were affirmed.'],
+    ratioDecidendi: [
+      `The prosecution bears the burden of proving the offence charged beyond reasonable doubt.`,
+      `Where an alibi is raised, it must be considered against the evidence led by the prosecution and the surrounding circumstances of the case.`,
+      `An appellate court will not disturb concurrent findings of fact where those findings are supported by credible evidence and are not perverse.`
+    ],
+    authoritiesCited: ['As cited in the full source judgment'],
+    statutesConsidered: ['Penal Code', 'Evidence Act'],
+    practiceNotes: [
+      'Where alibi is raised, check the time it was raised, the particulars supplied, and how the prosecution answered it.',
+      'For homicide appeals, compare eyewitness evidence, medical evidence and the trial court’s credibility findings.'
+    ],
+    keyPrinciples: [
+      'Proof beyond reasonable doubt remains the standard in capital offences.',
+      'A bare or displaced alibi will not defeat credible prosecution evidence.',
+      'Concurrent findings are rarely disturbed without perversity or miscarriage of justice.'
+    ],
+    relatedCaseIds: ['case-024'],
+    isLandmark: true,
+  },
+  {
+    id: 'case-023',
+    title: 'Adeoye Adekunle v. The State',
+    citation: '(2018) LDLR (CA) pt 1200',
+    hasFullJudgment: true,
+    suitNumber: 'CA/AK/127CA/2016',
+    court: 'Court of Appeal',
+    judicialDivision: 'Akure Judicial Division',
+    dateDelivered: 'Thursday, 31 May 2018',
+    year: 2018,
+    presidingJudges: [
+      'Uzo Ifeyinwa Ndukwe-Anyanwu, JCA',
+      'Mohammed Ambi-Usi Danjuma, JCA',
+      'Obande Festus Ogbuinya, JCA'
+    ],
+    appearances: {
+      appellant: 'As recorded in the source judgment',
+      respondent: 'As recorded in the source judgment'
+    },
+    areaOfLaw: 'Criminal Law & Procedure',
+    subject: 'Armed Robbery, Confessional Statement and Use of Previous Evidence',
+    catchwords: ['Armed robbery', 'Confessional statement', 'Previous testimony', 'Consent of court', 'Criminal appeal'],
+    proceduralHistory:
+      'Appeal from the decision of the High Court of Osun State sitting at Ile-Ife in a criminal matter.',
+    factsSummary:
+      'The appellant challenged his conviction, attacking the use of evidence from previous proceedings, the consent granted by the trial judge, and the reliance placed on confessional evidence.',
+    issuesForDetermination: [
+      'Whether the lower court properly admitted and relied on evidence from a previous proceeding.',
+      'Whether the trial court was right to rely on the appellant’s confessional statement.',
+      'Whether the conviction was supported by the totality of evidence.'
+    ],
+    decisionSummary:
+      'The Court of Appeal considered the appellant’s complaints against the conviction and resolved the appeal on the issues set out in the judgment.',
+    ordersMade: ['The orders made are as stated in the full Court of Appeal judgment.'],
+    ratioDecidendi: [
+      `For a party, who tenders evidence given by a witness in previous proceeding, to take advantage of the procedure, the statutory conditions regulating the use of such evidence must be satisfied.`,
+      `A confession occupies a central place in criminal jurisprudence where it is voluntary, direct and positive, and the court is satisfied that it is true.`,
+      `The appellate court tests a conviction against the evidence accepted by the trial court and the applicable criminal procedure rules.`
+    ],
+    authoritiesCited: ['As cited in the full source judgment'],
+    statutesConsidered: ['Evidence Act', 'Criminal Procedure Law'],
+    practiceNotes: [
+      'When relying on previous testimony, confirm the statutory basis, the availability of the witness, and whether the accused had opportunity to cross-examine.',
+      'Challenge confessional evidence through voluntariness, consistency and corroborative circumstances.'
+    ],
+    keyPrinciples: [
+      'Previous testimony can only be used where the statutory conditions are met.',
+      'A valid confessional statement can ground a conviction.',
+      'Criminal appeals turn on whether the conviction is supported by admissible and credible evidence.'
+    ],
+    relatedCaseIds: ['case-021'],
+    isLandmark: true,
+  },
+  {
+    id: 'case-024',
+    title: 'Tunde Adava & Anor v. The State',
+    citation: '(2002) LDLR (CA) pt 357',
+    hasFullJudgment: true,
+    suitNumber: 'CA/A/96C/99',
+    court: 'Court of Appeal',
+    judicialDivision: 'Abuja Judicial Division',
+    dateDelivered: 'Wednesday, 5 June 2002',
+    year: 2002,
+    presidingJudges: [
+      'Muhammad Saifullahi Muntaka-Coomassie, JCA',
+      'Zainab Adamu Bulkachuwa, JCA',
+      'Albert Gbadebo Oduyemi, JCA'
+    ],
+    appearances: {
+      appellant: 'As recorded in the source judgment',
+      respondent: 'As recorded in the source judgment'
+    },
+    areaOfLaw: 'Criminal Law & Procedure',
+    subject: 'Culpable Homicide, Alibi, Eyewitness Evidence and Cause of Death',
+    catchwords: ['Culpable homicide', 'Alibi', 'Eyewitness evidence', 'Cause of death', 'Criminal appeal'],
+    proceduralHistory:
+      'Appeal from the Obangede Division of the High Court of Kogi State following convictions arising from a fatal shooting after a political rally.',
+    factsSummary:
+      'The appellants were tried after public disturbances in which the deceased was shot dead. They challenged the proof of cause of death, the eyewitness testimony and the treatment of their alibi.',
+    issuesForDetermination: [
+      'Whether the prosecution proved the cause of death and the identity of the person who caused it.',
+      'Whether the trial court properly evaluated the eyewitness evidence.',
+      'Whether the alibi raised by the appellants created reasonable doubt.'
+    ],
+    decisionSummary:
+      'The Court of Appeal considered the criminal appeal and the evidence connecting the appellants to the death of the deceased.',
+    ordersMade: ['The orders made are as stated in the full Court of Appeal judgment.'],
+    ratioDecidendi: [
+      `It is not necessary for the prosecution, in order to discharge the onus of proof beyond reasonable doubt, to call a host of witnesses where the witnesses called establish the case.`,
+      `An alibi must be tested against the credible evidence placing the accused at the scene of the offence.`,
+      `The court is entitled to rely on consistent eyewitness evidence where it accepts the witnesses as truthful.`
+    ],
+    authoritiesCited: ['As cited in the full source judgment'],
+    statutesConsidered: ['Penal Code', 'Evidence Act'],
+    practiceNotes: [
+      'In homicide appeals, assess whether medical evidence, eyewitness accounts and surrounding facts prove cause of death.',
+      'An alibi should be raised timeously and with particulars sufficient for investigation.'
+    ],
+    keyPrinciples: [
+      'The prosecution need only call enough credible witnesses to prove the charge.',
+      'Credible eyewitness evidence can displace an alibi.',
+      'Cause of death may be proved by direct and circumstantial evidence.'
+    ],
+    relatedCaseIds: ['case-022'],
+    isLandmark: true,
   }
 ];
 

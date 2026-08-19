@@ -11,6 +11,8 @@
   --lawpex-yellow-2: #f0c85a;
   --lawpex-muted: #70685d;
   font-family:
+    Geist,
+    Inter,
     Outfit,
     Satoshi,
     "Avenir Next",
@@ -30,16 +32,162 @@
 
 html {
   scroll-behavior: smooth;
+  font-size: 16px;
 }
 
 body {
   margin: 0;
   min-width: 320px;
   min-height: 100dvh;
+  font-size: 1rem;
+  line-height: 1.6;
   background:
     radial-gradient(circle at 8% 2%, rgba(250, 204, 21, 0.34), transparent 28rem),
     radial-gradient(circle at 92% 8%, rgba(125, 211, 252, 0.2), transparent 32rem),
     var(--lawpex-paper);
+}
+
+.font-black {
+  font-weight: 700 !important;
+}
+
+.font-extrabold {
+  font-weight: 800 !important;
+}
+
+@media (min-width: 1024px) {
+  .max-w-7xl {
+    max-width: 80rem !important;
+  }
+
+  .max-w-6xl,
+  .max-w-5xl {
+    max-width: 76rem !important;
+  }
+
+  .max-w-4xl {
+    max-width: 64rem !important;
+  }
+
+  .max-w-3xl {
+    max-width: 48rem !important;
+  }
+
+  .lg\:grid-cols-3 {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  }
+
+  .lg\:grid-cols-4 {
+    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+  }
+}
+
+@media (min-width: 1536px) {
+  .max-w-7xl {
+    max-width: 80rem !important;
+  }
+
+  .max-w-6xl,
+  .max-w-5xl {
+    max-width: 76rem !important;
+  }
+}
+
+.text-\[10px\] {
+  font-size: 0.75rem !important;
+  line-height: 1rem !important;
+}
+
+.text-\[11px\] {
+  font-size: 0.8125rem !important;
+  line-height: 1.125rem !important;
+}
+
+.text-xs {
+  font-size: 0.875rem !important;
+  line-height: 1.25rem !important;
+}
+
+.text-sm {
+  font-size: 0.9375rem !important;
+  line-height: 1.5rem !important;
+}
+
+.text-base {
+  font-size: 1rem !important;
+  line-height: 1.5rem !important;
+}
+
+.text-lg {
+  font-size: 1.0625rem !important;
+  line-height: 1.625rem !important;
+}
+
+.text-xl {
+  font-size: 1.25rem !important;
+  line-height: 1.75rem !important;
+}
+
+.text-2xl {
+  font-size: 1.5rem !important;
+  line-height: 1.875rem !important;
+}
+
+.text-3xl {
+  font-size: 1.875rem !important;
+  line-height: 2.25rem !important;
+}
+
+.text-4xl {
+  font-size: 1.875rem !important;
+  line-height: 2.25rem !important;
+}
+
+.text-5xl {
+  font-size: 2.25rem !important;
+  line-height: 2.6rem !important;
+}
+
+.text-6xl {
+  font-size: 2.5rem !important;
+  line-height: 2.875rem !important;
+}
+
+@media (min-width: 1024px) {
+  .text-lg {
+    font-size: 1.125rem !important;
+    line-height: 1.75rem !important;
+  }
+
+  .text-xl {
+    font-size: 1.375rem !important;
+    line-height: 1.875rem !important;
+  }
+
+  .text-2xl {
+    font-size: 1.75rem !important;
+    line-height: 2.125rem !important;
+  }
+
+  .text-3xl {
+    font-size: 2rem !important;
+    line-height: 2.4rem !important;
+  }
+
+  .text-4xl {
+    font-size: 3rem !important;
+    line-height: 3.45rem !important;
+  }
+
+  .text-5xl {
+    font-size: 3.5rem !important;
+    line-height: 3.9rem !important;
+  }
+
+  .text-6xl {
+    font-size: 4rem !important;
+    line-height: 4.4rem !important;
+  }
 }
 
 button,

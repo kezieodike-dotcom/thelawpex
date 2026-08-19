@@ -25,13 +25,21 @@ import { LogoMark } from './LogoMark';
 import { SubscriptionTier, UserRole } from '../types';
 import { AUTH_CAPABILITIES, SUBSCRIPTION_USAGE, USER_ROLE_OPTIONS } from '../data/platform';
 
+interface AuthPanelProps {
+  initialMode?: AuthMode;
+  onClose: () => void;
+  onSuccessLogin: (barNumber: string, role: UserRole) => void;
+  variant?: 'modal' | 'page';
+}
+
 interface AuthModalProps {
   isOpen: boolean;
+  initialMode?: AuthMode;
   onClose: () => void;
   onSuccessLogin: (barNumber: string, role: UserRole) => void;
 }
 
-type AuthMode = 'login' | 'register' | 'forgot';
+export type AuthMode = 'login' | 'register' | 'forgot';
 
 const WORKSPACE_ENTITLEMENTS = [
   { label: 'Profile', detail: 'Role, jurisdiction and verification status', icon: BadgeCheck },
@@ -79,8 +87,13 @@ const MODE_COPY: Record<AuthMode, { kicker: string; title: string; body: string;
   },
 };
 
-export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onSuccessLogin }) => {
-  const [mode, setMode] = useState<AuthMode>('login');
+const AuthPanel: React.FC<AuthPanelProps> = ({
+  initialMode = 'login',
+  onClose,
+  onSuccessLogin,
+  variant = 'modal',
+}) => {
+  const [mode, setMode] = useState<AuthMode>(initialMode);
   const [selectedRole, setSelectedRole] = useState<UserRole>('lawyer');
   const [selectedPlan, setSelectedPlan] = useState<SubscriptionTier>('professional');
   const [barNumber, setBarNumber] = useState('SCN/084251');
@@ -100,6 +113,11 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onSuccess
   const selectedUsage = SUBSCRIPTION_USAGE[selectedPlan];
   const selectedRoleIcon = ROLE_ICON[selectedRole] || User;
 
+  React.useEffect(() => {
+    setMode(initialMode);
+    setSuccess('');
+  }, [initialMode]);
+
   const verificationRoute = useMemo(() => {
     if (mode === 'forgot') return 'Reset link and device confirmation';
     if (selectedRole === 'lawyer') return 'SCN enrolment number and email verification';
@@ -110,8 +128,6 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onSuccess
     if (selectedRole === 'student') return 'Email verification and learning profile setup';
     return 'Corporate identity and compliance role verification';
   }, [mode, selectedRole]);
-
-  if (!isOpen) return null;
 
   const handleSubmit = (event: React.FormEvent) => {
     event.preventDefault();
@@ -138,8 +154,11 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onSuccess
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#181411]/62 p-3 backdrop-blur-sm sm:p-4">
-      <div className="grid max-h-[94vh] w-full max-w-6xl grid-cols-1 overflow-hidden rounded-[2rem] border border-amber-200 bg-white text-[#181411] shadow-[0_34px_100px_-62px_rgba(24,20,17,0.78)] lg:grid-cols-[0.95fr_1.05fr]">
+      <div className={`grid w-full grid-cols-1 overflow-hidden border border-amber-200 bg-white text-[#181411] shadow-[0_34px_100px_-62px_rgba(24,20,17,0.78)] lg:grid-cols-[0.95fr_1.05fr] ${
+        variant === 'page'
+          ? 'min-h-[calc(100dvh-8rem)] rounded-[1.5rem] sm:rounded-[2rem]'
+          : 'max-h-[94vh] max-w-6xl rounded-[2rem]'
+      }`}>
         <aside className="relative hidden overflow-hidden bg-[#fff9d7] p-7 lg:block">
           <div className="absolute inset-0 bg-[radial-gradient(circle_at_18%_12%,rgba(250,204,21,0.54),transparent_20rem),radial-gradient(circle_at_90%_20%,rgba(125,211,252,0.22),transparent_18rem)]" />
           <div className="relative">
@@ -202,13 +221,13 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onSuccess
             <button
               onClick={onClose}
               className="lawpex-focus-ring rounded-xl bg-amber-50 p-2 text-neutral-600 hover:bg-yellow-100 hover:text-neutral-950"
-              aria-label="Close authentication modal"
+              aria-label={variant === 'page' ? 'Return to home page' : 'Close authentication modal'}
             >
               <X className="h-5 w-5" />
             </button>
           </div>
 
-          <div className="min-h-0 overflow-y-auto p-5">
+          <div className={`${variant === 'page' ? 'p-4 sm:p-6 lg:p-7' : 'min-h-0 overflow-y-auto p-5'}`}>
             <div className="mb-5 grid grid-cols-3 gap-2 rounded-2xl border border-amber-200 bg-white p-1">
               {([
                 ['login', 'Sign in'],
@@ -476,9 +495,26 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onSuccess
           </div>
         </section>
       </div>
+  );
+};
+
+export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, initialMode = 'login', onClose, onSuccessLogin }) => {
+  if (!isOpen) return null;
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#181411]/62 p-3 backdrop-blur-sm sm:p-4">
+      <AuthPanel initialMode={initialMode} onClose={onClose} onSuccessLogin={onSuccessLogin} />
     </div>
   );
 };
+
+export const AuthPage: React.FC<Omit<AuthPanelProps, 'variant'>> = (props) => (
+  <div className="bg-[#fffdf6] px-3 py-6 text-neutral-950 sm:px-6 lg:px-8">
+    <div className="mx-auto max-w-6xl">
+      <AuthPanel {...props} variant="page" />
+    </div>
+  </div>
+);
 
 const StepHeader: React.FC<{ number: string; title: string }> = ({ number, title }) => (
   <div className="mb-2 flex items-center gap-2">

@@ -14,7 +14,7 @@ import { Footer } from './components/Footer';
 import { AssistantLauncher } from './components/AssistantLauncher';
 import { HomeView } from './components/HomeView';
 import { NotFoundView } from './components/NotFoundView';
-import { AuthModal } from './components/AuthModal';
+import { AuthMode, AuthPage } from './components/AuthModal';
 import { UniversalSearchModal } from './components/UniversalSearchModal';
 import { UniversalViewerModal } from './components/UniversalViewerModal';
 import { DraftCustomizerModal } from './components/DraftCustomizerModal';
@@ -75,7 +75,6 @@ export function AppShell() {
   const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
 
   // Modals
-  const [isAuthOpen, setIsAuthOpen] = useState<boolean>(false);
   const [isSearchOpen, setIsSearchOpen] = useState<boolean>(false);
   const [searchInitialQuery, setSearchInitialQuery] = useState<string>('');
   const [viewingItem, setViewingItem] = useState<any | null>(null);
@@ -102,13 +101,14 @@ export function AppShell() {
     setIsSearchOpen(true);
   }, []);
   const openViewer = useCallback((item: any) => setViewingItem(item), []);
-  const openAuthModal = useCallback(() => setIsAuthOpen(true), []);
+  const openAuthModal = useCallback((mode: AuthMode = 'login') => {
+    navigate(mode === 'register' ? '/register' : mode === 'forgot' ? '/recover-access' : '/sign-in');
+  }, [navigate]);
 
   const handleLoginSuccess = (scBarNum: string, role: UserRole) => {
     setBarNumber(scBarNum);
     setUserRole(role);
     setIsLoggedIn(true);
-    setIsAuthOpen(false);
     navigate(pathForTab('dashboard'));
   };
 
@@ -150,6 +150,37 @@ export function AppShell() {
                 setActiveTab={setActiveTab}
                 onOpenSearch={openSearch}
                 onOpenViewer={openViewer}
+              />
+            }
+          />
+
+          <Route
+            path="/sign-in"
+            element={
+              <AuthPage
+                initialMode="login"
+                onClose={() => navigate(HOME_ROUTE.path)}
+                onSuccessLogin={handleLoginSuccess}
+              />
+            }
+          />
+          <Route
+            path="/register"
+            element={
+              <AuthPage
+                initialMode="register"
+                onClose={() => navigate(HOME_ROUTE.path)}
+                onSuccessLogin={handleLoginSuccess}
+              />
+            }
+          />
+          <Route
+            path="/recover-access"
+            element={
+              <AuthPage
+                initialMode="forgot"
+                onClose={() => navigate(HOME_ROUTE.path)}
+                onSuccessLogin={handleLoginSuccess}
               />
             }
           />
@@ -244,12 +275,6 @@ export function AppShell() {
       <AssistantLauncher />
 
       {/* Modals & Overlays */}
-      <AuthModal
-        isOpen={isAuthOpen}
-        onClose={() => setIsAuthOpen(false)}
-        onSuccessLogin={handleLoginSuccess}
-      />
-
       <UniversalSearchModal
         isOpen={isSearchOpen}
         initialQuery={searchInitialQuery}

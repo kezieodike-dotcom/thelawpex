@@ -122,6 +122,8 @@ export interface CaseLaw {
   statutesConsidered?: string[];
   practiceNotes?: string[];
   hasFullJudgment?: boolean;
+  preserveSourceFormatting?: boolean;
+  verbatimWholeCase?: boolean;
   fullJudgmentText?: string;
   judgmentPages?: {
     page: string;

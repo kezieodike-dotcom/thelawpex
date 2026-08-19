@@ -177,21 +177,25 @@ export const HeroSearch: React.FC<HeroSearchProps> = ({ onSearch }) => {
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_22%,rgba(250,204,21,0.72),transparent_26rem),radial-gradient(circle_at_82%_18%,rgba(245,158,11,0.34),transparent_24rem)]" />
       </div>
 
-      <div className="mx-auto flex min-h-[calc(100dvh-4rem)] max-w-7xl flex-col items-center justify-center px-3 pb-10 pt-28 text-center sm:px-6 sm:py-14 lg:px-8">
-        <div className="-translate-y-14 sm:translate-y-0">
-          <div className="inline-flex items-center gap-2 rounded-full border border-amber-500 bg-yellow-300/88 px-3 py-1.5 text-[11px] font-extrabold uppercase tracking-[0.16em] text-[#5f4104] shadow-sm backdrop-blur-xl">
+      <div className="mx-auto flex max-w-7xl flex-col items-center px-5 pb-20 pt-24 text-center sm:px-8 sm:pb-28 sm:pt-32 lg:px-12 lg:pb-32 lg:pt-36">
+        <div>
+          <div className="inline-flex items-center gap-2 rounded-lg border border-amber-500 bg-yellow-300/88 px-3 py-1.5 text-xs font-semibold uppercase tracking-[0.12em] text-[#5f4104] shadow-sm backdrop-blur-xl sm:text-sm">
             <Sparkles className="h-3.5 w-3.5" />
-            Nigerian litigation intelligence
+            LAWPEX Research Workspace
           </div>
 
-          <p className="mt-4 max-w-[21rem] font-serif text-lg font-black italic leading-7 text-[#181411] sm:mt-6 sm:max-w-2xl sm:text-2xl sm:leading-9">
+          <h1 className="mx-auto mt-4 max-w-[44rem] text-[2.25rem] font-bold leading-[1.15] tracking-[-0.025em] text-[#181411] sm:mt-5 sm:text-[4rem] sm:leading-[1.1]">
+            Nigerian litigation <span className="text-amber-700">intelligence</span>
+          </h1>
+
+          <p className="mx-auto mt-5 max-w-[38rem] text-[17px] font-normal leading-[26px] text-neutral-800 sm:mt-6 sm:text-xl sm:leading-[30px]">
             Research Nigerian law, prepare stronger arguments, and draft with confidence.
           </p>
         </div>
 
         <form
           onSubmit={submitSearch}
-          className="mt-7 w-full max-w-4xl rounded-[1.45rem] border border-amber-400 bg-yellow-50/96 p-1.5 text-left shadow-[inset_0_1px_0_rgba(255,255,255,0.9),0_34px_90px_-54px_rgba(180,126,18,0.92)] backdrop-blur-2xl sm:mt-7 sm:rounded-[1.7rem] sm:p-2"
+          className="mt-8 w-full max-w-4xl rounded-xl border border-amber-400 bg-yellow-50/96 p-1.5 text-left shadow-[inset_0_1px_0_rgba(255,255,255,0.9),0_34px_90px_-54px_rgba(180,126,18,0.92)] backdrop-blur-2xl sm:mt-9 sm:p-2"
         >
           <div className="grid grid-cols-[minmax(0,1fr)_3rem_3rem] items-center gap-1.5 sm:flex sm:gap-2 sm:items-center">
             <label className="relative min-w-0 flex-1">
@@ -201,7 +205,7 @@ export const HeroSearch: React.FC<HeroSearchProps> = ({ onSearch }) => {
                 value={searchQuery}
                 onChange={(event) => setSearchQuery(event.target.value)}
                 placeholder="Ask a legal question, search a citation, statute, rule or draft..."
-                className="lawpex-focus-ring min-h-12 w-full rounded-[1.05rem] border border-transparent bg-yellow-100/80 py-3 pl-10 pr-2 text-[13px] font-medium text-neutral-900 placeholder:text-neutral-500 focus:border-amber-400 focus:bg-white focus:outline-none sm:min-h-14 sm:rounded-2xl sm:py-4 sm:pl-13 sm:pr-4 sm:text-base"
+                className="lawpex-focus-ring min-h-[50px] w-full rounded-lg border border-transparent bg-yellow-100/80 py-3 pl-10 pr-2 text-base font-normal text-neutral-900 placeholder:text-neutral-500 focus:border-amber-400 focus:bg-white focus:outline-none sm:min-h-[52px] sm:rounded-xl sm:py-3.5 sm:pl-13 sm:pr-4"
               />
             </label>
 
@@ -210,7 +214,7 @@ export const HeroSearch: React.FC<HeroSearchProps> = ({ onSearch }) => {
               onClick={toggleVoiceInput}
               aria-label={isListening ? 'Stop voice search' : 'Start voice search'}
               aria-pressed={isListening}
-              className={`lawpex-focus-ring inline-flex min-h-12 min-w-12 items-center justify-center rounded-[1.05rem] border text-sm font-black transition active:scale-[0.98] sm:min-h-14 sm:min-w-14 sm:rounded-2xl ${
+              className={`lawpex-focus-ring inline-flex min-h-[50px] min-w-[50px] items-center justify-center rounded-lg border text-base font-semibold transition active:scale-[0.98] sm:min-h-[52px] sm:min-w-[52px] sm:rounded-xl ${
                 isListening
                   ? 'border-yellow-300 bg-[#facc15] text-[#181411]'
                   : 'border-amber-200 bg-white text-amber-800 hover:border-amber-400 hover:bg-yellow-50'
@@ -222,7 +226,7 @@ export const HeroSearch: React.FC<HeroSearchProps> = ({ onSearch }) => {
             <button
               type="submit"
               aria-label="Search LAWPEX"
-              className="lawpex-focus-ring inline-flex min-h-12 min-w-12 items-center justify-center rounded-[1.05rem] bg-[#181411] text-yellow-200 transition hover:bg-[#2a2118] active:scale-[0.98] sm:min-h-14 sm:min-w-14 sm:rounded-2xl"
+              className="lawpex-focus-ring inline-flex min-h-[50px] min-w-[50px] items-center justify-center rounded-lg bg-[#181411] text-yellow-200 transition hover:bg-[#2a2118] active:scale-[0.98] sm:min-h-[52px] sm:min-w-[52px] sm:rounded-xl"
             >
               <Search className="h-[18px] w-[18px] sm:h-5 sm:w-5" />
             </button>

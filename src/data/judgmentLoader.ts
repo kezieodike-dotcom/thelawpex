@@ -2,6 +2,8 @@ import { CaseLaw } from '../types';
 
 export interface CaseJudgmentDocument {
   id: string;
+  preserveSourceFormatting?: boolean;
+  verbatimWholeCase?: boolean;
   fullJudgmentText: string;
   judgmentPages?: NonNullable<CaseLaw['judgmentPages']>;
 }
@@ -25,6 +27,8 @@ export const mergeCaseJudgmentDocument = (
   document
     ? {
         ...judgment,
+        preserveSourceFormatting: document.preserveSourceFormatting,
+        verbatimWholeCase: document.verbatimWholeCase,
         fullJudgmentText: document.fullJudgmentText,
         judgmentPages: document.judgmentPages,
       }

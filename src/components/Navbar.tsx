@@ -3,10 +3,11 @@ import { Link } from 'react-router-dom';
 import { LogOut, Menu, User, X } from 'lucide-react';
 import { LogoMark } from './LogoMark';
 import { pathForTab } from '../routes';
+import { AuthMode } from './AuthModal';
 
 interface NavbarProps {
   activeTab: string;
-  openAuthModal: () => void;
+  openAuthModal: (mode?: AuthMode) => void;
   isLoggedIn: boolean;
   onLogout: () => void;
 }
@@ -80,13 +81,22 @@ export const Navbar: React.FC<NavbarProps> = ({
               <span className="hidden sm:inline">Sign Out</span>
             </button>
           ) : (
-            <button
-              onClick={openAuthModal}
+            <Link
+              to="/sign-in"
               className="lawpex-focus-ring inline-flex items-center gap-2 rounded-full bg-[#facc15] px-3 py-2 text-xs font-black text-[#181411] shadow-[inset_0_1px_0_rgba(255,255,255,0.45)] hover:-translate-y-0.5 hover:bg-[#fde047]"
             >
               <User className="h-4 w-4" />
               <span className="hidden sm:inline">Sign In</span>
-            </button>
+            </Link>
+          )}
+
+          {!isLoggedIn && (
+            <Link
+              to="/register"
+              className="lawpex-focus-ring hidden rounded-full border border-amber-300 bg-white/86 px-3 py-2 text-xs font-black text-neutral-800 hover:-translate-y-0.5 hover:border-amber-500 hover:bg-yellow-50 sm:inline-flex"
+            >
+              Register
+            </Link>
           )}
 
           <button
@@ -101,6 +111,28 @@ export const Navbar: React.FC<NavbarProps> = ({
 
       {mobileMenuOpen && (
         <div className="border-t border-amber-200 bg-white/96 px-4 py-4 shadow-2xl backdrop-blur-2xl lg:hidden">
+          {!isLoggedIn && (
+            <div className="mb-3 grid grid-cols-2 gap-2">
+              <button
+                onClick={() => {
+                  setMobileMenuOpen(false);
+                  openAuthModal('login');
+                }}
+                className="lawpex-focus-ring rounded-xl bg-[#facc15] px-3 py-3 text-xs font-black text-[#181411]"
+              >
+                Sign In
+              </button>
+              <button
+                onClick={() => {
+                  setMobileMenuOpen(false);
+                  openAuthModal('register');
+                }}
+                className="lawpex-focus-ring rounded-xl border border-amber-300 bg-white px-3 py-3 text-xs font-black text-neutral-800"
+              >
+                Register
+              </button>
+            </div>
+          )}
           <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
             {MOBILE_NAV.map((item) => (
               <Link
