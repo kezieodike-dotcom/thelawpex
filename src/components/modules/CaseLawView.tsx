@@ -280,9 +280,9 @@ const CaseDetail: React.FC<{ judgment: CaseLaw }> = ({ judgment }) => {
     .filter((item): item is CaseLaw => Boolean(item));
 
   return (
-    <div className={`lawpex-case-section ${CASE_PAGE_BG} min-h-screen py-8 text-neutral-900 sm:py-12`}>
-      <div className="mx-auto max-w-[96rem] px-4 sm:px-6 2xl:px-8">
-        <div className="relative overflow-hidden rounded-[1.35rem] border border-amber-200 bg-white p-4 shadow-[0_18px_55px_-44px_rgba(24,20,17,0.72)] sm:p-5">
+    <div className={`lawpex-case-section ${CASE_PAGE_BG} min-h-screen py-4 text-neutral-900 sm:py-12`}>
+      <div className="mx-auto max-w-[96rem] px-3 sm:px-6 2xl:px-8">
+        <div className="relative overflow-hidden rounded-[1.1rem] border border-amber-200 bg-white p-3.5 shadow-[0_18px_55px_-44px_rgba(24,20,17,0.72)] sm:rounded-[1.35rem] sm:p-5">
           <div className="absolute inset-y-0 right-0 hidden w-32 bg-[linear-gradient(135deg,rgba(250,204,21,0.16),transparent_62%)] sm:block" />
           <Link
             to={court ? `/case-law/${court.slug}` : '/case-law'}
@@ -292,14 +292,14 @@ const CaseDetail: React.FC<{ judgment: CaseLaw }> = ({ judgment }) => {
             {judgment.court}
           </Link>
 
-          <h1 className="relative mt-3 max-w-4xl text-xl font-black leading-tight tracking-tight text-neutral-950 sm:text-2xl">
+          <h1 className="relative mt-3 max-w-4xl text-lg font-black leading-tight tracking-tight text-neutral-950 sm:text-2xl">
             {judgment.title}
           </h1>
-          <p className="relative mt-1.5 text-xs font-black text-amber-700">
+          <p className="relative mt-1.5 break-words text-[11px] font-black leading-5 text-amber-700 sm:text-xs">
             {judgment.citation} - {judgment.suitNumber} - {judgment.year}
           </p>
 
-          <div className="relative mt-4 grid gap-2 sm:grid-cols-2 lg:grid-cols-[repeat(4,minmax(0,1fr))]">
+          <div className="relative mt-4 grid grid-cols-2 gap-2 lg:grid-cols-[repeat(4,minmax(0,1fr))]">
             <MetaCard icon={Landmark} label="Court" value={judgment.court} />
             <MetaCard icon={MapPin} label="Division" value={judgment.judicialDivision ?? 'Not supplied'} />
             <MetaCard icon={CalendarDays} label="Delivered" value={judgment.dateDelivered ?? String(judgment.year)} />
@@ -310,17 +310,17 @@ const CaseDetail: React.FC<{ judgment: CaseLaw }> = ({ judgment }) => {
             />
           </div>
 
-          <div className="relative mt-4 flex flex-wrap gap-2">
-            <span className="rounded-full border border-amber-200 bg-amber-50 px-2.5 py-1 text-[11px] font-bold text-neutral-700">
+          <div className="relative mt-3 flex flex-wrap gap-1.5 sm:mt-4 sm:gap-2">
+            <span className="rounded-full border border-amber-200 bg-amber-50 px-2.5 py-1 text-[10px] font-bold leading-4 text-neutral-700 sm:text-[11px]">
               {judgment.areaOfLaw}
             </span>
-            <span className="rounded-full border border-amber-200 bg-white px-2.5 py-1 text-[11px] font-bold text-neutral-700">
+            <span className="rounded-full border border-amber-200 bg-white px-2.5 py-1 text-[10px] font-bold leading-4 text-neutral-700 sm:text-[11px]">
               {judgment.subject}
             </span>
             {(judgment.catchwords ?? []).map((catchword) => (
               <span
                 key={catchword}
-                className="rounded-full border border-neutral-800 bg-neutral-950 px-2.5 py-1 text-[11px] font-bold text-yellow-200"
+                className="rounded-full border border-neutral-800 bg-neutral-950 px-2.5 py-1 text-[10px] font-bold leading-4 text-yellow-200 sm:text-[11px]"
               >
                 {catchword}
               </span>
@@ -328,13 +328,13 @@ const CaseDetail: React.FC<{ judgment: CaseLaw }> = ({ judgment }) => {
           </div>
         </div>
 
-        <div className="my-6 grid gap-4 lg:grid-cols-[14rem_minmax(0,1fr)] xl:grid-cols-[15rem_minmax(0,1fr)] lg:items-start">
-          <aside className="lg:sticky lg:top-[5rem]">
-            <div className="rounded-2xl border border-amber-200 bg-white/94 p-2.5 shadow-[0_18px_50px_-42px_rgba(24,20,17,0.72)] backdrop-blur-xl">
-              <p className="px-2 pb-2 text-[10px] font-black uppercase tracking-[0.18em] text-amber-700">
+        <div className="my-4 grid gap-4 sm:my-6 lg:grid-cols-[14rem_minmax(0,1fr)] xl:grid-cols-[15rem_minmax(0,1fr)] lg:items-start">
+          <aside className="sticky top-0 z-20 -mx-3 bg-[#fffdf6]/95 px-3 py-2 backdrop-blur-xl sm:-mx-6 sm:px-6 lg:top-[5rem] lg:z-auto lg:mx-0 lg:bg-transparent lg:px-0 lg:py-0">
+            <div className="rounded-2xl border border-amber-200 bg-white/94 p-2 shadow-[0_18px_50px_-42px_rgba(24,20,17,0.72)] backdrop-blur-xl sm:p-2.5">
+              <p className="px-2 pb-2 text-[9px] font-black uppercase tracking-[0.18em] text-amber-700 sm:text-[10px]">
                 Case sections
               </p>
-              <div className="flex gap-2 overflow-x-auto lg:flex-col lg:overflow-visible">
+              <div className="lawpex-scrollbar-hide flex snap-x gap-2 overflow-x-auto pb-1 lg:flex-col lg:overflow-visible lg:pb-0">
                 <TabButton
                   active={tab === 'ratio'}
                   icon={Award}
@@ -889,7 +889,7 @@ const WholeCasePanel: React.FC<{
           <div className="overflow-hidden rounded-[1.5rem] border border-amber-200 bg-white shadow-inner">
             <CaseCoatOfArmsHeader />
             <CaseOpeningPage judgment={judgment} totalPages={totalPages} />
-            <article className="w-full border-b border-amber-100 bg-white p-5 last:border-b-0 sm:p-7 lg:px-8 lg:py-8 xl:px-10">
+            <article className="w-full border-b border-amber-100 bg-white p-3.5 last:border-b-0 sm:p-7 lg:px-8 lg:py-8 xl:px-10">
               <div className="mb-5 inline-flex items-center rounded-full bg-amber-50 px-2.5 py-1 font-mono text-[9px] font-bold text-amber-700">
                 page (2) of ({totalPages})
               </div>
@@ -901,22 +901,22 @@ const WholeCasePanel: React.FC<{
             <CaseCoatOfArmsHeader />
             <CaseOpeningPage judgment={judgment} totalPages={totalPages} />
             {bodyPages.map((page, pageIndex) => (
-              <article key={page.page} className="w-full border-b border-amber-100 p-5 last:border-b-0 sm:p-8 lg:px-8 lg:py-8 xl:px-10">
+              <article key={page.page} className="w-full border-b border-amber-100 p-3.5 last:border-b-0 sm:p-8 lg:px-8 lg:py-8 xl:px-10">
                 <div className="mb-5 inline-flex items-center rounded-full bg-amber-50 px-2.5 py-1 font-mono text-[9px] font-bold text-amber-700">
                   page ({pageIndex + 2}) of ({totalPages})
                 </div>
-                <div className="space-y-5 text-sm leading-7 text-neutral-800">
+                <div className="space-y-4 text-[13px] leading-6 text-neutral-800 sm:space-y-5 sm:text-sm sm:leading-7">
                   {page.paragraphs.map((paragraph, index) => {
                     const sourceParagraph = parseSourceParagraph(paragraph);
                     const label = hasSourceLabels ? sourceParagraph.label : paragraphLabel(index);
                     const text = hasSourceLabels ? sourceParagraph.text : paragraph;
 
                     return (
-                      <p key={`${page.page}-${index}`} className="grid grid-cols-[2.75rem_1fr] gap-3 sm:grid-cols-[3.5rem_1fr]">
-                        <span className="font-mono text-sm font-black leading-7 text-amber-700">
+                      <p key={`${page.page}-${index}`} className="grid grid-cols-[1.9rem_minmax(0,1fr)] gap-2 sm:grid-cols-[3.5rem_1fr] sm:gap-3">
+                        <span className="font-mono text-xs font-black leading-6 text-amber-700 sm:text-sm sm:leading-7">
                           {label ?? ''}
                         </span>
-                        <span>{text}</span>
+                        <span className="min-w-0 break-words">{text}</span>
                       </p>
                     );
                   })}
@@ -929,11 +929,11 @@ const WholeCasePanel: React.FC<{
             <CaseCoatOfArmsHeader />
             <CaseOpeningPage judgment={judgment} totalPages={totalPages} />
             {judgment.fullJudgmentText ? (
-              <article className="border-b border-amber-100 p-5 last:border-b-0 sm:p-8 lg:px-10 lg:py-9">
+              <article className="border-b border-amber-100 p-3.5 last:border-b-0 sm:p-8 lg:px-10 lg:py-9">
                 <div className="mb-5 inline-flex items-center rounded-full bg-amber-50 px-2.5 py-1 font-mono text-[9px] font-bold text-amber-700">
                   page (2) of ({totalPages})
                 </div>
-                <pre className="block w-full max-w-none whitespace-pre-wrap font-mono text-sm leading-7 text-neutral-800">
+                <pre className="block w-full max-w-none overflow-x-auto whitespace-pre-wrap break-words font-mono text-[12px] leading-6 text-neutral-800 sm:text-sm sm:leading-7">
                   {judgment.fullJudgmentText}
                 </pre>
               </article>
@@ -976,7 +976,7 @@ const SourceJudgmentText: React.FC<{ text: string }> = ({ text }) => {
     .map((block) => block.replace(/\n+/g, ' ').replace(/\s+/g, ' ').trim());
 
   return (
-    <div className="w-full max-w-none space-y-4 text-sm leading-7 text-neutral-900 sm:text-base">
+    <div className="w-full max-w-none space-y-3.5 text-[13px] leading-6 text-neutral-900 sm:space-y-4 sm:text-base sm:leading-7">
       {blocks.map((block, index) => {
         const isHeading =
           block.length < 96 &&
@@ -986,9 +986,9 @@ const SourceJudgmentText: React.FC<{ text: string }> = ({ text }) => {
 
         if (sourceLabel) {
           return (
-            <p key={`${block.slice(0, 28)}-${index}`} className="grid w-full grid-cols-[2.5rem_minmax(0,1fr)] gap-3">
+            <p key={`${block.slice(0, 28)}-${index}`} className="grid w-full grid-cols-[1.8rem_minmax(0,1fr)] gap-2 sm:grid-cols-[2.5rem_minmax(0,1fr)] sm:gap-3">
               <span className="font-semibold text-amber-700">{sourceLabel[1]}</span>
-              <span>{sourceLabel[2]}</span>
+              <span className="min-w-0 break-words">{sourceLabel[2]}</span>
             </p>
           );
         }
@@ -1011,9 +1011,9 @@ const CaseOpeningPage: React.FC<{ judgment: CaseLaw; totalPages: number }> = ({ 
   const role = judgeRole(judgment.court);
 
   return (
-    <article className="w-full border-b border-amber-100 bg-white px-5 py-9 font-[Georgia,ui-serif,serif] text-neutral-950 sm:px-10 sm:py-12 lg:px-12 xl:px-16">
+    <article className="w-full border-b border-amber-100 bg-white px-4 py-7 font-[Georgia,ui-serif,serif] text-neutral-950 sm:px-10 sm:py-12 lg:px-12 xl:px-16">
       <div className="mx-auto w-full max-w-[76rem]">
-        <header className="text-center text-sm leading-7 sm:text-base">
+        <header className="text-center text-[13px] leading-6 sm:text-base sm:leading-7">
           <p className="font-black">{formatCourtHeading(judgment.court)}</p>
           {judgment.judicialDivision && (
             <p className="mt-1 font-semibold">{formatDivision(judgment.judicialDivision)}</p>
@@ -1023,20 +1023,20 @@ const CaseOpeningPage: React.FC<{ judgment: CaseLaw; totalPages: number }> = ({ 
           <p className="mt-5">Before Their Lordship</p>
         </header>
 
-        <div className="mt-8 space-y-9 sm:mt-10">
+        <div className="mt-7 space-y-6 text-[13px] sm:mt-10 sm:space-y-9 sm:text-base">
           {judgment.presidingJudges.map((judge) => (
-            <div key={judge} className="grid gap-3 sm:grid-cols-[1.05fr_0.95fr] sm:gap-16">
+            <div key={judge} className="grid gap-1.5 rounded-xl border border-amber-100 bg-[#fffdf6] p-3 sm:grid-cols-[1.05fr_0.95fr] sm:gap-16 sm:border-0 sm:bg-transparent sm:p-0">
               <p className="font-black leading-6">{cleanJudgeName(judge)}</p>
               <p className="font-black leading-6">{role}</p>
             </div>
           ))}
         </div>
 
-        <div className="mt-11 space-y-9 text-sm sm:mt-12">
+        <div className="mt-9 space-y-7 text-[13px] sm:mt-12 sm:space-y-9 sm:text-sm">
           <p>BETWEEN</p>
 
           <div className="grid items-end gap-4 sm:grid-cols-[1fr_auto] sm:gap-16">
-            <div className="space-y-1 text-center leading-6 sm:pl-24">
+            <div className="space-y-1 break-words text-center leading-6 sm:pl-24">
               {parties.appellants.map((party) => (
                 <p key={party}>{party}</p>
               ))}
@@ -1047,7 +1047,7 @@ const CaseOpeningPage: React.FC<{ judgment: CaseLaw; totalPages: number }> = ({ 
           <p>And</p>
 
           <div className="grid items-end gap-4 sm:grid-cols-[1fr_auto] sm:gap-16">
-            <div className="space-y-1 text-center leading-6 sm:pl-24">
+            <div className="space-y-1 break-words text-center leading-6 sm:pl-24">
               {parties.respondents.map((party) => (
                 <p key={party}>{party}</p>
               ))}
@@ -1072,14 +1072,14 @@ const TabButton: React.FC<{
 }> = ({ active, icon: Icon, label, onClick }) => (
   <button
     onClick={onClick}
-    className={`flex min-w-max shrink-0 items-center gap-2 rounded-xl px-4 py-3 text-left text-xs font-black transition active:scale-[0.99] lg:w-full ${
+    className={`flex min-h-11 min-w-[10.25rem] shrink-0 snap-start items-center gap-2 rounded-xl px-3.5 py-2.5 text-left text-[11px] font-black leading-4 transition active:scale-[0.99] sm:min-w-max sm:px-4 sm:py-3 sm:text-xs lg:w-full ${
       active
         ? 'bg-[#facc15] text-neutral-950 shadow-[0_12px_30px_-20px_rgba(180,126,18,0.9)]'
         : 'border border-amber-200 bg-white text-neutral-700 hover:border-amber-400 hover:bg-amber-50'
     }`}
   >
-    <Icon className="w-4 h-4" />
-    {label}
+    <Icon className="h-4 w-4 shrink-0" />
+    <span>{label}</span>
   </button>
 );
 
@@ -1089,10 +1089,12 @@ const MetaCard: React.FC<{ icon: React.ElementType; label: string; value: string
   value,
 }) => (
   <div className="min-h-0 rounded-lg border border-amber-100 bg-[#fffdf6] px-2.5 py-2">
-    <div className="flex min-w-0 items-center gap-2 text-yellow-700">
-      <Icon className="h-3 w-3 shrink-0" />
-      <span className="shrink-0 text-[9px] font-semibold uppercase tracking-wider">{label}</span>
-      <span className="min-w-0 truncate text-[11px] font-semibold leading-snug text-neutral-950">{value}</span>
+    <div className="flex min-w-0 flex-col gap-1 text-yellow-700 lg:flex-row lg:items-center lg:gap-2">
+      <span className="flex items-center gap-1.5">
+        <Icon className="h-3 w-3 shrink-0" />
+        <span className="shrink-0 text-[9px] font-semibold uppercase tracking-wider">{label}</span>
+      </span>
+      <span className="min-w-0 break-words text-[11px] font-semibold leading-snug text-neutral-950 lg:truncate">{value}</span>
     </div>
   </div>
 );
@@ -1124,12 +1126,12 @@ const NumberedList: React.FC<{ items: string[]; italic?: boolean }> = ({ items, 
     {items.map((item, index) => (
       <li
         key={`${item}-${index}`}
-        className={`flex gap-3 rounded-2xl border border-amber-100 bg-white p-4 text-sm leading-7 text-neutral-800 sm:p-5 ${
+        className={`flex min-w-0 gap-2.5 rounded-xl border border-amber-100 bg-white p-3.5 text-[13px] leading-6 text-neutral-800 sm:gap-3 sm:rounded-2xl sm:p-5 sm:text-sm sm:leading-7 ${
           italic ? 'italic' : ''
         }`}
       >
         <span className="shrink-0 font-black text-amber-700 not-italic">{index + 1}.</span>
-        <span className="whitespace-pre-wrap">{item}</span>
+        <span className="min-w-0 whitespace-pre-wrap break-words">{item}</span>
       </li>
     ))}
   </ol>
@@ -1140,11 +1142,11 @@ const SimpleList: React.FC<{ items: string[]; italic?: boolean }> = ({ items, it
     {items.map((item, index) => (
       <li
         key={`${item}-${index}`}
-        className={`rounded-2xl border border-amber-100 bg-white p-4 text-sm leading-7 text-neutral-800 sm:p-5 ${
+        className={`min-w-0 rounded-xl border border-amber-100 bg-white p-3.5 text-[13px] leading-6 text-neutral-800 sm:rounded-2xl sm:p-5 sm:text-sm sm:leading-7 ${
           italic ? 'italic' : ''
         }`}
       >
-        <span className="whitespace-pre-wrap">{item}</span>
+        <span className="whitespace-pre-wrap break-words">{item}</span>
       </li>
     ))}
   </ul>
@@ -1155,10 +1157,10 @@ const Section: React.FC<{ title: string; subtitle: string; children: React.React
   subtitle,
   children,
 }) => (
-  <div className="rounded-[1.5rem] border border-amber-200 bg-[#fffdf6] p-5 shadow-[0_18px_55px_-44px_rgba(24,20,17,0.72)] lg:p-6">
-    <div className="mb-5 border-b border-amber-100 pb-4">
+  <div className="rounded-[1.15rem] border border-amber-200 bg-[#fffdf6] p-3.5 shadow-[0_18px_55px_-44px_rgba(24,20,17,0.72)] sm:rounded-[1.5rem] sm:p-5 lg:p-6">
+    <div className="mb-4 border-b border-amber-100 pb-3.5 sm:mb-5 sm:pb-4">
       <h2 className="text-lg font-black tracking-tight text-neutral-950 sm:text-xl">{title}</h2>
-      <p className="mt-1.5 max-w-3xl text-xs leading-6 text-neutral-600 sm:text-sm">{subtitle}</p>
+      <p className="mt-1.5 max-w-3xl text-[12px] leading-5 text-neutral-600 sm:text-sm sm:leading-6">{subtitle}</p>
     </div>
     {children}
   </div>

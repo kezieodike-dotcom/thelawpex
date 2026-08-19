@@ -396,3 +396,12 @@ select {
 ::-webkit-scrollbar-thumb:hover {
   background: rgba(138, 95, 5, 0.52);
 }
+
+.lawpex-scrollbar-hide {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.lawpex-scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
