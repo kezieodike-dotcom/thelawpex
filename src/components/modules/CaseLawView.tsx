@@ -83,7 +83,7 @@ export const CaseLawView: React.FC<CaseLawViewProps> = ({ courtSlug, caseId }) =
 const CourtDirectory: React.FC = () => (
   <div className={`${CASE_PAGE_BG} text-neutral-900 min-h-screen py-8 sm:py-12`}>
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <div className="relative overflow-hidden rounded-[2rem] border border-amber-200 bg-white p-6 shadow-[0_26px_80px_-58px_rgba(24,20,17,0.72)] sm:p-8 lg:p-10">
+      <div className="lawpex-case-motion relative overflow-hidden rounded-[2rem] border border-amber-200 bg-white p-6 shadow-[0_26px_80px_-58px_rgba(24,20,17,0.72)] sm:p-8 lg:p-10">
         <div className="absolute inset-y-0 right-0 hidden w-1/3 bg-[linear-gradient(135deg,rgba(250,204,21,0.22),transparent_58%)] lg:block" />
         <div className="relative max-w-4xl">
           <span className="inline-flex items-center rounded-full bg-[#facc15] px-3 py-1 text-[11px] font-black uppercase tracking-[0.16em] text-neutral-950">
@@ -98,14 +98,15 @@ const CourtDirectory: React.FC = () => (
       </div>
 
       <div className="mt-8 grid grid-cols-1 gap-5 md:grid-cols-2">
-        {CASE_LAW_COURTS.map((court) => {
+        {CASE_LAW_COURTS.map((court, index) => {
           const count = casesForCourt(court.name).length;
 
           return (
             <Link
               key={court.slug}
               to={`/case-law/${court.slug}`}
-              className="group flex min-h-[13rem] flex-col justify-between rounded-[1.5rem] border border-amber-200 bg-white p-5 shadow-[0_18px_55px_-44px_rgba(24,20,17,0.7)] transition hover:-translate-y-1 hover:border-amber-400 hover:shadow-[0_28px_70px_-46px_rgba(180,126,18,0.76)] sm:p-6"
+              className="lawpex-case-motion group flex min-h-[13rem] flex-col justify-between rounded-[1.5rem] border border-amber-200 bg-white p-5 shadow-[0_18px_55px_-44px_rgba(24,20,17,0.7)] transition hover:-translate-y-1 hover:border-amber-400 hover:shadow-[0_28px_70px_-46px_rgba(180,126,18,0.76)] sm:p-6"
+              style={{ '--case-delay': `${120 + index * 85}ms` } as React.CSSProperties}
             >
               <div className="flex gap-4">
                 <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl border border-amber-300 bg-amber-50">
@@ -287,6 +288,12 @@ const CaseDetail: React.FC<{ judgment: CaseLaw }> = ({ judgment }) => {
     { id: 'authorities', icon: Library, label: 'Authorities & notes', kicker: 'Cases, statutes, practice' },
     { id: 'whole', icon: BookOpen, label: 'Read the whole case', kicker: 'Full judgment' },
   ];
+  const selectCaseSection = (nextTab: CaseDetailTab) => {
+    setTab(nextTab);
+    window.requestAnimationFrame(() => {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+  };
 
   return (
     <div className={`lawpex-case-section ${CASE_PAGE_BG} min-h-screen py-4 text-neutral-900 sm:py-12`}>
@@ -319,7 +326,7 @@ const CaseDetail: React.FC<{ judgment: CaseLaw }> = ({ judgment }) => {
                     icon={item.icon}
                     label={`${index + 1}. ${item.label}`}
                     description={item.kicker}
-                    onClick={() => setTab(item.id)}
+                    onClick={() => selectCaseSection(item.id)}
                   />
                 ))}
               </nav>
@@ -367,7 +374,7 @@ const CaseDetail: React.FC<{ judgment: CaseLaw }> = ({ judgment }) => {
             </div>
 
             <section className="min-w-0" aria-live="polite">
-              {tab === 'ratio' && <RatioPanel judgment={fullJudgment} onReadFullJudgment={() => setTab('whole')} />}
+              {tab === 'ratio' && <RatioPanel judgment={fullJudgment} onReadFullJudgment={() => selectCaseSection('whole')} />}
               {tab === 'digest' && <DigestPanel judgment={judgment} />}
               {tab === 'principles' && <PrinciplesPanel judgment={judgment} />}
               {tab === 'authorities' && <AuthoritiesPanel judgment={judgment} />}
@@ -1186,10 +1193,33 @@ const normalizeCitationText = (text: string) =>
     .trim()
     .toLowerCase();
 
-const relevantNeedle = (text: string) => {
-  const normalized = normalizeCitationText(text);
-  if (normalized.length <= 140) return normalized;
-  return normalized.slice(0, 140);
+const normalizeCitationLookupText = (text: string) =>
+  text
+    .replace(PAGE_CITATION_PATTERN, '')
+    .replace(/[â€œâ€“”"']/g, '')
+    .replace(/^\s*(?:\.{3}|…)\s*/, '')
+    .replace(/[^a-z0-9]+/gi, ' ')
+    .replace(/\s+/g, ' ')
+    .trim()
+    .toLowerCase();
+
+const excerptNeedle = (text: string, start: number, length = 140) =>
+  text
+    .slice(start, start + length)
+    .replace(start > 0 ? /^\S*\s+/ : /^/, '')
+    .replace(/\s+\S*$/, '')
+    .trim();
+
+const relevantLookupNeedles = (text: string) => {
+  const normalized = normalizeCitationLookupText(text);
+  if (!normalized) return [];
+  if (normalized.length <= 140) return [normalized];
+
+  return [
+    excerptNeedle(normalized, 0),
+    excerptNeedle(normalized, Math.max(0, normalized.length - 170)),
+    excerptNeedle(normalized, Math.max(0, Math.floor(normalized.length / 2) - 70)),
+  ].filter((needle, index, needles) => needle.length > 32 && needles.indexOf(needle) === index);
 };
 
 const paragraphCitationText = (start?: string, end?: string) => {
@@ -1209,6 +1239,30 @@ const reportCitationText = ({ start, end }: ReportCitationSpan) => {
   return paragraphText
     ? `(Pp. ${start.pageNumber}-${end.pageNumber}, ${paragraphText})`
     : `(Pp. ${start.pageNumber}-${end.pageNumber})`;
+};
+
+const manualRatioCitation = (judgment: CaseLaw, point: RatioPoint) => {
+  if (
+    judgment.id === 'case-023' &&
+    /^PRACTICE AND PROCEDURE\s+-\s+ISSUE OF JURISDICTION\s+-\s+Importance of resolving the issue of jurisdiction once it is raised/i.test(
+      point.heading,
+    )
+  ) {
+    return '(P. 20, paras. D-G)';
+  }
+
+  if (judgment.id === 'case-024') {
+    const tundeAdavaPageNineRatioHeadings = [
+      /^EVIDENCE\s+-\s+CALLING OF EVIDENCE\s+-\s+Whether in a criminal trial, a host of witnesses is required/i,
+      /^EVIDENCE\s+-\s+EVALUATION OF EVIDENCE\s+-\s+Duty of the trial Court as regards perception, evaluation and findings of fact/i,
+    ];
+
+    if (tundeAdavaPageNineRatioHeadings.some((pattern) => pattern.test(point.heading))) {
+      return '(P. 9, para. A)';
+    }
+  }
+
+  return undefined;
 };
 
 const LEADING_JUDGMENT_TEXT = new RegExp(String.raw`^${JUDGE_JUDGMENT_HEADING}\s*`, 'i');
@@ -1387,31 +1441,54 @@ const currentReportCitationTargets = (judgment: CaseLaw): ReportCitationTarget[]
   });
 };
 
+const targetForNormalizedOffset = (
+  ranges: Array<{ start: number; end: number; target: ReportCitationTarget }>,
+  offset: number,
+) => {
+  const containingTarget = ranges.find((range) => offset >= range.start && offset < range.end);
+  if (containingTarget) return containingTarget.target;
+
+  return ranges.find((range) => offset < range.end)?.target ?? ranges[ranges.length - 1]?.target;
+};
+
 const findCurrentReportCitation = (judgment: CaseLaw, sourceText: string): ReportCitationSpan | undefined => {
-  const needle = relevantNeedle(sourceText);
-  if (!needle) return undefined;
+  const needles = relevantLookupNeedles(sourceText);
+  const startNeedle = needles[0];
+  const endNeedle = needles[1] ?? startNeedle;
+  if (!startNeedle) return undefined;
 
   const targets = currentReportCitationTargets(judgment);
+  let flatText = '';
+  const ranges: Array<{ start: number; end: number; target: ReportCitationTarget }> = [];
 
-  for (let startIndex = 0; startIndex < targets.length; startIndex += 1) {
-    let combined = '';
+  targets.forEach((target) => {
+    const normalized = normalizeCitationLookupText(target.text);
+    if (!normalized) return;
 
-    for (let endIndex = startIndex; endIndex < targets.length; endIndex += 1) {
-      combined = `${combined} ${targets[endIndex].text}`.trim();
-      const normalized = normalizeCitationText(combined);
+    if (flatText) flatText += ' ';
+    const start = flatText.length;
+    flatText += normalized;
+    ranges.push({ start, end: flatText.length, target });
+  });
 
-      if (normalized.includes(needle)) {
-        return {
-          start: targets[startIndex],
-          end: targets[endIndex],
-        };
-      }
+  const startOffset = flatText.indexOf(startNeedle);
+  if (startOffset > -1) {
+    const endOffset = flatText.indexOf(endNeedle, startOffset);
+    const start = targetForNormalizedOffset(ranges, startOffset);
+    const end = targetForNormalizedOffset(
+      ranges,
+      endOffset > -1 ? endOffset + endNeedle.length - 1 : startOffset + startNeedle.length - 1,
+    );
 
-      if (normalized.length > needle.length + 1200) break;
-    }
+    if (start && end) return { start, end };
   }
 
-  return undefined;
+  const fallbackNeedle = needles.find((needle) => flatText.includes(needle));
+  if (!fallbackNeedle) return undefined;
+
+  const fallbackOffset = flatText.indexOf(fallbackNeedle);
+  const fallbackTarget = targetForNormalizedOffset(ranges, fallbackOffset);
+  return fallbackTarget ? { start: fallbackTarget, end: fallbackTarget } : undefined;
 };
 
 const withCurrentReportCitations = (judgment: CaseLaw, items: string[]) => {
@@ -1435,10 +1512,15 @@ const withCurrentReportCitations = (judgment: CaseLaw, items: string[]) => {
 };
 
 const withCurrentRatioCitation = (judgment: CaseLaw, point: RatioPoint): RatioPoint => {
-  const target = findCurrentReportCitation(judgment, point.body || point.fullText);
-  if (!target) return point;
+  const manualCitation = manualRatioCitation(judgment, point);
+  const target =
+    manualCitation
+      ? undefined
+      : findCurrentReportCitation(judgment, point.body || point.fullText) ??
+        findCurrentReportCitation(judgment, point.fullText);
+  if (!manualCitation && !target) return point;
 
-  const currentCitation = reportCitationText(target);
+  const currentCitation = manualCitation ?? reportCitationText(target as ReportCitationSpan);
   const replaceCitation = (text?: string) => {
     if (!text) return text;
     PAGE_CITATION_PATTERN.lastIndex = 0;

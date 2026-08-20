@@ -455,6 +455,14 @@ select {
   transform: translate3d(0, -4px, 0);
 }
 
+.lawpex-case-motion {
+  opacity: 0;
+  transform: translate3d(0, 28px, 0) scale(0.985);
+  animation: lawpex-case-rise 760ms cubic-bezier(0.16, 1, 0.3, 1) both;
+  animation-delay: var(--case-delay, 0ms);
+  will-change: transform, opacity;
+}
+
 @keyframes lawpex-hero-rise {
   0% {
     opacity: 0;
@@ -513,6 +521,23 @@ select {
   }
 }
 
+@keyframes lawpex-case-rise {
+  0% {
+    opacity: 0;
+    transform: translate3d(0, 28px, 0) scale(0.985);
+  }
+
+  62% {
+    opacity: 1;
+    transform: translate3d(0, -3px, 0) scale(1.002);
+  }
+
+  100% {
+    opacity: 1;
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+}
+
 @keyframes lawpex-hero-aurora {
   0% {
     opacity: 0.78;
@@ -541,7 +566,8 @@ select {
   .lawpex-hero-aurora,
   .lawpex-hero-reveal,
   .lawpex-reveal,
-  .lawpex-reveal-in {
+  .lawpex-reveal-in,
+  .lawpex-case-motion {
     animation: none !important;
     opacity: 1 !important;
     transform: none !important;
