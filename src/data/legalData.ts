@@ -935,36 +935,6 @@ export const LANDMARK_CASES: CaseLaw[] = [
       'Female children have equal inheritance rights.',
       'Discriminatory customs void under S.42 Constitution.'
     ],
-    relatedCaseIds: ['case-016'],
-    isLandmark: true,
-  },
-  {
-    id: 'case-016',
-    title: 'Mojekwu v. Mojekwu',
-    citation: '(1997) LDLR (CA) pt 1016',
-    hasFullJudgment: true,
-    suitNumber: 'CA/E/85/94',
-    court: 'Court of Appeal',
-    year: 1997,
-    presidingJudges: ['Niki Tobi, JCA (Delivered Leading Judgment)', 'Achike, JCA', 'Pats-Acholonu, JCA'],
-    areaOfLaw: 'Family, Matrimonial & Probate',
-    subject: 'Repugnancy Doctrine and the "Oli-Ekpe" Discriminatory Custom',
-    factsSummary: 'A dispute over the devolution of property in which the "Oli-Ekpe" custom of Nnewi was invoked to allow a male relation to inherit the property of a deceased to the exclusion of female descendants.',
-    issuesForDetermination: [
-      'Whether the Oli-Ekpe custom, which permits inheritance by a male relation to the exclusion of females, is valid.'
-    ],
-    decisionSummary: 'The Court of Appeal (per Tobi, JCA) struck down the Oli-Ekpe custom as discriminatory against women and repugnant to natural justice, equity and good conscience.',
-    ratioDecidendi: [
-      'A custom that discriminates against a woman on the ground of sex offends the repugnancy doctrine and modern notions of equality and cannot be enforced.'
-    ],
-    obiterDicta: [
-      'Per Tobi, JCA: courts should not give their blessing to customs that subject women to indignities merely on account of their sex.'
-    ],
-    keyPrinciples: [
-      'Repugnancy doctrine invalidates discriminatory customs.',
-      'Judicial protection of women’s customary property rights.'
-    ],
-    relatedCaseIds: ['case-015'],
     isLandmark: true,
   },
   {

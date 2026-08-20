@@ -164,38 +164,38 @@ export const HeroSearch: React.FC<HeroSearchProps> = ({ onSearch }) => {
   };
 
   return (
-    <section className="relative isolate overflow-hidden border-b border-amber-200 bg-[#fffbea] text-[#181411]">
+    <section className="lawpex-hero-motion relative isolate overflow-hidden border-b border-amber-200 bg-[#fffbea] text-[#181411]">
       <div className="absolute inset-0 -z-10" aria-hidden="true">
         <img
           src="/hero-justice.jpg"
           alt=""
           loading="eager"
           fetchPriority="high"
-          className="absolute inset-0 h-full w-full scale-[1.05] object-cover object-[56%_42%] opacity-[0.32] sm:object-[62%_45%] lg:opacity-[0.42]"
+          className="lawpex-hero-image absolute inset-0 h-full w-full scale-[1.05] object-cover object-[56%_42%] opacity-[0.32] sm:object-[62%_45%] lg:opacity-[0.42]"
         />
-        <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(255,251,234,0.96)_0%,rgba(255,244,184,0.46)_46%,rgba(255,253,246,0.98)_100%)]" />
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_22%,rgba(250,204,21,0.34),transparent_28rem),radial-gradient(circle_at_82%_18%,rgba(251,191,36,0.16),transparent_25rem)]" />
+        <div className="lawpex-hero-wash absolute inset-0 bg-[linear-gradient(180deg,rgba(255,251,234,0.96)_0%,rgba(255,244,184,0.46)_46%,rgba(255,253,246,0.98)_100%)]" />
+        <div className="lawpex-hero-aurora absolute inset-0 bg-[radial-gradient(circle_at_50%_22%,rgba(250,204,21,0.34),transparent_28rem),radial-gradient(circle_at_82%_18%,rgba(251,191,36,0.16),transparent_25rem)]" />
       </div>
 
       <div className="mx-auto flex max-w-7xl flex-col items-center px-5 pb-20 pt-24 text-center sm:px-8 sm:pb-28 sm:pt-32 lg:px-12 lg:pb-32 lg:pt-36">
         <div>
-          <div className="inline-flex items-center gap-2 rounded-lg border border-amber-300 bg-yellow-100/90 px-3 py-1.5 text-xs font-semibold uppercase tracking-[0.12em] text-[#6f4d08] shadow-sm backdrop-blur-xl sm:text-sm">
+          <div className="lawpex-hero-reveal inline-flex items-center gap-2 rounded-lg border border-amber-300 bg-yellow-100/90 px-3 py-1.5 text-xs font-semibold uppercase tracking-[0.12em] text-[#6f4d08] shadow-sm backdrop-blur-xl sm:text-sm [--hero-delay:80ms]">
             <Sparkles className="h-3.5 w-3.5" />
             LAWPEX Research Workspace
           </div>
 
-          <h1 className="mx-auto mt-4 max-w-[44rem] text-[2.25rem] font-bold leading-[1.15] tracking-[-0.025em] text-[#181411] sm:mt-5 sm:text-[4rem] sm:leading-[1.1]">
+          <h1 className="lawpex-hero-reveal mx-auto mt-4 max-w-[44rem] text-[2.25rem] font-bold leading-[1.15] tracking-[-0.025em] text-[#181411] sm:mt-5 sm:text-[4rem] sm:leading-[1.1] [--hero-delay:190ms]">
             Nigerian litigation <span className="text-amber-600">intelligence</span>
           </h1>
 
-          <p className="mx-auto mt-5 max-w-[38rem] text-[17px] font-normal leading-[26px] text-neutral-800 sm:mt-6 sm:text-xl sm:leading-[30px]">
+          <p className="lawpex-hero-reveal mx-auto mt-5 max-w-[38rem] text-[17px] font-normal leading-[26px] text-neutral-800 sm:mt-6 sm:text-xl sm:leading-[30px] [--hero-delay:310ms]">
             Research Nigerian law, prepare stronger arguments, and draft with confidence.
           </p>
         </div>
 
         <form
           onSubmit={submitSearch}
-          className="mt-8 w-full max-w-4xl rounded-xl border border-amber-200 bg-white/92 p-1.5 text-left shadow-[inset_0_1px_0_rgba(255,255,255,0.95),0_34px_90px_-58px_rgba(180,126,18,0.56)] backdrop-blur-2xl sm:mt-9 sm:p-2"
+          className="lawpex-hero-search-shell lawpex-hero-reveal mt-8 w-full max-w-4xl rounded-xl border border-amber-200 bg-white/92 p-1.5 text-left shadow-[inset_0_1px_0_rgba(255,255,255,0.95),0_34px_90px_-58px_rgba(180,126,18,0.56)] backdrop-blur-2xl sm:mt-9 sm:p-2 [--hero-delay:430ms]"
         >
           <div className="grid grid-cols-[minmax(0,1fr)_3rem_3rem] items-center gap-1.5 sm:flex sm:gap-2 sm:items-center">
             <label className="relative min-w-0 flex-1">
@@ -245,22 +245,27 @@ export const HeroSearch: React.FC<HeroSearchProps> = ({ onSearch }) => {
         </form>
 
         <div className="mt-4 flex w-full max-w-4xl flex-nowrap justify-start gap-2 overflow-x-auto px-1 pb-1 sm:flex-wrap sm:justify-center sm:overflow-visible sm:px-0 sm:pb-0">
-          {QUICK_PROMPTS.map((prompt) => (
+          {QUICK_PROMPTS.map((prompt, index) => (
             <button
               key={prompt.label}
               onClick={() => {
                 setSearchQuery(prompt.label);
               }}
-              className="lawpex-focus-ring shrink-0 rounded-full border border-amber-200 bg-white/78 px-3 py-1.5 text-[11px] font-bold text-[#6f4d08] shadow-sm backdrop-blur hover:border-amber-400 hover:bg-yellow-100 hover:text-neutral-950"
+              style={{ '--hero-delay': `${560 + index * 85}ms` } as React.CSSProperties}
+              className="lawpex-hero-reveal lawpex-focus-ring shrink-0 rounded-full border border-amber-200 bg-white/78 px-3 py-1.5 text-[11px] font-bold text-[#6f4d08] shadow-sm backdrop-blur hover:border-amber-400 hover:bg-yellow-100 hover:text-neutral-950"
             >
               {prompt.label}
             </button>
           ))}
         </div>
 
-        <div className="mt-6 grid w-full max-w-2xl grid-cols-3 divide-x divide-amber-200 overflow-hidden rounded-2xl border border-amber-200 bg-white/66 py-3 backdrop-blur sm:mt-8 sm:rounded-none sm:border-x-0 sm:py-4">
-          {METRICS.map((metric) => (
-            <div key={metric.label} className="px-3">
+        <div className="lawpex-hero-reveal mt-6 grid w-full max-w-2xl grid-cols-3 divide-x divide-amber-200 overflow-hidden rounded-2xl border border-amber-200 bg-white/66 py-3 backdrop-blur sm:mt-8 sm:rounded-none sm:border-x-0 sm:py-4 [--hero-delay:920ms]">
+          {METRICS.map((metric, index) => (
+            <div
+              key={metric.label}
+              style={{ '--hero-delay': `${1020 + index * 90}ms` } as React.CSSProperties}
+              className="lawpex-hero-reveal px-3"
+            >
               <div className="text-xl font-black tracking-tight text-[#181411] sm:text-2xl">
                 {metric.value}
               </div>

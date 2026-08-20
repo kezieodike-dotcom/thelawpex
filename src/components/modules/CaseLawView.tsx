@@ -244,6 +244,8 @@ const CourtCaseList: React.FC<{ court: (typeof CASE_LAW_COURTS)[number] }> = ({ 
   );
 };
 
+type CaseDetailTab = 'ratio' | 'digest' | 'principles' | 'authorities' | 'whole';
+
 const CaseDetail: React.FC<{ judgment: CaseLaw }> = ({ judgment }) => {
   const [document, setDocument] = useState<CaseJudgmentDocument | null>(null);
   const [documentStatus, setDocumentStatus] = useState<'idle' | 'loading' | 'ready' | 'error'>(
@@ -251,13 +253,13 @@ const CaseDetail: React.FC<{ judgment: CaseLaw }> = ({ judgment }) => {
   );
   const fullJudgment = useMemo(() => mergeCaseJudgmentDocument(judgment, document), [document, judgment]);
   const court = CASE_LAW_COURTS.find((item) => item.name === judgment.court);
-  const [tab, setTab] = useState<'ratio' | 'digest' | 'principles' | 'authorities' | 'whole'>('ratio');
+  const [tab, setTab] = useState<CaseDetailTab>('ratio');
 
   useEffect(() => {
     let isMounted = true;
 
     if (!judgment.hasFullJudgment || document) return undefined;
-    if (tab !== 'whole') return undefined;
+    if (!['ratio', 'principles', 'whole'].includes(tab)) return undefined;
 
     setDocumentStatus('loading');
     loadCaseJudgmentDocument(judgment.id)
@@ -278,103 +280,99 @@ const CaseDetail: React.FC<{ judgment: CaseLaw }> = ({ judgment }) => {
   const related = (judgment.relatedCaseIds ?? [])
     .map((id) => LANDMARK_CASES.find((item) => item.id === id))
     .filter((item): item is CaseLaw => Boolean(item));
+  const caseSectionTabs: { id: CaseDetailTab; icon: React.ElementType; label: string; kicker: string }[] = [
+    { id: 'ratio', icon: Award, label: 'Ratio decidendi', kicker: 'Binding reasons' },
+    { id: 'digest', icon: ClipboardList, label: 'Case digest', kicker: 'Facts and decision' },
+    { id: 'principles', icon: Scale, label: 'Principles of law', kicker: 'Legal propositions' },
+    { id: 'authorities', icon: Library, label: 'Authorities & notes', kicker: 'Cases, statutes, practice' },
+    { id: 'whole', icon: BookOpen, label: 'Read the whole case', kicker: 'Full judgment' },
+  ];
 
   return (
     <div className={`lawpex-case-section ${CASE_PAGE_BG} min-h-screen py-4 text-neutral-900 sm:py-12`}>
-      <div className="mx-auto max-w-[96rem] px-3 sm:px-6 2xl:px-8">
-        <div className="relative overflow-hidden rounded-[1.1rem] border border-amber-200 bg-white p-3.5 shadow-[0_18px_55px_-44px_rgba(24,20,17,0.72)] sm:rounded-[1.35rem] sm:p-5">
-          <div className="absolute inset-y-0 right-0 hidden w-32 bg-[linear-gradient(135deg,rgba(250,204,21,0.16),transparent_62%)] sm:block" />
-          <Link
-            to={court ? `/case-law/${court.slug}` : '/case-law'}
-            className="relative inline-flex items-center gap-1.5 rounded-full bg-amber-50 px-2.5 py-1 text-[10px] font-black uppercase tracking-[0.13em] text-amber-800 hover:bg-amber-100"
-          >
-            <ArrowLeft className="w-3.5 h-3.5" />
-            {judgment.court}
-          </Link>
-
-          <h1 className="relative mt-3 max-w-4xl text-lg font-black leading-tight tracking-tight text-neutral-950 sm:text-2xl">
-            {judgment.title}
-          </h1>
-          <p className="relative mt-1.5 break-words text-[11px] font-black leading-5 text-amber-700 sm:text-xs">
-            {judgment.citation} - {judgment.suitNumber} - {judgment.year}
-          </p>
-
-          <div className="relative mt-4 grid grid-cols-2 gap-2 lg:grid-cols-[repeat(4,minmax(0,1fr))]">
-            <MetaCard icon={Landmark} label="Court" value={judgment.court} />
-            <MetaCard icon={MapPin} label="Division" value={judgment.judicialDivision ?? 'Not supplied'} />
-            <MetaCard icon={CalendarDays} label="Delivered" value={judgment.dateDelivered ?? String(judgment.year)} />
-            <MetaCard
-              icon={Users}
-              label="Panel"
-              value={`${judgment.presidingJudges.length} justice${judgment.presidingJudges.length === 1 ? '' : 's'}`}
-            />
-          </div>
-
-          <div className="relative mt-3 flex flex-wrap gap-1.5 sm:mt-4 sm:gap-2">
-            <span className="rounded-full border border-amber-200 bg-amber-50 px-2.5 py-1 text-[10px] font-bold leading-4 text-neutral-700 sm:text-[11px]">
-              {judgment.areaOfLaw}
-            </span>
-            <span className="rounded-full border border-amber-200 bg-white px-2.5 py-1 text-[10px] font-bold leading-4 text-neutral-700 sm:text-[11px]">
-              {judgment.subject}
-            </span>
-            {(judgment.catchwords ?? []).map((catchword) => (
-              <span
-                key={catchword}
-                className="rounded-full border border-neutral-800 bg-neutral-950 px-2.5 py-1 text-[10px] font-bold leading-4 text-yellow-200 sm:text-[11px]"
-              >
-                {catchword}
-              </span>
-            ))}
-          </div>
-        </div>
-
-        <div className="my-4 grid gap-4 sm:my-6 lg:grid-cols-[14rem_minmax(0,1fr)] xl:grid-cols-[15rem_minmax(0,1fr)] lg:items-start">
-          <aside className="sticky top-0 z-20 -mx-3 bg-[#fffdf6]/95 px-3 py-2 backdrop-blur-xl sm:-mx-6 sm:px-6 lg:top-[5rem] lg:z-auto lg:mx-0 lg:bg-transparent lg:px-0 lg:py-0">
-            <div className="rounded-2xl border border-amber-200 bg-white/94 p-2 shadow-[0_18px_50px_-42px_rgba(24,20,17,0.72)] backdrop-blur-xl sm:p-2.5">
-              <p className="px-2 pb-2 text-[9px] font-black uppercase tracking-[0.18em] text-amber-700 sm:text-[10px]">
-                Case sections
-              </p>
-              <div className="lawpex-scrollbar-hide flex snap-x gap-2 overflow-x-auto pb-1 lg:flex-col lg:overflow-visible lg:pb-0">
-                <TabButton
-                  active={tab === 'ratio'}
-                  icon={Award}
-                  label="1. Ratio decidendi"
-                  onClick={() => setTab('ratio')}
-                />
-                <TabButton
-                  active={tab === 'digest'}
-                  icon={ClipboardList}
-                  label="2. Case digest"
-                  onClick={() => setTab('digest')}
-                />
-                <TabButton
-                  active={tab === 'principles'}
-                  icon={Scale}
-                  label="3. Principles of law"
-                  onClick={() => setTab('principles')}
-                />
-                <TabButton
-                  active={tab === 'authorities'}
-                  icon={Library}
-                  label="4. Authorities & notes"
-                  onClick={() => setTab('authorities')}
-                />
-                <TabButton
-                  active={tab === 'whole'}
-                  icon={BookOpen}
-                  label="5. Read the whole case"
-                  onClick={() => setTab('whole')}
-                />
+      <div className="mx-auto max-w-[112rem] px-3 sm:px-6 2xl:px-10">
+        <div className="grid gap-4 lg:grid-cols-[18rem_minmax(0,1fr)] xl:grid-cols-[19.5rem_minmax(0,1fr)] lg:items-start">
+          <aside className="sticky top-0 z-20 -mx-3 bg-[#fffdf6]/96 px-3 py-2 backdrop-blur-xl sm:-mx-6 sm:px-6 lg:top-4 lg:z-auto lg:mx-0 lg:bg-transparent lg:px-0 lg:py-0">
+            <div className="overflow-hidden rounded-[1.15rem] border border-amber-200 bg-white/96 shadow-[0_20px_60px_-48px_rgba(24,20,17,0.8)] backdrop-blur-xl">
+              <div className="border-b border-amber-100 bg-[#fff8dc] px-4 py-4">
+                <Link
+                  to={court ? `/case-law/${court.slug}` : '/case-law'}
+                  className="lawpex-focus-ring inline-flex items-center gap-1.5 rounded-full bg-white px-2.5 py-1 text-[10px] font-black uppercase tracking-[0.13em] text-amber-800 hover:bg-amber-50"
+                >
+                  <ArrowLeft className="h-3.5 w-3.5" />
+                  {judgment.court}
+                </Link>
+                <p className="mt-4 text-[10px] font-black uppercase tracking-[0.18em] text-amber-700">
+                  Case sections
+                </p>
+                <h2 className="mt-1.5 text-lg font-black leading-tight tracking-tight text-neutral-950">
+                  {judgment.title}
+                </h2>
+                <p className="mt-1 text-xs font-black leading-5 text-amber-800">{judgment.citation}</p>
               </div>
+
+              <nav className="lawpex-scrollbar-hide flex snap-x gap-2 overflow-x-auto p-2 lg:flex-col lg:overflow-visible" aria-label="Case sections">
+                {caseSectionTabs.map((item, index) => (
+                  <TabButton
+                    key={item.id}
+                    active={tab === item.id}
+                    icon={item.icon}
+                    label={`${index + 1}. ${item.label}`}
+                    description={item.kicker}
+                    onClick={() => setTab(item.id)}
+                  />
+                ))}
+              </nav>
+
             </div>
           </aside>
 
-          <main className="min-w-0">
-            {tab === 'ratio' && <RatioPanel judgment={judgment} />}
-            {tab === 'digest' && <DigestPanel judgment={judgment} />}
-            {tab === 'principles' && <PrinciplesPanel judgment={judgment} />}
-            {tab === 'authorities' && <AuthoritiesPanel judgment={judgment} />}
-            {tab === 'whole' && <WholeCasePanel judgment={fullJudgment} status={documentStatus} />}
+          <main className="min-w-0 space-y-4 xl:max-w-none">
+            <div className="relative overflow-hidden rounded-[1.1rem] border border-amber-200 bg-white p-4 shadow-[0_18px_55px_-44px_rgba(24,20,17,0.72)] sm:rounded-[1.35rem] sm:p-6 lg:p-7">
+              <div className="absolute inset-y-0 right-0 hidden w-40 bg-[linear-gradient(135deg,rgba(250,204,21,0.18),transparent_62%)] sm:block" />
+              <h1 className="relative max-w-5xl text-2xl font-black leading-tight tracking-tight text-neutral-950 sm:text-3xl">
+                {judgment.title}
+              </h1>
+              <p className="relative mt-2 max-w-5xl break-words text-sm font-black leading-6 text-amber-700 sm:text-base">
+                {judgment.citation} - {judgment.suitNumber} - {judgment.year}
+              </p>
+
+              <div className="relative mt-4 grid grid-cols-2 gap-2 lg:grid-cols-[repeat(4,minmax(0,1fr))]">
+                <MetaCard icon={Landmark} label="Court" value={judgment.court} />
+                <MetaCard icon={MapPin} label="Division" value={judgment.judicialDivision ?? 'Not supplied'} />
+                <MetaCard icon={CalendarDays} label="Delivered" value={judgment.dateDelivered ?? String(judgment.year)} />
+                <MetaCard
+                  icon={Users}
+                  label="Panel"
+                  value={`${judgment.presidingJudges.length} justice${judgment.presidingJudges.length === 1 ? '' : 's'}`}
+                />
+              </div>
+
+              <div className="relative mt-3 flex flex-wrap gap-1.5 sm:mt-4 sm:gap-2">
+                <span className="rounded-full border border-amber-200 bg-amber-50 px-2.5 py-1 text-[10px] font-bold leading-4 text-neutral-700 sm:text-[11px]">
+                  {judgment.areaOfLaw}
+                </span>
+                <span className="rounded-full border border-amber-200 bg-white px-2.5 py-1 text-[10px] font-bold leading-4 text-neutral-700 sm:text-[11px]">
+                  {judgment.subject}
+                </span>
+                {(judgment.catchwords ?? []).map((catchword) => (
+                  <span
+                    key={catchword}
+                    className="rounded-full border border-neutral-800 bg-neutral-950 px-2.5 py-1 text-[10px] font-bold leading-4 text-yellow-200 sm:text-[11px]"
+                  >
+                    {catchword}
+                  </span>
+                ))}
+              </div>
+            </div>
+
+            <section className="min-w-0" aria-live="polite">
+              {tab === 'ratio' && <RatioPanel judgment={fullJudgment} onReadFullJudgment={() => setTab('whole')} />}
+              {tab === 'digest' && <DigestPanel judgment={judgment} />}
+              {tab === 'principles' && <PrinciplesPanel judgment={judgment} />}
+              {tab === 'authorities' && <AuthoritiesPanel judgment={judgment} />}
+              {tab === 'whole' && <WholeCasePanel judgment={fullJudgment} status={documentStatus} />}
+            </section>
           </main>
         </div>
 
@@ -406,13 +404,13 @@ const DigestPanel: React.FC<{ judgment: CaseLaw }> = ({ judgment }) => {
   const citation = `${judgment.title} ${judgment.citation}`;
 
   return (
-    <div className="space-y-5">
+    <div className="space-y-6">
       <Section
         title="Summary of judgment"
         subtitle="The fast brief: court, posture, facts, issues, decision and orders."
       >
-        <div className="grid grid-cols-1 lg:grid-cols-[1.15fr_0.85fr] gap-4">
-          <div className="space-y-4">
+        <div className="grid grid-cols-1 gap-6 xl:grid-cols-[1.75fr_0.7fr] xl:items-start">
+          <div className="space-y-6">
             {judgment.proceduralHistory && (
               <DigestBlock title="Procedural history" body={judgment.proceduralHistory} />
             )}
@@ -420,11 +418,11 @@ const DigestPanel: React.FC<{ judgment: CaseLaw }> = ({ judgment }) => {
             <DigestBlock title="Decision / held" body={judgment.decisionSummary} tone="strong" />
           </div>
 
-          <div className="space-y-4 rounded-2xl border border-amber-200 bg-white p-5">
+          <div className="space-y-5 rounded-2xl border border-amber-200 bg-white p-6 sm:p-7 xl:sticky xl:top-28">
             <MiniHeading icon={Users} label="Coram" />
             <ul className="space-y-2">
               {judgment.presidingJudges.map((judge) => (
-                <li key={judge} className="text-sm text-neutral-700 leading-7 flex gap-2">
+                <li key={judge} className="flex gap-2 text-base leading-8 text-neutral-700 sm:text-[17px]">
                   <span className="mt-1.5 h-1.5 w-1.5 rounded-full bg-yellow-500 shrink-0" />
                   {judge}
                 </li>
@@ -434,7 +432,7 @@ const DigestPanel: React.FC<{ judgment: CaseLaw }> = ({ judgment }) => {
             {judgment.appearances && (
               <div className="border-t border-neutral-200 pt-4">
                 <MiniHeading icon={FileText} label="Appearances" />
-                <div className="mt-2 space-y-1.5 text-sm text-neutral-700 leading-7">
+                <div className="mt-2 space-y-1.5 text-base leading-8 text-neutral-700 sm:text-[17px]">
                   {judgment.appearances.appellant && <p>Appellant: {judgment.appearances.appellant}</p>}
                   {judgment.appearances.respondent && <p>Respondent: {judgment.appearances.respondent}</p>}
                 </div>
@@ -478,7 +476,7 @@ const DigestPanel: React.FC<{ judgment: CaseLaw }> = ({ judgment }) => {
 
 const PrinciplesPanel: React.FC<{ judgment: CaseLaw }> = ({ judgment }) => {
   const citation = `${judgment.title} ${judgment.citation}`;
-  const principles = getExactPrincipleItems(judgment);
+  const principles = withCurrentReportCitations(judgment, getExactPrincipleItems(judgment));
 
   return (
     <div className="space-y-5">
@@ -512,26 +510,137 @@ const PrinciplesPanel: React.FC<{ judgment: CaseLaw }> = ({ judgment }) => {
   );
 };
 
-const RatioPanel: React.FC<{ judgment: CaseLaw }> = ({ judgment }) => {
+const RatioPanel: React.FC<{ judgment: CaseLaw; onReadFullJudgment: () => void }> = ({
+  judgment,
+  onReadFullJudgment,
+}) => {
+  const [activeRatioIndex, setActiveRatioIndex] = useState<number | null>(null);
   const citation = `${judgment.title} ${judgment.citation}`;
-  const ratioDecidendi = getExactRatioItems(judgment);
+  const ratioPoints = useMemo(
+    () => getExactRatioPoints(judgment).map((point) => withCurrentRatioCitation(judgment, point)),
+    [judgment],
+  );
+  const ratioDecidendi = ratioPoints.map((point) => point.fullText);
+  const activeRatio = activeRatioIndex === null ? undefined : ratioPoints[activeRatioIndex];
+  const openRatio = (index: number) => {
+    setActiveRatioIndex(index);
+    window.requestAnimationFrame(() => {
+      document.getElementById('ratio-decidendi-reader')?.scrollIntoView({ block: 'start' });
+    });
+  };
 
   return (
     <Section
       title="Ratio decidendi"
-      subtitle="The judge's exact words. Kept as a standalone authority section for authentication, citation and argument."
+      subtitle="Each ratio is listed by its legal proposition. Open any item to read the judge's exact words without summary."
     >
-      <div className="rounded-2xl border border-amber-300 bg-[#fff9d7] p-4 sm:p-5">
-        <NumberedList items={ratioDecidendi} italic />
-      </div>
+      {ratioPoints.length > 0 && !activeRatio ? (
+        <div className="min-h-[68vh] divide-y divide-amber-100 rounded-2xl border border-amber-200 bg-white">
+            {ratioPoints.map((point, index) => (
+              <button
+                key={`${point.heading}-${index}`}
+                type="button"
+                onClick={() => openRatio(index)}
+                className="group flex min-h-[10.5rem] w-full gap-4 p-5 text-left text-neutral-800 transition hover:bg-amber-50/80 active:scale-[0.995] sm:min-h-[12rem] sm:gap-5 sm:p-7 lg:p-8"
+              >
+                <span className="mt-1 flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[#facc15] text-base font-black text-neutral-950 shadow-[inset_0_1px_0_rgba(255,255,255,0.45)] sm:h-12 sm:w-12 sm:text-lg">
+                  {index + 1}
+                </span>
+                <span className="flex min-w-0 flex-1 flex-col gap-3">
+                  <span className="inline-flex w-fit max-w-full rounded-xl border border-amber-200 bg-amber-50 px-3 py-1.5 text-sm font-black uppercase leading-6 text-amber-950 shadow-[inset_0_1px_0_rgba(255,255,255,0.55)] sm:px-4 sm:py-2 sm:text-base sm:leading-7">
+                    {judgment.title}
+                  </span>
+                  <RatioHeadingText heading={point.heading} />
+                  {point.body && (
+                    <span className="line-clamp-1 max-w-5xl font-[Georgia,ui-serif,serif] text-sm leading-7 text-neutral-500 sm:text-base">
+                      {point.body}
+                    </span>
+                  )}
+                  <span className="mt-auto inline-flex items-center justify-end text-amber-700">
+                    <ChevronRight className="h-5 w-5 transition group-hover:translate-x-1" />
+                  </span>
+                </span>
+              </button>
+            ))}
+        </div>
+      ) : activeRatio ? (
+        <div id="ratio-decidendi-reader" className="scroll-mt-24 min-h-[70vh]">
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+            <button
+              type="button"
+              onClick={() => setActiveRatioIndex(null)}
+              className="inline-flex min-h-11 w-fit items-center gap-2 rounded-full border border-amber-200 bg-white px-4 py-2 text-sm font-black text-amber-800 transition hover:border-amber-400 hover:bg-amber-50 active:scale-[0.99]"
+            >
+              <ArrowLeft className="h-4 w-4" />
+              Back
+            </button>
+            <button
+              type="button"
+              onClick={onReadFullJudgment}
+              className="inline-flex min-h-11 w-fit items-center justify-center rounded-full bg-neutral-950 px-4 py-2 text-sm font-black text-yellow-200 transition hover:bg-neutral-800 active:scale-[0.99] sm:ml-auto"
+            >
+              Read full judgment
+            </button>
+          </div>
 
-      <DocumentActions
-        className="mt-4"
-        html={buildWordList('Ratio decidendi', citation, ratioDecidendi)}
-        filename={`${judgment.title} - ratio decidendi`}
-        hint="Copy the ratio to MS Word."
-      />
+          <article className="mt-5 w-full rounded-2xl border border-amber-300 bg-[#fff9d7] p-5 sm:p-8 lg:p-10 xl:p-12">
+            <p className="text-lg font-black leading-8 tracking-tight text-neutral-950 sm:text-2xl">
+              {judgment.title}
+            </p>
+            <p className="text-xs font-black uppercase tracking-[0.16em] text-amber-800">
+              Ratio {activeRatioIndex + 1} of {ratioPoints.length}
+            </p>
+            <h3 className="mt-4 max-w-6xl text-2xl font-black leading-tight tracking-tight text-neutral-950 sm:text-3xl sm:leading-tight">
+              {activeRatio.heading}
+            </h3>
+            {activeRatio.body && (
+              <blockquote className="mt-8 max-w-7xl whitespace-pre-wrap border-l-4 border-amber-500 pl-5 font-[Georgia,ui-serif,serif] text-[17px] leading-9 text-neutral-900 sm:pl-7 sm:text-xl sm:leading-10">
+                {activeRatio.body}
+              </blockquote>
+            )}
+            {activeRatio.attribution && (
+              <p className="mt-8 text-base font-black leading-7 text-amber-800 sm:text-lg">
+                {activeRatio.attribution}
+              </p>
+            )}
+          </article>
+
+          <DocumentActions
+            className="mt-4"
+            html={buildWordList('Ratio decidendi', citation, [activeRatio.fullText])}
+            filename={`${judgment.title} - ratio ${activeRatioIndex + 1}`}
+            hint="Copy this ratio to MS Word."
+          />
+        </div>
+      ) : (
+        <div className="w-full rounded-2xl border border-amber-300 bg-[#fff9d7] p-4 sm:p-6 lg:p-7">
+          <NumberedList items={ratioDecidendi} italic />
+        </div>
+      )}
     </Section>
+  );
+};
+
+const RatioHeadingText: React.FC<{ heading: string }> = ({ heading }) => {
+  const parts = heading.split(/\s+-\s+/).map((part) => part.trim()).filter(Boolean);
+
+  if (parts.length < 2) {
+    return (
+      <span className="min-w-0 text-sm font-black leading-7 tracking-[0.02em] text-neutral-950 sm:text-base sm:leading-8">
+        {heading}
+      </span>
+    );
+  }
+
+  const category = parts.slice(0, -1).join(' - ');
+  const issue = parts[parts.length - 1];
+
+  return (
+    <span className="min-w-0 text-sm font-black leading-7 tracking-[0.02em] sm:text-base sm:leading-8">
+      <span className="text-amber-700">{category}</span>
+      <span className="text-amber-700"> - </span>
+      <span className="text-neutral-950">{issue}</span>
+    </span>
   );
 };
 
@@ -574,15 +683,23 @@ const AuthoritiesPanel: React.FC<{ judgment: CaseLaw }> = ({ judgment }) => {
 
 const getJudgmentTextForCopy = (judgment: CaseLaw): string => {
   const pages = getJudgmentBodyPages(judgment);
-  const totalPages = pages.length ? pages.length + 1 : judgment.fullJudgmentText ? 2 : 1;
 
   if (judgment.verbatimWholeCase || judgment.preserveSourceFormatting) {
     const bodyText = getSourceCaseBodyText(judgment.fullJudgmentText ?? '');
+    const sourcePages = paginateSourceJudgmentText(bodyText);
+    const totalPages = sourcePages.length ? sourcePages.length + 1 : 1;
     if (!bodyText) return '';
 
-    return [getCaseOpeningText(judgment, totalPages), `page (2) of (${totalPages})`, bodyText].join('\n\n');
+    return [
+      getCaseOpeningText(judgment, totalPages),
+      ...sourcePages.map((page, pageIndex) => [
+        page.blocks.map((block) => block.text).join('\n\n'),
+        `page (${pageIndex + 2}) of (${totalPages})`,
+      ].join('\n\n')),
+    ].join('\n\n');
   }
 
+  const totalPages = pages.length ? pages.length + 1 : judgment.fullJudgmentText ? 2 : 1;
   const hasSourceLabels = usesSourceParagraphLabels(pages);
   const openingText = getCaseOpeningText(judgment, totalPages);
 
@@ -598,10 +715,10 @@ const getJudgmentTextForCopy = (judgment: CaseLaw): string => {
 
   const bodyText = pages
     .map((page, pageIndex) => [
-      `page (${pageIndex + 2}) of (${totalPages})`,
       ...page.paragraphs.map((paragraph, index) =>
-        hasSourceLabels ? paragraph : `${paragraphLabel(index)} ${paragraph}`,
+        hasSourceLabels ? paragraph : paragraph,
       ),
+      `page (${pageIndex + 2}) of (${totalPages})`,
     ].join('\n\n'))
     .join('\n\n');
 
@@ -629,6 +746,13 @@ const getCaseOpeningText = (judgment: CaseLaw, totalPages: number) => {
 const getDisplayJudgmentPages = (judgment: CaseLaw): NonNullable<CaseLaw['judgmentPages']> =>
   judgment.judgmentPages?.filter((page) => page.page.toLowerCase() !== 'headnote') ?? [];
 
+const JUDGE_JUDGMENT_HEADING =
+  String.raw`(?:[A-Z][A-Z\s.'-]+,\s+J\.?\s*(?:S\.?\s*C|C\.?\s*A)\.?(?:\s*\([^)]*(?:Leading\s+)?Judgment[^)]*\))?\s*:)`;
+const LEADING_JUDGMENT_HEADING = new RegExp(String.raw`^(?:[A-G]\s+)?${JUDGE_JUDGMENT_HEADING}`, 'i');
+const INLINE_LEADING_JUDGMENT_HEADING = new RegExp(String.raw`(\s+)((?:[A-G]\s+)?${JUDGE_JUDGMENT_HEADING})`, 'gi');
+
+const isLeadingJudgmentStart = (text: string) => LEADING_JUDGMENT_HEADING.test(text.trim());
+
 const getJudgmentBodyPages = (judgment: CaseLaw): NonNullable<CaseLaw['judgmentPages']> => {
   const pages = getDisplayJudgmentPages(judgment);
   if (!pages.length) return [];
@@ -647,6 +771,19 @@ const getJudgmentBodyPages = (judgment: CaseLaw): NonNullable<CaseLaw['judgmentP
         ...page,
         paragraphs: firstBodyIndex > -1 ? page.paragraphs.slice(firstBodyIndex) : page.paragraphs,
       };
+    })
+    .flatMap((page) => {
+      const leadIndex = page.paragraphs.findIndex((paragraph) => {
+        const trimmed = paragraph.trim();
+        const sourceLabel = trimmed.match(/^([A-G])\s+(.+)/);
+        return isLeadingJudgmentStart(sourceLabel?.[2] ?? trimmed);
+      });
+      if (leadIndex < 1) return [page];
+
+      return [
+        { ...page, paragraphs: page.paragraphs.slice(0, leadIndex) },
+        { ...page, page: `${page.page}-lead`, paragraphs: page.paragraphs.slice(leadIndex) },
+      ];
     })
     .filter((page) => page.paragraphs.length > 0);
 };
@@ -777,12 +914,89 @@ const getSourceCaseBodyText = (text: string) => {
   const summaryIndex = candidate.search(/\bSUMMARY OF JUDGMENT\b/i);
   if (summaryIndex > -1) return candidate.slice(summaryIndex).trim();
 
-  const leadingJudgmentMatch = candidate.match(
-    /[A-Z][A-Z\s.'-]+,\s+J\.?\s*(?:S\.?\s*C|C\.?\s*A)\.?\s*(?:\([\s\S]{0,120}?Judgment\))?\s*:/,
-  );
+  const leadingJudgmentMatch = candidate.match(new RegExp(JUDGE_JUDGMENT_HEADING, 'i'));
   if (leadingJudgmentMatch?.index !== undefined) return candidate.slice(leadingJudgmentMatch.index).trim();
 
   return candidate.trim();
+};
+
+type SourceJudgmentBlock = {
+  text: string;
+  isHeading: boolean;
+  isRatioHeading: boolean;
+  startsLeadingJudgment: boolean;
+  sourceLabel?: string;
+  sourceText?: string;
+};
+
+const normalizeSourceJudgmentMarkers = (text: string) =>
+  text.replace(
+    /([A-Z][A-Z\s.'-]+,\s+J\.?\s*(?:S\.?\s*C|C\.?\s*A)\.?\s*\(\s*Delivering)\s*\n+\s*[A-G]\s+the\s+Leading\s+Judgment\)\s*:/gi,
+    '$1 the Leading Judgment):',
+  );
+
+const getSourceJudgmentBlocks = (text: string): SourceJudgmentBlock[] =>
+  normalizeSourceJudgmentMarkers(text)
+    .replace(INLINE_LEADING_JUDGMENT_HEADING, '\n\n$2')
+    .split(/\n{2,}/)
+    .map((block) => block.trim())
+    .filter(Boolean)
+    .map((block) => block.replace(/\n+/g, ' ').replace(/\s+/g, ' ').trim())
+    .map((block) => {
+      const isHeading =
+        block.length < 96 &&
+        (/^[A-Z][A-Z0-9\s.,'():;/&-]+$/.test(block) ||
+          /^(SUMMARY OF JUDGMENT|INTRODUCTION:|FACTS:?|ISSUES:?|DECISION\/HELD:|RATIO DECIDENDI)$/i.test(block));
+      const sourceLabel = block.match(/^([A-G])\s+(.+)/);
+
+      return {
+        text: block,
+        isHeading,
+        isRatioHeading: /^RATIO DECIDENDI$/i.test(block),
+        startsLeadingJudgment: isLeadingJudgmentStart(sourceLabel?.[2] ?? block),
+        sourceLabel: sourceLabel?.[1],
+        sourceText: sourceLabel?.[2],
+      };
+    });
+
+const paginateSourceJudgmentText = (text: string) => {
+  const blocks = getSourceJudgmentBlocks(text);
+  const pages: { blocks: SourceJudgmentBlock[] }[] = [];
+  let current: SourceJudgmentBlock[] = [];
+  let pageSize = 0;
+  let hasForcedLeadingJudgmentPage = false;
+  const targetCharactersPerPage = 5000;
+
+  blocks.forEach((block) => {
+    const weightedSize = block.text.length + (block.isHeading ? 220 : 90);
+    const shouldForceLeadPage =
+      current.length > 0 &&
+      !hasForcedLeadingJudgmentPage &&
+      block.startsLeadingJudgment;
+
+    if (shouldForceLeadPage) {
+      pages.push({ blocks: current });
+      current = [];
+      pageSize = 0;
+      hasForcedLeadingJudgmentPage = true;
+    }
+
+    const shouldStartNewPage =
+      current.length > 0 && pageSize + weightedSize > targetCharactersPerPage && !block.isHeading;
+
+    if (shouldStartNewPage) {
+      pages.push({ blocks: current });
+      current = [];
+      pageSize = 0;
+    }
+
+    current.push(block);
+    pageSize += weightedSize;
+  });
+
+  if (current.length) pages.push({ blocks: current });
+
+  return pages;
 };
 
 const exactSectionStops = [
@@ -839,6 +1053,93 @@ const getSourcePrincipleItems = (judgment: CaseLaw) =>
 const getSourceRatioItems = (judgment: CaseLaw) =>
   extractExactSourceSection(judgment.fullJudgmentText ?? '', [/^RATIO DECIDENDI$/i, /^Ratio Decidendi$/i]);
 
+type RatioPoint = {
+  heading: string;
+  body: string;
+  attribution?: string;
+  fullText: string;
+};
+
+const isRatioPointHeading = (block: string) => {
+  const clean = block.trim();
+  if (!clean || /^Per\b/i.test(clean) || clean.startsWith('"') || clean.startsWith('“')) return false;
+  return /^[A-Z0-9][A-Z0-9\s&/.,()'’-]+ - [A-Z0-9][A-Z0-9\s&/.,()'’-]+ - /i.test(clean);
+};
+
+const stripSourceParagraphLead = (line: string) => line.replace(/^([A-G])\s+/, '').trim();
+
+const getSourceRatioBlocks = (judgment: CaseLaw) => {
+  const text = (judgment.fullJudgmentText ?? '').replace(/\r\n/g, '\n');
+  if (!text.trim()) return [];
+
+  const lines = text.split('\n');
+  const headingIndex = lines.findIndex((line) => /^RATIO DECIDENDI$/i.test(line.trim()));
+  if (headingIndex === -1) return [];
+
+  const captured: string[] = [];
+
+  for (let index = headingIndex + 1; index < lines.length; index += 1) {
+    const trimmed = lines[index].trim();
+    const withoutSourceLabel = stripSourceParagraphLead(trimmed);
+
+    if (trimmed && captured.some((line) => line.trim()) && isLeadingJudgmentStart(withoutSourceLabel)) break;
+    captured.push(lines[index]);
+  }
+
+  return splitExactSectionBlocks(captured.join('\n'));
+};
+
+const ratioPointFromText = (text: string): RatioPoint => {
+  const clean = text.trim();
+  const headingMatch = clean.match(/^([\s\S]{16,260}?-\s+Whether[\s\S]*?)(?=\n+["“])/i);
+  const heading = headingMatch?.[1]?.replace(/\s+/g, ' ').trim() || clean.replace(/\s+/g, ' ').slice(0, 180);
+  const body = headingMatch ? clean.slice(headingMatch[0].length).trim() : clean;
+
+  return {
+    heading,
+    body,
+    fullText: clean,
+  };
+};
+
+const getSourceRatioPoints = (judgment: CaseLaw): RatioPoint[] => {
+  const blocks = getSourceRatioBlocks(judgment);
+  const points: RatioPoint[] = [];
+
+  for (let index = 0; index < blocks.length; index += 1) {
+    const heading = blocks[index].replace(/\s+/g, ' ').trim();
+    if (!isRatioPointHeading(heading)) continue;
+
+    const bodyParts: string[] = [];
+    let attribution: string | undefined;
+    let cursor = index + 1;
+
+    while (cursor < blocks.length && !isRatioPointHeading(blocks[cursor])) {
+      const block = blocks[cursor].trim();
+      if (/^Per\b/i.test(block)) {
+        attribution = block.replace(/\s+/g, ' ').trim();
+      } else if (block) {
+        bodyParts.push(block);
+      }
+      cursor += 1;
+    }
+
+    const body = bodyParts.join('\n\n').trim();
+    const fullText = [heading, body, attribution].filter(Boolean).join('\n\n');
+    points.push({ heading, body, attribution, fullText });
+    index = cursor - 1;
+  }
+
+  return points;
+};
+
+const getExactRatioPoints = (judgment: CaseLaw): RatioPoint[] => {
+  const sourcePoints = getSourceRatioPoints(judgment);
+  if (sourcePoints.length) return sourcePoints;
+
+  return getExactRatioItems(judgment).map(ratioPointFromText);
+};
+
 const getExactPrincipleItems = (judgment: CaseLaw) => {
   const sourcePrinciples = getSourcePrincipleItems(judgment);
   if (sourcePrinciples.length) return sourcePrinciples;
@@ -859,6 +1160,303 @@ const getExactRatioItems = (judgment: CaseLaw) => {
   return judgment.ratioDecidendi ?? [];
 };
 
+type ReportCitationTarget = {
+  pageNumber: number;
+  label?: string;
+  text: string;
+};
+
+type ReportCitationSpan = {
+  start: ReportCitationTarget;
+  end: ReportCitationTarget;
+};
+
+type ReportParagraph = {
+  label: string;
+  text: string;
+};
+
+const PAGE_CITATION_PATTERN = /\((?:Pp?\.|Pages?)\s*[^)]*?paras?\.?\s*[^)]*?\)/gi;
+
+const normalizeCitationText = (text: string) =>
+  text
+    .replace(PAGE_CITATION_PATTERN, '')
+    .replace(/[“”"]/g, '')
+    .replace(/\s+/g, ' ')
+    .trim()
+    .toLowerCase();
+
+const relevantNeedle = (text: string) => {
+  const normalized = normalizeCitationText(text);
+  if (normalized.length <= 140) return normalized;
+  return normalized.slice(0, 140);
+};
+
+const paragraphCitationText = (start?: string, end?: string) => {
+  if (!start) return '';
+  if (!end || start === end) return `para. ${start}`;
+  return `paras. ${start}-${end}`;
+};
+
+const reportCitationText = ({ start, end }: ReportCitationSpan) => {
+  const samePage = start.pageNumber === end.pageNumber;
+  const paragraphText = paragraphCitationText(start.label, end.label);
+
+  if (samePage) {
+    return paragraphText ? `(P. ${start.pageNumber}, ${paragraphText})` : `(P. ${start.pageNumber})`;
+  }
+
+  return paragraphText
+    ? `(Pp. ${start.pageNumber}-${end.pageNumber}, ${paragraphText})`
+    : `(Pp. ${start.pageNumber}-${end.pageNumber})`;
+};
+
+const LEADING_JUDGMENT_TEXT = new RegExp(String.raw`^${JUDGE_JUDGMENT_HEADING}\s*`, 'i');
+
+const extractLeadingJudgmentHeading = (text: string) => text.match(LEADING_JUDGMENT_TEXT)?.[0]?.trim();
+
+const stripLeadingJudgmentHeading = (text: string) => text.replace(LEADING_JUDGMENT_TEXT, '').trim();
+
+const normalizeReportParagraphText = (text: string) =>
+  isLeadingJudgmentStart(text) ? stripLeadingJudgmentHeading(text) : text;
+
+const splitIntoSentences = (text: string) => {
+  const normalized = text.replace(/\s+/g, ' ').trim();
+  if (!normalized) return [];
+
+  return normalized.match(/[^.!?]+(?:[.!?]+["')\]]*|$)/g)?.map((sentence) => sentence.trim()).filter(Boolean) ?? [
+    normalized,
+  ];
+};
+
+const splitLongReportText = (text: string, targetCharacters: number) => {
+  const words = text.split(' ').filter(Boolean);
+  const chunks: string[] = [];
+  let current = '';
+
+  words.forEach((word) => {
+    const next = current ? `${current} ${word}` : word;
+    if (current && next.length > targetCharacters) {
+      chunks.push(current);
+      current = word;
+      return;
+    }
+
+    current = next;
+  });
+
+  if (current) chunks.push(current);
+  return chunks;
+};
+
+const splitIntoReportParagraphs = (text: string, targetCharacters = 640): ReportParagraph[] => {
+  const sentences = splitIntoSentences(text);
+  const paragraphs: ReportParagraph[] = [];
+  let current = '';
+
+  sentences.forEach((sentence) => {
+    if (sentence.length > targetCharacters * 1.65) {
+      if (current) {
+        paragraphs.push({
+          label: paragraphLabel(paragraphs.length),
+          text: current,
+        });
+        current = '';
+      }
+
+      splitLongReportText(sentence, targetCharacters).forEach((chunk) => {
+        paragraphs.push({
+          label: paragraphLabel(paragraphs.length),
+          text: chunk,
+        });
+      });
+      return;
+    }
+
+    const next = current ? `${current} ${sentence}` : sentence;
+    if (current && next.length > targetCharacters) {
+      paragraphs.push({
+        label: paragraphLabel(paragraphs.length),
+        text: current,
+      });
+      current = sentence;
+      return;
+    }
+
+    current = next;
+  });
+
+  if (current) {
+    paragraphs.push({
+      label: paragraphLabel(paragraphs.length),
+      text: current,
+    });
+  }
+
+  return paragraphs;
+};
+
+const reportParagraphsFromSourceBlocks = (blocks: SourceJudgmentBlock[]) =>
+  splitIntoReportParagraphs(
+    blocks
+      .filter((block) => !block.isHeading)
+      .map((block) => normalizeReportParagraphText(block.sourceText ?? block.text))
+      .filter(Boolean)
+      .join(' '),
+  );
+
+const leadingJudgmentHeadingFromBlocks = (blocks: SourceJudgmentBlock[]) =>
+  blocks
+    .map((block) => extractLeadingJudgmentHeading(block.sourceText ?? block.text))
+    .find(Boolean);
+
+const leadingJudgmentHeadingFromStructuredPage = (
+  paragraphs: string[],
+  hasSourceLabels: boolean,
+) =>
+  paragraphs
+    .map((paragraph) => {
+      const sourceParagraph = parseSourceParagraph(paragraph);
+      return extractLeadingJudgmentHeading(hasSourceLabels ? sourceParagraph.text : paragraph);
+    })
+    .find(Boolean);
+
+const reportParagraphsFromStructuredPage = (
+  paragraphs: string[],
+  hasSourceLabels: boolean,
+) =>
+  splitIntoReportParagraphs(
+    paragraphs
+      .map((paragraph) => {
+        const sourceParagraph = parseSourceParagraph(paragraph);
+        return normalizeReportParagraphText(hasSourceLabels ? sourceParagraph.text : paragraph);
+      })
+      .filter(Boolean)
+      .join(' '),
+  );
+
+const sourceLeadingJudgmentPageIndex = (pages: { blocks: SourceJudgmentBlock[] }[]) => {
+  const index = pages.findIndex((page) => page.blocks.some((block) => block.startsLeadingJudgment));
+  return index > -1 ? index : Number.POSITIVE_INFINITY;
+};
+
+const structuredLeadingJudgmentPageIndex = (
+  pages: NonNullable<CaseLaw['judgmentPages']>,
+) => {
+  const index = pages.findIndex((page) =>
+    page.paragraphs.some((paragraph) => isLeadingJudgmentStart(parseSourceParagraph(paragraph).text ?? paragraph)),
+  );
+  return index > -1 ? index : Number.POSITIVE_INFINITY;
+};
+
+const currentReportCitationTargets = (judgment: CaseLaw): ReportCitationTarget[] => {
+  if (judgment.verbatimWholeCase || judgment.preserveSourceFormatting) {
+    const bodyText = getSourceCaseBodyText(judgment.fullJudgmentText ?? '');
+    const sourcePages = paginateSourceJudgmentText(bodyText);
+    const leadPageIndex = sourceLeadingJudgmentPageIndex(sourcePages);
+
+    return sourcePages.flatMap((page, pageIndex) => {
+      const pageNumber = pageIndex + 2;
+      const isLeadPage = pageIndex >= leadPageIndex;
+
+      if (!isLeadPage) return [];
+
+      return reportParagraphsFromSourceBlocks(page.blocks).map((paragraph) => ({
+        pageNumber,
+        label: paragraph.label,
+        text: paragraph.text,
+      }));
+    });
+  }
+
+  const pages = getJudgmentBodyPages(judgment);
+  const hasSourceLabels = usesSourceParagraphLabels(pages);
+  const leadPageIndex = structuredLeadingJudgmentPageIndex(pages);
+
+  return pages.flatMap((page, pageIndex) => {
+    const pageNumber = pageIndex + 2;
+    const isLeadPage = pageIndex >= leadPageIndex;
+
+    if (!isLeadPage) return [];
+
+    return reportParagraphsFromStructuredPage(page.paragraphs, hasSourceLabels).map((paragraph) => ({
+      pageNumber,
+      label: paragraph.label,
+      text: paragraph.text,
+    }));
+  });
+};
+
+const findCurrentReportCitation = (judgment: CaseLaw, sourceText: string): ReportCitationSpan | undefined => {
+  const needle = relevantNeedle(sourceText);
+  if (!needle) return undefined;
+
+  const targets = currentReportCitationTargets(judgment);
+
+  for (let startIndex = 0; startIndex < targets.length; startIndex += 1) {
+    let combined = '';
+
+    for (let endIndex = startIndex; endIndex < targets.length; endIndex += 1) {
+      combined = `${combined} ${targets[endIndex].text}`.trim();
+      const normalized = normalizeCitationText(combined);
+
+      if (normalized.includes(needle)) {
+        return {
+          start: targets[startIndex],
+          end: targets[endIndex],
+        };
+      }
+
+      if (normalized.length > needle.length + 1200) break;
+    }
+  }
+
+  return undefined;
+};
+
+const withCurrentReportCitations = (judgment: CaseLaw, items: string[]) => {
+  let previousQuote = '';
+
+  return items.map((item) => {
+    PAGE_CITATION_PATTERN.lastIndex = 0;
+    const hasCitation = PAGE_CITATION_PATTERN.test(item);
+    PAGE_CITATION_PATTERN.lastIndex = 0;
+
+    if (!hasCitation) {
+      if (normalizeCitationText(item).length > 24) previousQuote = item;
+      return item;
+    }
+
+    const target = findCurrentReportCitation(judgment, item) ?? findCurrentReportCitation(judgment, previousQuote);
+    if (!target) return item;
+
+    return item.replace(PAGE_CITATION_PATTERN, reportCitationText(target));
+  });
+};
+
+const withCurrentRatioCitation = (judgment: CaseLaw, point: RatioPoint): RatioPoint => {
+  const target = findCurrentReportCitation(judgment, point.body || point.fullText);
+  if (!target) return point;
+
+  const currentCitation = reportCitationText(target);
+  const replaceCitation = (text?: string) => {
+    if (!text) return text;
+    PAGE_CITATION_PATTERN.lastIndex = 0;
+    return PAGE_CITATION_PATTERN.test(text)
+      ? text.replace(PAGE_CITATION_PATTERN, currentCitation)
+      : `${text} ${currentCitation}`;
+  };
+
+  const attribution = replaceCitation(point.attribution);
+  const fullText = [point.heading, point.body, attribution].filter(Boolean).join('\n\n');
+
+  return {
+    ...point,
+    attribution,
+    fullText,
+  };
+};
+
 const WholeCasePanel: React.FC<{
   judgment: CaseLaw;
   status?: 'idle' | 'loading' | 'ready' | 'error';
@@ -867,16 +1465,79 @@ const WholeCasePanel: React.FC<{
   const judgmentText = getJudgmentTextForCopy(judgment);
   const isLoading = status === 'idle' || status === 'loading';
   const bodyPages = getJudgmentBodyPages(judgment);
-  const totalPages = bodyPages.length ? bodyPages.length + 1 : judgment.fullJudgmentText ? 2 : 1;
   const hasSourceLabels = usesSourceParagraphLabels(bodyPages);
   const sourceCaseBodyText = getSourceCaseBodyText(judgment.fullJudgmentText ?? '');
+  const sourcePages =
+    (judgment.verbatimWholeCase || judgment.preserveSourceFormatting) && judgment.fullJudgmentText
+      ? paginateSourceJudgmentText(sourceCaseBodyText)
+      : [];
+  const sourceLeadPageIndex = sourceLeadingJudgmentPageIndex(sourcePages);
+  const bodyLeadPageIndex = structuredLeadingJudgmentPageIndex(bodyPages);
+  const totalPages = sourcePages.length
+    ? sourcePages.length + 1
+    : bodyPages.length
+      ? bodyPages.length + 1
+      : judgment.fullJudgmentText
+        ? 2
+        : 1;
+  const [activeReportPage, setActiveReportPage] = useState(1);
+
+  useEffect(() => {
+    setActiveReportPage(1);
+  }, [judgment.id, totalPages]);
+
+  useEffect(() => {
+    if (isLoading || status === 'error') return undefined;
+
+    const container = document.querySelector<HTMLElement>(`[data-case-report-id="${judgment.id}"]`);
+    if (!container) return undefined;
+
+    const pages = Array.from(container.querySelectorAll<HTMLElement>('[data-report-page-number]'));
+    if (!pages.length) return undefined;
+
+    const updateActivePage = () => {
+      const tracker = container.querySelector<HTMLElement>('[data-report-page-tracker]');
+      const trackerBottom = tracker?.getBoundingClientRect().bottom ?? 0;
+      const viewportBottom = window.innerHeight;
+      const visiblePage = pages.reduce(
+        (best, page) => {
+          const box = page.getBoundingClientRect();
+          const visibleHeight = Math.max(0, Math.min(box.bottom, viewportBottom) - Math.max(box.top, trackerBottom));
+          const distanceFromTracker = Math.abs(box.top - trackerBottom);
+
+          if (visibleHeight > best.visibleHeight) return { visibleHeight, distanceFromTracker, page };
+          if (visibleHeight === best.visibleHeight && distanceFromTracker < best.distanceFromTracker) {
+            return { visibleHeight, distanceFromTracker, page };
+          }
+
+          return best;
+        },
+        { visibleHeight: -1, distanceFromTracker: Number.POSITIVE_INFINITY, page: pages[0] },
+      ).page;
+
+      const pageNumber = Number(visiblePage.dataset.reportPageNumber);
+      if (Number.isFinite(pageNumber)) setActiveReportPage(pageNumber);
+    };
+
+    updateActivePage();
+    window.addEventListener('scroll', updateActivePage, { passive: true });
+    window.addEventListener('resize', updateActivePage);
+
+    return () => {
+      window.removeEventListener('scroll', updateActivePage);
+      window.removeEventListener('resize', updateActivePage);
+    };
+  }, [isLoading, judgment.id, status, totalPages]);
 
   return (
     <div className="space-y-5">
-      <Section
-        title="The whole case"
-        subtitle="The judgment as delivered, paragraphed and page-numbered where the report provides it."
-      >
+      <div className="border-b border-amber-100 pb-4">
+        <h2 className="text-lg font-black tracking-tight text-neutral-950 sm:text-xl">The whole case</h2>
+        <p className="mt-1.5 max-w-3xl text-[12px] leading-5 text-neutral-600 sm:text-sm sm:leading-6">
+          The judgment as delivered, paragraphed and page-numbered where the report provides it.
+        </p>
+      </div>
+
         {isLoading ? (
           <div className="rounded-2xl border border-amber-200 bg-white p-6 text-base font-semibold text-neutral-700">
             Loading the full judgment...
@@ -886,57 +1547,87 @@ const WholeCasePanel: React.FC<{
             The full judgment could not be loaded. Please refresh and try again.
           </div>
         ) : (judgment.verbatimWholeCase || judgment.preserveSourceFormatting) && judgment.fullJudgmentText ? (
-          <div className="overflow-hidden rounded-[1.5rem] border border-amber-200 bg-white shadow-inner">
+          <div className="overflow-visible bg-white" data-case-report-id={judgment.id}>
+            <ReportPageTracker pageNumber={activeReportPage} totalPages={totalPages} />
             <CaseCoatOfArmsHeader />
-            <CaseOpeningPage judgment={judgment} totalPages={totalPages} />
-            <article className="w-full border-b border-amber-100 bg-white p-3.5 last:border-b-0 sm:p-7 lg:px-8 lg:py-8 xl:px-10">
-              <div className="mb-5 inline-flex items-center rounded-full bg-amber-50 px-2.5 py-1 font-mono text-[9px] font-bold text-amber-700">
-                page (2) of ({totalPages})
-              </div>
-              <SourceJudgmentText text={sourceCaseBodyText} />
-            </article>
+            <CaseOpeningPage judgment={judgment} />
+            {sourcePages.map((page, pageIndex) => {
+              const shouldReparagraph = pageIndex >= sourceLeadPageIndex;
+
+              return (
+                <CaseReportPage key={`source-page-${pageIndex + 2}`} pageNumber={pageIndex + 2}>
+                  <SourceJudgmentText
+                    blocks={page.blocks}
+                    reparagraph={shouldReparagraph}
+                  />
+                </CaseReportPage>
+              );
+            })}
           </div>
         ) : bodyPages.length ? (
-          <div className="overflow-hidden rounded-[1.5rem] border border-amber-200 bg-white shadow-inner">
+          <div className="overflow-visible bg-white" data-case-report-id={judgment.id}>
+            <ReportPageTracker pageNumber={activeReportPage} totalPages={totalPages} />
             <CaseCoatOfArmsHeader />
-            <CaseOpeningPage judgment={judgment} totalPages={totalPages} />
-            {bodyPages.map((page, pageIndex) => (
-              <article key={page.page} className="w-full border-b border-amber-100 p-3.5 last:border-b-0 sm:p-8 lg:px-8 lg:py-8 xl:px-10">
-                <div className="mb-5 inline-flex items-center rounded-full bg-amber-50 px-2.5 py-1 font-mono text-[9px] font-bold text-amber-700">
-                  page ({pageIndex + 2}) of ({totalPages})
-                </div>
-                <div className="space-y-4 text-[13px] leading-6 text-neutral-800 sm:space-y-5 sm:text-sm sm:leading-7">
-                  {page.paragraphs.map((paragraph, index) => {
-                    const sourceParagraph = parseSourceParagraph(paragraph);
-                    const label = hasSourceLabels ? sourceParagraph.label : paragraphLabel(index);
-                    const text = hasSourceLabels ? sourceParagraph.text : paragraph;
+            <CaseOpeningPage judgment={judgment} />
+            {bodyPages.map((page, pageIndex) => {
+              const shouldReparagraph = pageIndex >= bodyLeadPageIndex;
 
-                    return (
-                      <p key={`${page.page}-${index}`} className="grid grid-cols-[1.9rem_minmax(0,1fr)] gap-2 sm:grid-cols-[3.5rem_1fr] sm:gap-3">
-                        <span className="font-mono text-xs font-black leading-6 text-amber-700 sm:text-sm sm:leading-7">
-                          {label ?? ''}
-                        </span>
-                        <span className="min-w-0 break-words">{text}</span>
-                      </p>
-                    );
-                  })}
-                </div>
-              </article>
-            ))}
+              return (
+                <CaseReportPage key={page.page} pageNumber={pageIndex + 2}>
+                  <div
+                    className={
+                      shouldReparagraph
+                        ? 'mx-auto w-full max-w-[64rem] space-y-0 font-[Georgia,ui-serif,serif] text-[15px] leading-7 text-neutral-900 sm:text-[17px] sm:leading-8'
+                        : 'mx-auto w-full max-w-[74rem] space-y-4 font-[Georgia,ui-serif,serif] text-[15px] leading-8 text-neutral-900 sm:text-[17px] sm:leading-9'
+                    }
+                  >
+                    {shouldReparagraph ? (
+                    <>
+                      {leadingJudgmentHeadingFromStructuredPage(page.paragraphs, hasSourceLabels) && (
+                        <p className="text-center font-[Georgia,ui-serif,serif] text-[13px] font-bold leading-6 text-neutral-950 sm:text-base sm:leading-7">
+                          {leadingJudgmentHeadingFromStructuredPage(page.paragraphs, hasSourceLabels)}
+                        </p>
+                      )}
+                      {reportParagraphsFromStructuredPage(page.paragraphs, hasSourceLabels).map((paragraph, index) => (
+                        <ReportParagraphRow key={`${page.page}-report-${index}`} label={paragraph.label} text={paragraph.text} />
+                      ))}
+                    </>
+                    ) : page.paragraphs.map((paragraph, index) => {
+                      const sourceParagraph = parseSourceParagraph(paragraph);
+                      const label = sourceParagraph.label;
+                      const text = hasSourceLabels ? sourceParagraph.text : paragraph;
+
+                      return label ? (
+                        <ReportParagraphRow key={`${page.page}-${index}`} label={label} text={text} />
+                      ) : (
+                        <p
+                          key={`${page.page}-${index}`}
+                          className={
+                            shouldReparagraph
+                              ? 'pl-[calc(2.25rem+0.625rem)] sm:pl-[calc(3.25rem+1rem)]'
+                              : 'whitespace-pre-wrap break-words'
+                          }
+                        >
+                          {text}
+                        </p>
+                      );
+                    })}
+                  </div>
+                </CaseReportPage>
+              );
+            })}
           </div>
         ) : (
-          <div className="overflow-hidden rounded-[1.5rem] border border-amber-200 bg-white shadow-inner">
+          <div className="overflow-visible bg-white" data-case-report-id={judgment.id}>
+            <ReportPageTracker pageNumber={activeReportPage} totalPages={totalPages} />
             <CaseCoatOfArmsHeader />
-            <CaseOpeningPage judgment={judgment} totalPages={totalPages} />
+            <CaseOpeningPage judgment={judgment} />
             {judgment.fullJudgmentText ? (
-              <article className="border-b border-amber-100 p-3.5 last:border-b-0 sm:p-8 lg:px-10 lg:py-9">
-                <div className="mb-5 inline-flex items-center rounded-full bg-amber-50 px-2.5 py-1 font-mono text-[9px] font-bold text-amber-700">
-                  page (2) of ({totalPages})
-                </div>
-                <pre className="block w-full max-w-none overflow-x-auto whitespace-pre-wrap break-words font-mono text-[12px] leading-6 text-neutral-800 sm:text-sm sm:leading-7">
+              <CaseReportPage pageNumber={2}>
+                <pre className="block w-full max-w-none overflow-x-auto whitespace-pre-wrap break-words font-mono text-sm leading-7 text-neutral-800 sm:text-base sm:leading-8">
                   {judgment.fullJudgmentText}
                 </pre>
-              </article>
+              </CaseReportPage>
             ) : (
               <div className="p-5 text-sm font-semibold leading-7 text-neutral-700 sm:p-8 lg:px-10 lg:py-9">
                 Full judgment text is not available yet.
@@ -953,7 +1644,6 @@ const WholeCasePanel: React.FC<{
             hint="Copy the whole case to MS Word."
           />
         )}
-      </Section>
 
     </div>
   );
@@ -968,37 +1658,82 @@ const CaseCoatOfArmsHeader: React.FC = () => (
   </div>
 );
 
-const SourceJudgmentText: React.FC<{ text: string }> = ({ text }) => {
-  const blocks = text
-    .split(/\n{2,}/)
-    .map((block) => block.trim())
-    .filter(Boolean)
-    .map((block) => block.replace(/\n+/g, ' ').replace(/\s+/g, ' ').trim());
+const ReportPageTracker: React.FC<{ pageNumber: number; totalPages: number }> = ({ pageNumber, totalPages }) => (
+  <div
+    className="sticky top-16 z-30 border-b-2 border-neutral-300 bg-white/95 px-3 py-2 backdrop-blur sm:px-8"
+    data-report-page-tracker
+  >
+    <p className="text-right font-[Georgia,ui-serif,serif] text-[12px] font-semibold text-neutral-700 sm:text-sm">
+      Page{' '}
+      <span className="mx-1 inline-flex min-w-7 justify-center rounded-sm border border-neutral-300 bg-white px-1.5 py-0.5 font-sans text-[11px] font-bold leading-none text-neutral-800 sm:text-xs">
+        {pageNumber}
+      </span>{' '}
+      of {totalPages}
+    </p>
+  </div>
+);
+
+const CaseReportPage: React.FC<{
+  pageNumber: number;
+  children: React.ReactNode;
+}> = ({ pageNumber, children }) => (
+  <article
+    className="lawpex-report-page flex min-h-[34rem] w-full flex-col border-b-4 border-amber-300 bg-white p-3.5 last:border-b-0 sm:min-h-[42rem] sm:p-8 lg:px-10 lg:py-9 xl:px-12"
+    data-report-page-number={pageNumber}
+  >
+    <div className="min-w-0 flex-1">{children}</div>
+    <p className="mt-8 text-center font-mono text-sm font-bold text-neutral-600">
+      {pageNumber}
+    </p>
+  </article>
+);
+
+const ReportParagraphRow: React.FC<{ label: string; text: string }> = ({ label, text }) => (
+  <p className="grid w-full grid-cols-[2.35rem_minmax(0,1fr)] gap-2.5 sm:grid-cols-[3.25rem_minmax(0,1fr)] sm:gap-4">
+    <span className="pt-0.5 font-sans text-xl font-black leading-7 text-amber-700 sm:text-2xl sm:leading-8">{label}</span>
+    <span className="min-w-0 whitespace-normal break-normal">{text}</span>
+  </p>
+);
+
+const SourceJudgmentText: React.FC<{
+  blocks: SourceJudgmentBlock[];
+  reparagraph?: boolean;
+}> = ({ blocks, reparagraph = false }) => {
+  const leadingHeading = reparagraph ? leadingJudgmentHeadingFromBlocks(blocks) : undefined;
+  const reportParagraphs = reparagraph ? reportParagraphsFromSourceBlocks(blocks) : [];
 
   return (
-    <div className="w-full max-w-none space-y-3.5 text-[13px] leading-6 text-neutral-900 sm:space-y-4 sm:text-base sm:leading-7">
-      {blocks.map((block, index) => {
-        const isHeading =
-          block.length < 96 &&
-          (/^[A-Z][A-Z0-9\s.,'():;/&-]+$/.test(block) ||
-            /^(SUMMARY OF JUDGMENT|INTRODUCTION:|FACTS:?|ISSUES:?|DECISION\/HELD:|RATIO DECIDENDI)$/i.test(block));
-        const sourceLabel = block.match(/^([A-G])\s+(.+)/);
-
-        if (sourceLabel) {
-          return (
-            <p key={`${block.slice(0, 28)}-${index}`} className="grid w-full grid-cols-[1.8rem_minmax(0,1fr)] gap-2 sm:grid-cols-[2.5rem_minmax(0,1fr)] sm:gap-3">
-              <span className="font-semibold text-amber-700">{sourceLabel[1]}</span>
-              <span className="min-w-0 break-words">{sourceLabel[2]}</span>
+    <div
+      className={
+        reparagraph
+          ? 'mx-auto w-full max-w-[64rem] space-y-0 font-[Georgia,ui-serif,serif] text-[15px] leading-7 text-neutral-900 sm:text-[17px] sm:leading-8'
+          : 'mx-auto w-full max-w-[74rem] space-y-4 font-[Georgia,ui-serif,serif] text-[15px] leading-8 text-neutral-900 sm:text-[17px] sm:leading-9'
+      }
+    >
+      {reparagraph ? (
+        <>
+          {leadingHeading && (
+            <p className="text-center font-sans text-base font-black uppercase tracking-[0.08em] text-neutral-950 sm:text-lg">
+              {leadingHeading}
             </p>
-          );
+          )}
+          {reportParagraphs.map((paragraph, index) => (
+            <ReportParagraphRow key={`report-${paragraph.label}-${index}`} label={paragraph.label} text={paragraph.text} />
+          ))}
+        </>
+      ) : blocks.map((block, index) => {
+        if (block.sourceLabel) {
+          return <ReportParagraphRow key={`${block.text.slice(0, 28)}-${index}`} label={block.sourceLabel} text={block.sourceText ?? ''} />;
         }
 
         return (
           <p
-            key={`${block.slice(0, 28)}-${index}`}
-            className={isHeading ? 'font-semibold uppercase tracking-[0.04em] text-neutral-950' : undefined}
+            key={`${block.text.slice(0, 28)}-${index}`}
+            className={block.isHeading
+              ? 'text-center font-sans text-sm font-black uppercase tracking-[0.08em] text-neutral-950 sm:text-base'
+              : 'whitespace-pre-wrap break-words'}
           >
-            {block}
+            {block.text}
           </p>
         );
       })}
@@ -1006,37 +1741,40 @@ const SourceJudgmentText: React.FC<{ text: string }> = ({ text }) => {
   );
 };
 
-const CaseOpeningPage: React.FC<{ judgment: CaseLaw; totalPages: number }> = ({ judgment, totalPages }) => {
+const CaseOpeningPage: React.FC<{ judgment: CaseLaw }> = ({ judgment }) => {
   const parties = getFormalCaseParties(judgment);
   const role = judgeRole(judgment.court);
 
   return (
-    <article className="w-full border-b border-amber-100 bg-white px-4 py-7 font-[Georgia,ui-serif,serif] text-neutral-950 sm:px-10 sm:py-12 lg:px-12 xl:px-16">
+    <article
+      className="w-full border-b-4 border-amber-300 bg-white px-4 py-7 font-[Georgia,ui-serif,serif] text-neutral-950 sm:px-10 sm:py-12 lg:px-12 xl:px-16"
+      data-report-page-number={1}
+    >
       <div className="mx-auto w-full max-w-[76rem]">
-        <header className="text-center text-[13px] leading-6 sm:text-base sm:leading-7">
+        <header className="text-center text-sm leading-7 sm:text-[17px] sm:leading-8">
           <p className="font-black">{formatCourtHeading(judgment.court)}</p>
           {judgment.judicialDivision && (
             <p className="mt-1 font-semibold">{formatDivision(judgment.judicialDivision)}</p>
           )}
           {judgment.dateDelivered && <p className="mt-5">{formatDeliveredDate(judgment.dateDelivered)}</p>}
-          <p className="mt-3">Suit No: {judgment.suitNumber}</p>
+          <p className="mt-3 font-semibold text-red-700">Suit No: {judgment.suitNumber}</p>
           <p className="mt-5">Before Their Lordship</p>
         </header>
 
-        <div className="mt-7 space-y-6 text-[13px] sm:mt-10 sm:space-y-9 sm:text-base">
+        <div className="mt-7 space-y-6 text-sm sm:mt-10 sm:space-y-9 sm:text-[17px]">
           {judgment.presidingJudges.map((judge) => (
             <div key={judge} className="grid gap-1.5 rounded-xl border border-amber-100 bg-[#fffdf6] p-3 sm:grid-cols-[1.05fr_0.95fr] sm:gap-16 sm:border-0 sm:bg-transparent sm:p-0">
-              <p className="font-black leading-6">{cleanJudgeName(judge)}</p>
-              <p className="font-black leading-6">{role}</p>
+              <p className="font-black leading-7">{cleanJudgeName(judge)}</p>
+              <p className="font-black leading-7">{role}</p>
             </div>
           ))}
         </div>
 
-        <div className="mt-9 space-y-7 text-[13px] sm:mt-12 sm:space-y-9 sm:text-sm">
+        <div className="mt-9 space-y-7 text-sm sm:mt-12 sm:space-y-9 sm:text-base">
           <p>BETWEEN</p>
 
           <div className="grid items-end gap-4 sm:grid-cols-[1fr_auto] sm:gap-16">
-            <div className="space-y-1 break-words text-center leading-6 sm:pl-24">
+            <div className="space-y-1 break-words text-center leading-7 sm:pl-24">
               {parties.appellants.map((party) => (
                 <p key={party}>{party}</p>
               ))}
@@ -1047,7 +1785,7 @@ const CaseOpeningPage: React.FC<{ judgment: CaseLaw; totalPages: number }> = ({ 
           <p>And</p>
 
           <div className="grid items-end gap-4 sm:grid-cols-[1fr_auto] sm:gap-16">
-            <div className="space-y-1 break-words text-center leading-6 sm:pl-24">
+            <div className="space-y-1 break-words text-center leading-7 sm:pl-24">
               {parties.respondents.map((party) => (
                 <p key={party}>{party}</p>
               ))}
@@ -1056,8 +1794,8 @@ const CaseOpeningPage: React.FC<{ judgment: CaseLaw; totalPages: number }> = ({ 
           </div>
         </div>
 
-        <p className="mt-12 text-right font-mono text-[9px] font-bold text-neutral-500">
-          page (1) of ({totalPages})
+        <p className="mt-12 text-center font-mono text-sm font-bold text-neutral-600">
+          1
         </p>
       </div>
     </article>
@@ -1068,18 +1806,32 @@ const TabButton: React.FC<{
   active: boolean;
   icon: React.ElementType;
   label: string;
+  description?: string;
   onClick: () => void;
-}> = ({ active, icon: Icon, label, onClick }) => (
+}> = ({ active, icon: Icon, label, description, onClick }) => (
   <button
     onClick={onClick}
-    className={`flex min-h-11 min-w-[10.25rem] shrink-0 snap-start items-center gap-2 rounded-xl px-3.5 py-2.5 text-left text-[11px] font-black leading-4 transition active:scale-[0.99] sm:min-w-max sm:px-4 sm:py-3 sm:text-xs lg:w-full ${
+    className={`flex min-h-14 min-w-[13rem] shrink-0 snap-start items-center gap-3 rounded-xl px-3.5 py-3 text-left transition active:scale-[0.99] sm:min-w-[14rem] lg:w-full lg:min-w-0 ${
       active
         ? 'bg-[#facc15] text-neutral-950 shadow-[0_12px_30px_-20px_rgba(180,126,18,0.9)]'
         : 'border border-amber-200 bg-white text-neutral-700 hover:border-amber-400 hover:bg-amber-50'
     }`}
   >
-    <Icon className="h-4 w-4 shrink-0" />
-    <span>{label}</span>
+    <span
+      className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-lg ${
+        active ? 'bg-white/55 text-neutral-950' : 'bg-amber-50 text-amber-700'
+      }`}
+    >
+      <Icon className="h-4 w-4" />
+    </span>
+    <span className="min-w-0">
+      <span className="block truncate text-xs font-black leading-5 sm:text-[13px]">{label}</span>
+      {description && (
+        <span className={`block truncate text-[10px] font-bold leading-4 ${active ? 'text-neutral-800' : 'text-neutral-500'}`}>
+          {description}
+        </span>
+      )}
+    </span>
   </button>
 );
 
@@ -1088,49 +1840,49 @@ const MetaCard: React.FC<{ icon: React.ElementType; label: string; value: string
   label,
   value,
 }) => (
-  <div className="min-h-0 rounded-lg border border-amber-100 bg-[#fffdf6] px-2.5 py-2">
+  <div className="min-h-0 rounded-lg border border-amber-100 bg-[#fffdf6] px-3 py-2.5">
     <div className="flex min-w-0 flex-col gap-1 text-yellow-700 lg:flex-row lg:items-center lg:gap-2">
       <span className="flex items-center gap-1.5">
-        <Icon className="h-3 w-3 shrink-0" />
-        <span className="shrink-0 text-[9px] font-semibold uppercase tracking-wider">{label}</span>
+        <Icon className="h-3.5 w-3.5 shrink-0" />
+        <span className="shrink-0 text-[10px] font-semibold uppercase tracking-wider">{label}</span>
       </span>
-      <span className="min-w-0 break-words text-[11px] font-semibold leading-snug text-neutral-950 lg:truncate">{value}</span>
+      <span className="min-w-0 break-words text-xs font-semibold leading-snug text-neutral-950 lg:truncate">{value}</span>
     </div>
   </div>
 );
 
 const MiniHeading: React.FC<{ icon: React.ElementType; label: string }> = ({ icon: Icon, label }) => (
   <div className="flex items-center gap-2 text-amber-700">
-    <Icon className="w-4 h-4" />
-    <span className="text-[11px] font-black uppercase tracking-[0.14em]">{label}</span>
+    <Icon className="h-[18px] w-[18px]" />
+    <span className="text-xs font-black uppercase tracking-[0.14em]">{label}</span>
   </div>
 );
 
 const DigestBlock: React.FC<{ title: string; body: string; tone?: 'strong' }> = ({ title, body, tone }) => (
   <div
-    className={`rounded-2xl border p-5 ${
+    className={`rounded-2xl border p-6 sm:p-7 lg:p-8 ${
       tone === 'strong' ? 'bg-neutral-950 border-neutral-800 text-white' : 'bg-white border-amber-100 text-neutral-800'
     }`}
   >
-    <h3 className={`text-[10px] font-black uppercase tracking-wider ${tone === 'strong' ? 'text-yellow-300' : 'text-yellow-700'}`}>
+    <h3 className={`text-xs font-black uppercase tracking-wider ${tone === 'strong' ? 'text-yellow-300' : 'text-yellow-700'}`}>
       {title}
     </h3>
-    <p className={`mt-3 text-sm leading-7 ${tone === 'strong' ? 'text-neutral-100' : 'text-neutral-700'}`}>
+    <p className={`mt-4 text-base leading-8 sm:text-[18px] sm:leading-9 ${tone === 'strong' ? 'text-neutral-100' : 'text-neutral-700'}`}>
       {body}
     </p>
   </div>
 );
 
 const NumberedList: React.FC<{ items: string[]; italic?: boolean }> = ({ items, italic }) => (
-  <ol className="space-y-3">
+  <ol className="space-y-5">
     {items.map((item, index) => (
       <li
         key={`${item}-${index}`}
-        className={`flex min-w-0 gap-2.5 rounded-xl border border-amber-100 bg-white p-3.5 text-[13px] leading-6 text-neutral-800 sm:gap-3 sm:rounded-2xl sm:p-5 sm:text-sm sm:leading-7 ${
+        className={`flex min-w-0 gap-3 rounded-xl border border-amber-100 bg-white p-5 text-base leading-8 text-neutral-800 sm:gap-4 sm:rounded-2xl sm:p-7 sm:text-[18px] sm:leading-9 ${
           italic ? 'italic' : ''
         }`}
       >
-        <span className="shrink-0 font-black text-amber-700 not-italic">{index + 1}.</span>
+        <span className="shrink-0 text-base font-black text-amber-700 not-italic sm:text-[18px]">{index + 1}.</span>
         <span className="min-w-0 whitespace-pre-wrap break-words">{item}</span>
       </li>
     ))}
@@ -1138,11 +1890,11 @@ const NumberedList: React.FC<{ items: string[]; italic?: boolean }> = ({ items, 
 );
 
 const SimpleList: React.FC<{ items: string[]; italic?: boolean }> = ({ items, italic }) => (
-  <ul className="space-y-3">
+  <ul className="space-y-5">
     {items.map((item, index) => (
       <li
         key={`${item}-${index}`}
-        className={`min-w-0 rounded-xl border border-amber-100 bg-white p-3.5 text-[13px] leading-6 text-neutral-800 sm:rounded-2xl sm:p-5 sm:text-sm sm:leading-7 ${
+        className={`min-w-0 rounded-xl border border-amber-100 bg-white p-5 text-base leading-8 text-neutral-800 sm:rounded-2xl sm:p-7 sm:text-[18px] sm:leading-9 ${
           italic ? 'italic' : ''
         }`}
       >
@@ -1157,10 +1909,10 @@ const Section: React.FC<{ title: string; subtitle: string; children: React.React
   subtitle,
   children,
 }) => (
-  <div className="rounded-[1.15rem] border border-amber-200 bg-[#fffdf6] p-3.5 shadow-[0_18px_55px_-44px_rgba(24,20,17,0.72)] sm:rounded-[1.5rem] sm:p-5 lg:p-6">
-    <div className="mb-4 border-b border-amber-100 pb-3.5 sm:mb-5 sm:pb-4">
-      <h2 className="text-lg font-black tracking-tight text-neutral-950 sm:text-xl">{title}</h2>
-      <p className="mt-1.5 max-w-3xl text-[12px] leading-5 text-neutral-600 sm:text-sm sm:leading-6">{subtitle}</p>
+  <div className="rounded-[1.15rem] border border-amber-200 bg-[#fffdf6] p-5 shadow-[0_18px_55px_-44px_rgba(24,20,17,0.72)] sm:rounded-[1.5rem] sm:p-7 lg:p-9">
+    <div className="mb-6 border-b border-amber-100 pb-5 sm:mb-7 sm:pb-6">
+      <h2 className="text-2xl font-black tracking-tight text-neutral-950 sm:text-[28px]">{title}</h2>
+      <p className="mt-2 max-w-6xl text-base leading-7 text-neutral-600 sm:text-[17px] sm:leading-8">{subtitle}</p>
     </div>
     {children}
   </div>

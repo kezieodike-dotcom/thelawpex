@@ -65,6 +65,79 @@ const useScrollToTop = (pathname: string) => {
   }, [pathname]);
 };
 
+/** Reveals feature sections and cards as they enter the viewport. */
+const useScrollReveal = (pathname: string) => {
+  useEffect(() => {
+    let observer: IntersectionObserver | null = null;
+
+    const clearRevealState = () => {
+      document.querySelectorAll<HTMLElement>('.lawpex-reveal, .lawpex-reveal-in').forEach((element) => {
+        element.classList.remove('lawpex-reveal', 'lawpex-reveal-in');
+        element.style.removeProperty('--reveal-delay');
+      });
+    };
+
+    if (pathname !== HOME_ROUTE.path) {
+      clearRevealState();
+      return undefined;
+    }
+
+    const selectors = [
+      '[data-lawpex-reveal]',
+      '.lawpex-card',
+      '.lawpex-panel',
+      'main a[class*="rounded"][class*="border"]',
+      'main div[class*="rounded"][class*="border"]',
+      'footer > div > div',
+      'footer a',
+      'footer input',
+      'footer button',
+      'footer [class*="rounded"][class*="border"]',
+    ];
+
+    const timer = window.setTimeout(() => {
+      const elements = Array.from(document.querySelectorAll<HTMLElement>(selectors.join(',')))
+        .filter((element, index, list) => list.indexOf(element) === index)
+        .filter((element) => !element.closest('.lawpex-hero-motion, .lawpex-no-reveal, [role="dialog"]'));
+
+      const revealElement = (element: Element) => {
+        window.requestAnimationFrame(() => {
+          window.requestAnimationFrame(() => element.classList.add('lawpex-reveal-in'));
+        });
+      };
+
+      observer = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((entry) => {
+            if (!entry.isIntersecting) return;
+            revealElement(entry.target);
+            observer?.unobserve(entry.target);
+          });
+        },
+        { threshold: 0.12, rootMargin: '0px 0px -8% 0px' },
+      );
+
+      elements.forEach((element, index) => {
+        element.classList.add('lawpex-reveal');
+        element.style.setProperty('--reveal-delay', `${Math.min(index % 8, 7) * 95}ms`);
+
+        const box = element.getBoundingClientRect();
+        if (box.top < window.innerHeight * 0.92 && box.bottom > 0) {
+          revealElement(element);
+          return;
+        }
+
+        observer?.observe(element);
+      });
+    }, 40);
+
+    return () => {
+      window.clearTimeout(timer);
+      observer?.disconnect();
+    };
+  }, [pathname]);
+};
+
 export function AppShell() {
   const navigate = useNavigate();
   const { pathname } = useLocation();
@@ -84,6 +157,7 @@ export function AppShell() {
 
   usePageMeta(pathname);
   useScrollToTop(pathname);
+  useScrollReveal(pathname);
 
   /**
    * Views still ask for navigation by tab id; the shell turns that into a URL change so

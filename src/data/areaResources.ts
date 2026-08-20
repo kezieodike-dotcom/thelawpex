@@ -565,7 +565,7 @@ The court may order a settlement of property for the benefit of the other party 
     },
   ],
 
-  caseIds: ['case-015', 'case-016'],
+  caseIds: ['case-015'],
 
   practicals: [
     {

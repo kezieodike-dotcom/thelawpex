@@ -122,6 +122,7 @@ export const HomeView: React.FC<HomeViewProps> = ({ setActiveTab, onOpenSearch, 
               <button
                 key={item.id}
                 onClick={() => setActiveTab(item.id)}
+                data-lawpex-reveal="module-card"
                 className={moduleClass(item.tone, isWide)}
               >
                 <div className="absolute right-4 top-4 text-5xl font-black leading-none opacity-[0.045]">
