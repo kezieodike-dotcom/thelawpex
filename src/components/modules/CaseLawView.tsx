@@ -278,9 +278,6 @@ const CaseDetail: React.FC<{ judgment: CaseLaw }> = ({ judgment }) => {
     };
   }, [document, judgment.hasFullJudgment, judgment.id, tab]);
 
-  const related = (judgment.relatedCaseIds ?? [])
-    .map((id) => LANDMARK_CASES.find((item) => item.id === id))
-    .filter((item): item is CaseLaw => Boolean(item));
   const caseSectionTabs: { id: CaseDetailTab; icon: React.ElementType; label: string; kicker: string }[] = [
     { id: 'ratio', icon: Award, label: 'Ratio decidendi', kicker: 'Binding reasons' },
     { id: 'digest', icon: ClipboardList, label: 'Case digest', kicker: 'Facts and decision' },
@@ -383,25 +380,6 @@ const CaseDetail: React.FC<{ judgment: CaseLaw }> = ({ judgment }) => {
           </main>
         </div>
 
-        {related.length > 0 && (
-          <div className="mt-6 rounded-[1.5rem] border border-amber-200 bg-white p-5 shadow-[0_18px_55px_-44px_rgba(24,20,17,0.72)] sm:p-6">
-            <h3 className="mb-3 text-xs font-black uppercase tracking-[0.16em] text-amber-700">
-              Cases considered alongside this one
-            </h3>
-            <div className="space-y-2">
-              {related.map((item) => (
-                <Link
-                  key={item.id}
-                  to={`/case-law/case/${item.id}`}
-                  className="block rounded-2xl border border-amber-100 bg-[#fffdf6] p-4 transition hover:border-amber-400"
-                >
-                  <p className="text-base font-black leading-snug text-neutral-950">{item.title}</p>
-                  <p className="mt-1 text-sm font-bold text-amber-700">{item.citation}</p>
-                </Link>
-              ))}
-            </div>
-          </div>
-        )}
       </div>
     </div>
   );
