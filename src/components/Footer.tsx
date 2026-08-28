@@ -6,7 +6,7 @@ import { pathForTab } from '../routes';
 
 const LITIGATION_LINKS = [
   { id: 'ai-assistant', label: 'AI Legal Assistant' },
-  { id: 'case-law', label: 'Case Law Library' },
+  { id: 'case-law', label: 'Case Laws Library' },
   { id: 'court-rules', label: 'Court Rules' },
   { id: 'laws', label: 'Nigerian Laws' },
   { id: 'drafts', label: 'Legal Drafts' },
@@ -15,7 +15,7 @@ const LITIGATION_LINKS = [
 ];
 
 const RESOURCE_LINKS = [
-  { id: 'areas-of-law', label: 'Areas of Law' },
+  { id: 'areas-of-law', label: 'Forms and Precedents' },
   { id: 'practicals', label: 'Courtroom Procedures' },
   { id: 'learn-litigation-ai', label: 'Learn Litigation with AI' },
   { id: 'articles', label: 'Legal Articles' },

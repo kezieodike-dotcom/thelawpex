@@ -40,9 +40,9 @@ type DashboardTab =
   | 'team';
 
 const savedCases = [
-  { id: 'case-001', title: 'Amaechi v. INEC & Ors', citation: '(2008) LDLR (SC) pt 1001', savedAt: '2026-07-22' },
-  { id: 'case-002', title: 'Salu v. Egeibon', citation: '(1994) LDLR (SC) pt 1002', savedAt: '2026-07-20' },
-  { id: 'case-005', title: 'Kubor v. Dickson', citation: '(2013) LDLR (SC) pt 1005', savedAt: '2026-07-18' },
+  { id: 'case-007', title: 'Tunde Adava & Anor v. The State', citation: '(2002) LDLR (CA) pt 357', savedAt: '2026-07-22' },
+  { id: 'case-006', title: 'Adeoye Adekunle v. The State', citation: '(2018) LDLR (CA) pt 1200', savedAt: '2026-07-20' },
+  { id: 'case-004', title: 'Adekunle v. State', citation: '(2006) LDLR (SC) pt 67', savedAt: '2026-07-18' },
 ];
 
 const savedDrafts = [

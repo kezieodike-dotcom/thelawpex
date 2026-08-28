@@ -475,353 +475,8 @@ export const AREAS_OF_LAW: AreaOfLaw[] = [
 ];
 
 export const LANDMARK_CASES: CaseLaw[] = [
-  {
+{
     id: 'case-001',
-    title: 'Amaechi v. Independent National Electoral Commission (INEC) & Ors',
-    citation: '(2008) LDLR (SC) pt 1001',
-    sourceUrl: 'https://lawcarenigeria.com/rt-hon-rotimi-chubuike-amaechi-v-inec-2-ors/',
-    hasFullJudgment: true,
-    suitNumber: 'SC.252/2007',
-    court: 'Supreme Court of Nigeria',
-    year: 2008,
-    presidingJudges: ['Katsina-Alu, JSC (Presiding)', 'Musdapher, JSC', 'Onnoghen, JSC', 'Aderemi, JSC', 'Oguntade, JSC'],
-    areaOfLaw: 'Election Petitions & Constitutional Law',
-    subject: 'Internal Party Primaries, Substitution of Candidates and Declaratory Orders',
-    factsSummary: 'Rotimi Amaechi won the PDP governorship primaries in Rivers State. Without cogent or verifiable reasons as required by S.34 Electoral Act 2006, PDP substituted his name with Celestine Omehia. Omehia went on to win the election. Amaechi challenged the illegal substitution.',
-    issuesForDetermination: [
-      'Whether the substitution of Rotimi Amaechi without compliance with S.34 Electoral Act 2006 was lawful.',
-      'Whether the Court could declare Amaechi the duly elected Governor when his name was not on the ballot paper on election day.'
-    ],
-    decisionSummary: 'Supreme Court held unanimously that the substitution was illegal, null and void. In law, parties vote for political parties and not individual candidates. Therefore, Amaechi who was the validly nominated candidate was declared the duly elected Governor of Rivers State.',
-    ratioDecidendi: [
-      `Where a candidate for an election is wrongfully substituted by another, on obtaining judgment; he steps into the shoes of his invalidly nominated opponent whether as loser or winner`,
-      `The word ‘shall’ in section 34(2) of the Electoral Act 2006 is mandatory and not directory – a party must give cogent and verifiable reasons for changing its candidate`,
-      `It is a political party that is obliged to give cogent and verifiable reasons in it’s application to substitute a candidate for an election under the Electoral Act 2006`,
-      `The doctrine of lis pendens prevents any transfer of any right or the taking of any step capable of foisting a state of helplessness on the parties or the court during the pendency in court of an action and after the action`,
-      `(b) In any event, I do not accept the argument that a mere accusation or charge or indictment is sufficient for the purpose of section 34 of the Electoral Act, 2006 having regard to the requirement that the reason of indictment must be cogent and verifiable particularly as the word “verify” connotes to prove to be true, to confirm, to establish the truth of: to examine or test the correctness or authenticity of something. If the word is used, as in the instant case in a statute, it is presumed to have been used in its legal sense meaning to confirm or substantiate by oath or affidavit – see Action Congress v. INEC. The above being the position it follows therefore that even if an indictment was proved to exist, there is the additional requirement that it be proved to be true, which still does not exist in this case. – Per Onnoghen, JSC (Pg. 144)`,
-    ],
-    obiterDicta: [
-      'Political parties must respect their own constitutions and guidelines for primary elections to prevent judicial intervention in internal party management.'
-    ],
-    keyPrinciples: [
-      'S.34 Electoral Act requires "cogent and verifiable reasons" for substitution of candidate.',
-      'Consequential order of Supreme Court declaring winner without fresh election.',
-      'Votes in Nigerian general elections belong to political parties.'
-    ],
-    isLandmark: true,
-  },
-  {
-    id: 'case-002',
-    title: 'Salu v. Egeibon',
-    citation: '(1994) LDLR (SC) pt 1002',
-    sourceUrl: 'https://lawcarenigeria.com/salu-v-egeibon/',
-    hasFullJudgment: true,
-    suitNumber: 'SC.114/1989',
-    court: 'Supreme Court of Nigeria',
-    year: 1994,
-    presidingJudges: ['Uwais, JSC (Presiding)', 'Belgore, JSC', 'Wali, JSC', 'Kutigi, JSC'],
-    areaOfLaw: 'Civil Litigation & Advocacy',
-    subject: 'Locus Standi, Cause of Action and Threshold Competence of Court',
-    factsSummary: 'The Appellant sued challenging the alienation of family property. The Respondent raised a preliminary objection that Appellant lacked locus standi to institute the action as he failed to show special interest or injury above the general public.',
-    issuesForDetermination: [
-      'What constitutes locus standi in civil actions?',
-      'Whether the statement of claim disclosed a reasonable cause of action and sufficient standing.'
-    ],
-    decisionSummary: 'Supreme Court affirmed the dismissal of the suit. Locus standi is a threshold issue touching on jurisdiction. A plaintiff must show a sufficient legal interest that has been directly infringed.',
-    ratioDecidendi: [
-      `A court is not bound to grant an adjournment as the question whether to grant an adjournment is a matter of discretion and it depends on the facts and circumstances of each particular case. See Odusote v. Odusote (1971) 1 NMLR 228; (1971) 1 All NLR 219 and Nigeria Ports Authority v. Construzioni G. F Cogefar SPA., (1974) 12 SC 81 at pp. 91. Where an application for an adjournment is made to a court, the court should bear in mind the requirement that justice should be done to both parties and that it is also in the interest of justice that the hearing of a case should not be unduly delayed. It should grant it if a refusal of the application is most likely to defeat the rights of the parties altogether or be an injustice to one or the other of them, unless there is a good or sufficient cause for such refusal, otherwise an appellate court will not only have power but will be under a duty to review the ruling refusing the application- PER ADIO JSC.`,
-      `A trial court, ought to weigh the reasons given for the application for adjournment and the surrounding circumstances. A Judge must balance the requirements of fair hearing with the requirements for hearing to be within a reasonable time. By using the word reasonable in section 33(1) the framers of the constitution have given enough wide discretion to enable a court to conduct this balancing act. Where the requirements of fair hearing outweigh the necessity for a speedy trial a Judge or court should not hesitate to grant an application for an adjournment. Where however a party indulges in dilatory tactics, it could not be said that party is aiming at a fair hearing rather, that party is using the due process to defeat justice being done to the opposing party. In such a case a Judge or court should have enough courage not to lend weight to such act of filibustering and should be firm in refusing unnecessary application for adjournment- PER OGUNDARE JSC.`,
-      `To acknowledge the resounding authorities of Kodinlinye v. Odu (1935) 2 WACA 336 and its precursor authority on the same issue in Ekpo v. Ita 11 NLR 68 that it is for the plaintiff who seeks declaration of title to offer prolific evidence in proof of such a disputed fact coupled with positive acts of user so numerous over a length of time to indicate ownership is not so much to belabour those authorities in this instance but to openly acknowledge them- PER OGUNDARE JSC.`,
-      `Ordinarily if a plaintiff claiming that he is entitled to statutory right of occupancy in relation to parcel of land fails to establish by evidence the boundaries of the land, the proper order to make is one dismissing his claim. See Imah v. Okogbe, (1993) 9 NWLR (Pt.316) 159- PER ADIO JSC.`,
-      `If a principle of natural justice is violated, it does not matter whether if the proper thing had been done the decision would have been the same; the proceedings will still be null and void. In other words, if the principles of natural justice are violated in respects of any decision, it is immaterial whether the same decision would have been arrived at in the absence of the departure from the essential principles of justice. The decision must be declared to be no decision. See Adigun v. A.-T., of Oyo State (1987) 1 NWLR. (Pt.53) 678- PER ADIO JSC.`,
-      `An appellate court is entitled to interfere with the exercise of discretion of a trial court if the appellate court is satisfied that it is in the interest of justice to do so. See Ceekay Traders Ltd., v. General Motors Ltd., (1992) 2 NWLR (Pt. 222) 132- PER ADIO JSC.`,
-    ],
-    keyPrinciples: [
-      'Locus standi is determined strictly from the 4 corners of the Statement of Claim.',
-      'Jurisdiction is a threshold matter that can be raised at any stage of proceedings.'
-    ],
-    isLandmark: true,
-  },
-  {
-    id: 'case-003',
-    title: 'Madukolu & Ors v. Nkemdilim',
-    citation: '(1962) LDLR (SC) pt 1003',
-    sourceUrl: 'https://lawcarenigeria.com/gabriel-madukolu-ors-v-johnson-nkemdilim-2/',
-    hasFullJudgment: true,
-    suitNumber: 'F.S.C. 344/1961',
-    court: 'Supreme Court of Nigeria',
-    year: 1962,
-    presidingJudges: ['Bairamian, FJ (Delivered Leading Judgment)'],
-    areaOfLaw: 'Civil Litigation & Advocacy',
-    subject: 'Conditions Precedent to Exercise of Judicial Jurisdiction',
-    factsSummary: 'Land dispute where proceedings were initiated without satisfying statutory notice conditions under native court rules. The fundamental question was whether the court had jurisdiction to hear the matter.',
-    issuesForDetermination: ['What are the essential ingredients that confer competence and jurisdiction on a court of law?'],
-    decisionSummary: 'The Federal Supreme Court established the bedrock 3-pronged test for judicial jurisdiction in Nigeria.',
-    ratioDecidendi: [
-      `To revert to the portions of record quoted above, the Native Court, that instead of having a full re-hearing, had the evidence of the former witnesses read out, and heard only witnesses from the other sub-families. That was a defect in procedure; neither party complained of it in the subsequent appeals. The re-hearing was not a nullity on that account.`,
-      `If it was a nullity, it would be, under condition (3) of the above statement on competence, on the ground that the District Officer’s order, which initiated the re-hearing, was bad in law. The order was in these terms`,
-      `I set aside the judgment of the Court below and order that the case be re-opened to enable witnesses to be called from the other two sub-families of Umuonala.`,
-      `If that means that the re-hearing is to be confined to witnesses from those sub-families, the order is bad; if it means that there is to be a re-hearing for the sake of enabling such witnesses to be heard but does not confine it to them, it is not bad.`,
-      `It may be suggested that the order is ambiguous and should be interpreted in the light of the paragraph which precedes it; but that is itself ambiguous and in my view cannot have any real weight. For my part I think that the order should be interpreted in the light of the maxim ut res magis valeat, and the second meaning which saves the order, should be adopted. Moreover, it was so understood by the Native Court to which it was addressed: at the outset that court had the former evidence read out, presumably as a method of incorporating it and of saving itself from hearing it again.`,
-      `I therefore think that the re-hearing was not a nullity. At the same time I should add that as the point arose incidentally ex improvise, it was not argued at all fully and no cases were cited.`,
-    ],
-    keyPrinciples: [
-      '3 cardinal requirements for court competence.',
-      'Any defect in competence renders proceedings a nullity no matter how well conducted.'
-    ],
-    isLandmark: true,
-  },
-  {
-    id: 'case-004',
-    title: 'Inakoju v. Adeleke & Ors',
-    citation: '(2007) LDLR (SC) pt 1004',
-    sourceUrl: 'https://sheriahub.com/cases/ng/caselaw/hon-muyiwa-inakoju-ibadan-south-east-and-others-v-hon-adeleke-speaker-and-others-sc-2722006-2007-ngsc-30-12-january-2007-sc-2722006-1960-ngsc-1-11-january-2007',
-    hasFullJudgment: true,
-    suitNumber: 'SC.272/2006',
-    court: 'Supreme Court of Nigeria',
-    year: 2007,
-    presidingJudges: ['Musdapher, JSC', 'Katsina-Alu, JSC', 'Niki Tobi, JSC'],
-    areaOfLaw: 'Constitutional Law',
-    subject: 'Impeachment of Governor under Section 188 of 1999 Constitution',
-    factsSummary: 'Impeachment proceedings against Governor Rasheed Ladoja of Oyo State held in a hotel room by 18 members of the House of Assembly without compliance with constitutional 2/3rd quorum and panel procedures.',
-    issuesForDetermination: ['Whether courts can inquire into impeachment proceedings despite the ousted clause in S.188(10) of the Constitution.'],
-    decisionSummary: 'Supreme Court held that section 188(10) ouster clause only applies if the House of Assembly strictly complied with all constitutional preconditions in S.188(1)-(9). Where procedure is breached, courts have jurisdiction to strike down the impeachment.',
-    ratioDecidendi: [
-      `They also contended that the claims did not disclose a reasonable cause of action.`,
-      `By the combined effect of the above provisions therefore, and having regard to the nature of the reliefs claimed by the plaintiffs, it is clear beyond argument that the jurisdiction of this court is clearly ousted.`,
-      `Fortunately, society and its people are not totally helpless as the Judiciary, in the performance of its judicial functions under section 6 of the Constitution, is alive to check acts of violation, breach and indiscretions on the part of the Legislature.`,
-    ],
-    keyPrinciples: [
-      'Non-compliance with constitutional steps voids S.188 impeachment.',
-      'Judicial review of legislative impeachment proceedings.'
-    ],
-    isLandmark: true,
-  },
-  {
-    id: 'case-005',
-    title: 'Kubor v. Dickson',
-    citation: '(2013) LDLR (SC) pt 1005',
-    sourceUrl: 'https://lawcarenigeria.com/dr-imoro-kubor-anor-v-hon-seriake-henry-dickson-ors/',
-    hasFullJudgment: true,
-    suitNumber: 'SC.369/2012',
-    court: 'Supreme Court of Nigeria',
-    year: 2013,
-    presidingJudges: ['Onnoghen, JSC', 'Rhodes-Vivour, JSC'],
-    areaOfLaw: 'Civil Litigation & Advocacy',
-    subject: 'Admissibility of Computer Generated Evidence under Section 84 Evidence Act 2011',
-    factsSummary: 'Tendering of internet printouts from website without attaching S.84 certificate of compliance certifying the operational condition of the computer printer.',
-    issuesForDetermination: ['Is a certificate mandatory under Section 84(2) & (4) for electronic and computer printout evidence?'],
-    decisionSummary: 'Supreme Court held that compliance with S.84 Evidence Act 2011 is mandatory. Computer printouts tendered without a S.84 Certificate of Compliance are inadmissible in law.',
-    ratioDecidendi: [
-      `I have to state from the onset that it is settled law that issues for trial are joined in the pleadings and that parties and indeed the court are bound by the pleadings of the parties. PER WALTER SAMUEL NKANU ONNOGHEN, J.S.C.`,
-      `it is necessary for us to know what the law/constitution provides as the requirement that a candidate for that office must possess. In that respect, we have to take a look at Section 177 of the Constitution of the Federal Republic of Nigeria, 1999, as amended, (hereinafter referred to as the 1999 Constitution, as amended) which provides as follows:-`,
-      `“A person shall be qualified for election to the Office of Governorship of a state if:`,
-      `(iii) He is a member of a political party and is sponsored by that political party, and;`,
-      `(iv) He has been educated up to at least School Certificate Level or its equivalent”.`,
-      `From the argument of learned senior counsel for appellants, it is clear that they are contending that the 1st respondent, though a member of a political party was not sponsored by that political party as its candidate for the election in issue, in breach of Section 177(iii) supra.`,
-      `The other Section of the 1999 Constitution as amended relevant to the issue of qualification or non qualification of a candidate for the office of Governor of a state is Section 182 of that constitution which enacts as follows:-`,
-      `“182(1) No person shall be qualified for election to the office of Governor of a State if;-`,
-    ],
-    keyPrinciples: [
-      'Mandatory nature of S.84 Evidence Act Certificate.',
-      'Electronic evidence admissibility in Nigerian courts.'
-    ],
-    relatedCaseIds: ['case-002'],
-    isLandmark: true,
-  },
-  {
-    id: 'case-006',
-    title: 'Military Governor of Lagos State v. Ojukwu',
-    citation: '(1986) LDLR (SC) pt 1006',
-    sourceUrl: 'https://lawcarenigeria.com/the-military-governor-of-lagos-state-ors-v-chief-emeka-odumegwu-ojukwu-anor-1986/',
-    hasFullJudgment: true,
-    suitNumber: 'SC.241/1985',
-    court: 'Supreme Court of Nigeria',
-    year: 1986,
-    presidingJudges: ['Obaseki, JSC', 'Eso, JSC', 'Kayode Eso, JSC', 'Aniagolu, JSC', 'Nnamani, JSC'],
-    areaOfLaw: 'Constitutional Law',
-    subject: 'Rule of Law, Executive Lawlessness and Obedience to Court Orders',
-    factsSummary: 'While a suit over ownership of a residential property at 29 Queen\'s Drive, Ikoyi was pending, and in the face of an order for maintenance of the status quo, the Lagos State Government forcibly ejected Chief Emeka Odumegwu-Ojukwu from the premises using armed men.',
-    issuesForDetermination: [
-      'Whether the executive can resort to self-help and disobey a subsisting order of court.',
-      'Whether the courts will lend their aid to preserve the rule of law against executive lawlessness.'
-    ],
-    decisionSummary: 'The Supreme Court roundly condemned the executive lawlessness and restored possession to Ojukwu, holding that in a society governed by the rule of law the executive must obey court orders and cannot resort to self-help.',
-    ratioDecidendi: [
-      `In the same Court, Ademola J.C.A. in a concurring ruling, said-`,
-      `Mr. Adelosoye the learned Solicitor General for the Lagos State pleaded for a restoration of the status quo ante the judgment of the High Court. He said Ojukwu had been in occupation for 10 months before the Lagos State Government got to know of his occupation.`,
-    ],
-    obiterDicta: [
-      'Per Eso, JSC: "The essence of the rule of law is that it should never operate under the rule of force or fear."'
-    ],
-    keyPrinciples: [
-      'Executive must obey subsisting court orders.',
-      'Courts will not condone self-help or executive lawlessness.'
-    ],
-    isLandmark: true,
-  },
-  {
-    id: 'case-007',
-    title: 'Garba & Ors v. University of Maiduguri',
-    citation: '(1986) LDLR (SC) pt 1007',
-    sourceUrl: 'https://lawcarenigeria.com/mr-yesufu-amuda-garba-ors-v-the-university-of-maiduguri1986/',
-    hasFullJudgment: true,
-    suitNumber: 'SC.55/1985',
-    court: 'Supreme Court of Nigeria',
-    year: 1986,
-    presidingJudges: ['Bello, JSC', 'Obaseki, JSC', 'Eso, JSC', 'Nnamani, JSC', 'Oputa, JSC'],
-    areaOfLaw: 'Constitutional & Human Rights',
-    subject: 'Fair Hearing and Nemo Judex in Causa Sua in Administrative Discipline',
-    factsSummary: 'Students of the University of Maiduguri were expelled by a disciplinary panel over allegations of misconduct/rioting without being afforded an opportunity to be heard, and where the accusers effectively sat in judgment over them.',
-    issuesForDetermination: [
-      'Whether the expulsion breached the students’ right to fair hearing under the Constitution.',
-      'Whether a body determining allegations that amount to a crime can do so without observing the twin pillars of natural justice.'
-    ],
-    decisionSummary: 'The Supreme Court set aside the expulsions, holding that the students were denied fair hearing. Where an allegation discloses a crime, it must be established before a court of law, and no person may be a judge in his own cause.',
-    ratioDecidendi: [
-      `(a) fair hearing`,
-      `(b) within a reasonable time`,
-      `(c) by a court or other tribunal established by law; and`,
-    ],
-    keyPrinciples: [
-      'Right to fair hearing (S.36 Constitution) applies to administrative panels.',
-      'Criminal allegations must be tried by a court, not a domestic tribunal.'
-    ],
-    relatedCaseIds: ['case-004'],
-    isLandmark: true,
-  },
-  {
-    id: 'case-008',
-    title: 'Ariori & Ors v. Elemo & Ors',
-    citation: '(1983) LDLR (SC) pt 1008',
-    sourceUrl: 'https://lawcarenigeria.com/a-ariori-ors-v-muraino-b-o-elemo-ors-1983/',
-    hasFullJudgment: true,
-    suitNumber: 'SC.80/1981',
-    court: 'Supreme Court of Nigeria',
-    year: 1983,
-    presidingJudges: ['Fatai-Williams, CJN', 'Bello, JSC', 'Idigbe, JSC', 'Obaseki, JSC', 'Eso, JSC'],
-    areaOfLaw: 'Civil Litigation & Advocacy',
-    subject: 'Fair Hearing Within a Reasonable Time and Waiver of Rights',
-    factsSummary: 'A land matter that had been in litigation for well over a decade raised the question of whether the constitutional guarantee of a hearing within a reasonable time had been breached, and whether such a right could be waived by the parties.',
-    issuesForDetermination: [
-      'What amounts to a fair hearing within a reasonable time under the Constitution.',
-      'Whether the right to fair hearing within a reasonable time can be waived.'
-    ],
-    decisionSummary: 'The Supreme Court examined the content of the fair hearing guarantee and held that while a person of full age and capacity may waive a right conferred for his sole benefit, the right to fair hearing is so fundamental that waiver must be approached with great caution.',
-    ratioDecidendi: [
-      `In the con of this appeal therefore, the first question that one asks is “what is waiver” Rather than define the word, it is probably appropriate just to describe its concept. For as Pollock said, Waiver is a simple and wholly untechnical concept perhaps the most powerful and flexible instrument to be found in any system of court jurisprudence. The concept of waiver must be one that presupposes that the person who is to enjoy a benefit or who has the choice of two benefits is fully aware of his right to the benefit or benefits, but he either neglects to exercise his right to the benefit, or where he has a choice of two, he decides to take one but not both – see Vyvyan v. Vyvyan 30 Beav 65 as per Sir John Romilly M.R. at p.74 (reported also in 54 E.R. 817). PER ESO, J.S.C.`,
-      `The next enquiry is the extent to which a person could waive rights conferred upon him by law. When a right is conferred solely for the benefit of an individual there should be no problem as to the extent to which he could waive such right.`,
-      `The right is for his benefit. He is sui juris. He is under no legal disability. He should be able to forgo the right or in other words waive it either completely or partially, depending on his free choice. The extent to which he has forgone his right would be a matter of fact and each case will depend on its peculiar facts. A simple example could be seen in a right which has been conferred by contract. A person who is a beneficiary to a contract, whereby the benefit is principally for him, has full competence to waive that right. What obtains in the case of a contract should go for benefits conferred by statute. A beneficiary under statute should have full competence to waive those rights once the rights are solely for his benefit.`,
-      `The only exception I can think of is where the statute itself forbids waiver of its statutory provisions. PER ESO, J.S.C.`,
-      `I do no think the question permits of a simple and summary answer and it would be of use to examine the attitude of the courts in other jurisdictions which operate Constitutions similar to ours especially the United States of America and India, if only by way of comparison, though not necessarily taking these judgments as serving as precedents to be followed in this country without a thorough examination of the implications of those judgments.`,
-      `I had cause in the case of Attorney-General of Bendel State v. Attorney-General of the Federation and 22 Ors. (1981) 10 S.C.1 to warn as to the reliance to be placed by this Court, especially in constitutional matters, upon the decisions of the courts of other countries, which even operated the same type of Constitution as ours. I said in that judgment, and I am still of the same view that-`,
-      `“Gone should be the days, if ever they were, when, the decisions of other countries in any common law country are to be accepted in this country as precedents in the like of the Delphic oracle. The decisions of any court, other than those of this Court, are only to be treated as the respected opinion of those courts, which were given in their wisdom, under given circumstances and given environmental and cultural background, and no more. They are, at best, to give a guidance of what those courts did in those circumstances, and the wisdom to be drawn from them by this Court would be reflected in its dealing with the peculiar problems of this country, to which the Constitution which this country operates, is peculiar.” PER ESO, J.S.C.`,
-      `It seems to me therefore that to answer the question whether or not one could waive one’s fundamental right to a speedy or fair trial, it would be necessary to make an enquiry first as to whether the right to be waived is exclusively within one’s control for it is common sense that one could not compromise what is not within one’s control.`,
-    ],
-    keyPrinciples: [
-      'Fair hearing within a reasonable time is fact-dependent.',
-      'Personal statutory/constitutional rights may be waived subject to public policy.'
-    ],
-    isLandmark: true,
-  },
-  {
-    id: 'case-009',
-    title: 'Adegoke Motors Ltd v. Adesanya & Anor',
-    citation: '(1989) LDLR (SC) pt 1009',
-    sourceUrl: 'https://lawcarenigeria.com/adegoke-motors-ltd-vs-dr-babatunde-adesanya/',
-    hasFullJudgment: true,
-    suitNumber: 'SC.169/1987',
-    court: 'Supreme Court of Nigeria',
-    year: 1989,
-    presidingJudges: ['Oputa, JSC (Delivered Leading Judgment)', 'Nnamani, JSC', 'Karibi-Whyte, JSC'],
-    areaOfLaw: 'Civil Litigation & Advocacy',
-    subject: 'Finality of the Supreme Court and Stare Decisis',
-    factsSummary: 'The appeal raised the effect of the finality of the Supreme Court’s decisions and the circumstances in which the apex court may depart from its own earlier decisions.',
-    issuesForDetermination: [
-      'Whether the Supreme Court is bound in perpetuity by its own previous decisions.',
-      'The proper approach to the finality and infallibility of the apex court.'
-    ],
-    decisionSummary: 'The Supreme Court reaffirmed that it is the final court of the land and, while it may in appropriate cases depart from its previous decisions to avoid perpetuating error, litigation must have an end.',
-    ratioDecidendi: [
-      `Generally, an appeal is regarded as a continuation of the original suit rather than the inception of a new action. Because of this, in an appeal, parties are normally confined to their case as pleaded in the Court of first instance. They are not allowed to make a new and different case on appeal. They are not allowed to raise in such appeal new Issues without the express leave of Court or to proffer new evidence without such leave. An appeal, being a judicial examination by a higher Court of the decision of an inferior Court, it follows that such examination should normally and more appropriately be confined to the facts and issues that came before the inferior Court for decision. PER OPUTA, J.S.C.`,
-      `There must be a distinction between the issuance of a Writ and the Service of that writ. After all the long title to the Sheriffs and Civil Process Act. Cap 189 of 1958 is:`,
-      `“An Ordinance to make provision for the appointment and duties of Sheriffs, the enforcement of judgments and orders and the Service and execution of civil process of the Courts of Regions throughout Nigeria.”`,
-      `Strictly speaking, the Issuing of civil Process and the Service of such process should be two distinct though inter related steps in civil litigation. A writ may be valid while its service may suffer from some defect. It may also happen, as was the case in Nwabueze v. Okoye supra, that both Writ and its Service are invalid. Again and strictly speaking, the issuing of civil process (here Writ of Summons) should be the concern of the High Court Law and the High Court Rules while the Service of such process will be referable to “the Law made for the Service of civil process of the Courts” – the Sheriffs and Civil Process Act Cap 189 of 1958. The reality of the present position is that the High Court of Lagos (Civil Procedure) Rules not only made provision for Service but also incorporated by direct reference, the Sheriffs and Civil Process Act. Order 2 Rule 4 of the Lagos Rules provides:-`,
-      `“Or. 2 Rule 4 – Subject to the provisions of Part VII of the Sheriffs & Civil Process Act no writ of summons for service out of jurisdiction……… shall be issued without the leave of the Court or Judge in Chambers.” PER OPUTA, J.S.C.`,
-      `It is not the business of the court to embark on a consideration of a conflict between one decision of the Supreme Court and another decision of the Supreme Court when issues warranting the consideration of the conflict are not raised in the grounds of appeal and when the facts of the two cases alleged to be in conflict are totally different from one another. Caution is a virtue that should not be dispensed with at any stage of the proceedings before any court. Dicta should not be taken and read out of con. PER OBASEKI, J.S.C.`,
-      `The principles on the question of raising new points not previously raised in the trial court or Court of Appeal, i.e. courts below, are well settled. They include the requirement of leave of court to raise them and the satisfaction of the court that no further or additional evidence is required on the issues to be considered. There is of course a total bar against new points designed to establish a case different from the one considered in the courts below.`,
-      `I refer to the following cases in which these guiding principles have been settled`,
-    ],
-    obiterDicta: [
-      'Per Oputa, JSC: "We are final not because we are infallible; rather we are infallible only because we are final."'
-    ],
-    keyPrinciples: [
-      'Supreme Court is final but may depart from prior decisions to correct error.',
-      'Doctrine of stare decisis in the Nigerian hierarchy of courts.'
-    ],
-    isLandmark: true,
-  },
-  {
-    id: 'case-010',
-    title: 'Fawehinmi v. Akilu & Anor',
-    citation: '(1987) LDLR (SC) pt 1010',
-    sourceUrl: 'https://lawcarenigeria.com/chief-gani-fawehinmi-vs-col-halilu-akilu-anor/',
-    hasFullJudgment: true,
-    suitNumber: 'SC.43/1987',
-    court: 'Supreme Court of Nigeria',
-    year: 1987,
-    presidingJudges: ['Obaseki, JSC', 'Eso, JSC', 'Nnamani, JSC', 'Oputa, JSC', 'Karibi-Whyte, JSC'],
-    areaOfLaw: 'Criminal Law & Procedure',
-    subject: 'Locus Standi in Private Prosecution',
-    factsSummary: 'Following the murder of the journalist Dele Giwa by a letter bomb, Chief Gani Fawehinmi, as counsel, sought to compel a private prosecution. His standing to apply was challenged on the ground that he was not related to the deceased.',
-    issuesForDetermination: [
-      'Whether a person who is not a relation of a deceased has locus standi to seek to prosecute those alleged to be responsible for the death.'
-    ],
-    decisionSummary: 'The Supreme Court held that every citizen is his "brother’s keeper" and has sufficient interest to set the criminal law in motion; locus standi to prosecute is not limited to relations of the victim.',
-    ratioDecidendi: [
-      `This is evident from a close examination of the provisions of section 342(a) of the Criminal Procedure Law. That paragraph reads: ‘The registrar shall receive an information from a private person If it has endorsed thereon a certificate by a law officer to the effect that he has seen such information and declines to prosecute at the public instance the offence therein set forth.” The duty that the appellant complains of the respondent has not carried out is that “having seen the information and having failed to decide to prosecute at the public instance the offence therein set forth, the Director of Public Prosecutions refused to endorse thereon “that he has seen the information and declines to prosecute at the public instance the offence therein set forth.” Where a law officer expresses that he is unable to come to a decision to prosecute, it cannot be interpreted that he has come to a decision to prosecute. It is more consonant with reason to hold that at that point of time, he has declined to prosecute. The reason for taking such a stand is not relevant at this stage and need not be enquired into for the purpose of the application for leave. What is relevant is the failure or refusal (1) to take a decision to prosecute or not to prosecute and (2) to endorse on the information that he declines to prosecute at public instance. PER OBASEKI, J.S.C.`,
-      `For the general rule is that before the applicant is entitled to the order, he must have addressed a direct distinct specific demand or request to the respondent to do a duty imposed upon him by law and the respondent must have unequivocally, either expressly or by necessary implication manifested his refusal to comply ……. PER OBASEKI, J.S.C.`,
-      `There is provision for other public officer or person to sign information. It is subsection(2) of section 341 of the Criminal Procedure Law which reads: “Where the State Commissioner shall for reasons of public convenience think fit, an information may be signed by any other public officer or person whom the State Commissioner may delegate.” PER OBASEKI, J.S.C.`,
-      `The conditions under which a private person can sign an information are set out in section 342 of the Criminal Procedure Law which reads: ‘The Registrar shall receive an information from a private person if – (a) it has endorsed thereon a certificate by a law officer that he has seen such information and declines to prosecute at the public instance the offence therein set forth, and (b) such private person has entered into a recognizance in the sum of one hundred Naira, together with one surety to be approved by the Registrar in the like sum to prosecute the said information to conclusion at the times as which the accused shall be required to appear and to pay such costs as may be ordered by the court or in lieu of entering into such recognizance shall have deposited one hundred Naira in court to abide the same conditions.” PER OBASEKI, J.S.C.`,
-      `It is fundamental that an applicant for leave to apply for an order of mandamus must have locus standi to make the application before leave can be granted by the court. Indeed, the party making any claim and bringing any application before the court must have locus standi. See Senator Adesanya v. President of Nigeria (supra) Irene Thomas v. Olufosoye (supra) Amusa Momoh & Anor. v. Jimoh Olotu (1970) 1 All NLR. 117. If the plaintiff has no locus standi, the court has no jurisdiction to entertain the matter and it must be struck out. See Oloriode & Ors. v. Oyebi & Ors. (1984) 5 SC. 1 at 28. When a party’s standing to sue (i.e. locus standi) is in issue, the question is whether the person whose standing is in issue is the proper party to request an adjudication of a particular issue and not whether the issue itself is justiciable. Oloriode & Ors. v. Oyebi & Ors. (1984) 5 SC. 1 at 28. PER OBASEKI, J.S.C.`,
-    ],
-    keyPrinciples: [
-      'Liberal locus standi in criminal/private prosecution.',
-      'Any citizen may set the criminal law in motion.'
-    ],
-    relatedCaseIds: ['case-002'],
-    isLandmark: true,
-  },
-  {
-    id: 'case-011',
-    title: 'General Sani Abacha & Ors v. Chief Gani Fawehinmi',
-    citation: '(2000) LDLR (SC) pt 1011',
-    sourceUrl: 'https://lawcarenigeria.com/general-sani-abacha-ors-v-chief-gani-fawehinmi2000/',
-    hasFullJudgment: true,
-    suitNumber: 'SC.45/1997',
-    court: 'Supreme Court of Nigeria',
-    year: 2000,
-    presidingJudges: ['Uwais, CJN', 'Ogundare, JSC', 'Ogwuegbu, JSC', 'Achike, JSC', 'Uwaifo, JSC'],
-    areaOfLaw: 'Constitutional & Human Rights',
-    subject: 'Status of the African Charter on Human and Peoples’ Rights in Nigerian Law',
-    factsSummary: 'Chief Gani Fawehinmi was arrested and detained without charge by State Security operatives. He challenged the detention and relied, in part, on the African Charter on Human and Peoples’ Rights (Ratification and Enforcement) Act.',
-    issuesForDetermination: [
-      'The status of the African Charter (Ratification and Enforcement) Act within the hierarchy of Nigerian laws.',
-      'Whether ouster decrees of the military era could oust the court’s jurisdiction to enforce fundamental rights.'
-    ],
-    decisionSummary: 'The Supreme Court held that the African Charter Act is a statute with international flavour that ranks above ordinary domestic legislation, though subordinate to the Constitution, and its provisions are enforceable in Nigerian courts.',
-    ratioDecidendi: [
-      `the government of Nigeria does not become binding until enacted into law by the National Assembly. See Section 12(1) of the 1979 Constitution which provides:`,
-      `“12(1) No treaty between the Federation and any other country shall have the force of law except to the extent to which any such treaty has been enacted into law by the National Assembly (AFRC).”`,
-    ],
-    keyPrinciples: [
-      'Domesticated treaties rank above ordinary statutes, below the Constitution.',
-      'Fundamental rights remain enforceable notwithstanding ouster provisions.'
-    ],
-    isLandmark: true,
-  },
-  {
-    id: 'case-012',
     title: 'Idundun & Ors v. Okumagba & Ors',
     citation: '(1976) LDLR (SC) pt 1012',
     sourceUrl: 'https://nigerialii.org/akn/ng/judgment/ngsc/1976/2/eng%401976-10-07',
@@ -838,9 +493,8 @@ export const LANDMARK_CASES: CaseLaw[] = [
     ],
     decisionSummary: 'The Supreme Court laid down the five distinct ways of proving title to land, any one of which, if established, is sufficient.',
     ratioDecidendi: [
-      `Firstly, ownership of land may be proved by traditional evidence as has been done in the case in hand. In our view, not only was the evidence of the witnesses called by the appellants rightly rejected by the learned trial judge for good and sufficient reasons, we also think that he was right in not attach­ing any weigh to the views expressed in the books cited in support of such traditiona1 evidence. As Lionel Brett, J.S.C. (as he then was), rightly in our view, once pointed out in a learned address given by him at the Univer­sity of Lagos to the Nigerian Association of Law Teachers:`,
-      `"The courts are not to be hypnotised by the authority of print. The crucial fact is that a book cannot be cross-examined, either as to the opinion expressed, or as to the claims of the author to have special knowledge. If the author is living, there is no reason why he should not be tendered as an expert witness, when this diffi­culty would vanish."`,
-      `No evidence was adduced to show that any of these books is generally acknowledged either in Nigeria or elsewhere as a standard work or as appropriate authority on the relevant traditional history so as to enable the court to resort, with justifica­tion, to its aid. (See section 58 and 73(2) of the Evidence Act, Cap. 62 and Adedibu v. Adewoyin 13 WACA 191 at page 192). Moreover, none of the authors of these books testified in support of the views stated therein and no explanation was given for this omission. For all these reasons, we share the apprehensions`,
+      "EVIDENCE - WRONGFUL ADMISSION/REJECTION OF EVIDENCE - Whether a wrongfully admitted/excluded evidence could constitute a ground for reversing a decision on appeal\n\n\"... it is settled law that any wrongful admission of evidence shall not constitute a ground for reversing a decision unless the party complaining can show as well that without such evidence the decision complained of would have been otherwise. (See Section 226(1) of the Evidence Act and the decision of this Court in Ugbe & 4 Ors. v. Edigbe & 2 Ors. (unreported) but see S.C.736/66 page 15, delivered on 27th February, 1970).\"\n\nPer ATANDA FATAI-WILLIAMS ,JSC (P. 10, para. F)",
+      "EVIDENCE - PROOF OF TITLE TO LAND - Ways of proving title/ownership of land\n\n\"As for the law involved, we would like to point out that it is now settled that there are five ways in which ownership of land may be proved. We will now proceed to consider each of these five ways in order to see if the findings of the learned trial Judge can be seen to bring the evidence adduced in the case in hand within the ambit of any of them. Firstly, ownership of land may be proved by traditional evidence as has been done in the case in hand. In our view, not only was the evidence of the witnesses called by the appellants rightly rejected by the learned trial Judge for good and sufficient reasons, we also think that he was right in not attaching any weight to the views expressed in the books cited in support of such traditional evidence. As Lionel Brett, JSC., (as he then was), rightly in our view, once pointed out in a learned address given by him at the University of Lagos to the Nigerian Association of Law Teachers: \"The Courts are not to be hypnotized by the authority of print. The crucial fact is that a book cannot be cross-examined, either as to the opinion expressed, or as to the claims of the author to have special knowledge. If the author is living, there is no reason why he should not be tendered as an expert witness, when this difficulty would vanish\". No evidence was adduced to show that any of these books is generally acknowledged either in Nigeria or elsewhere as a standard work or as appropriate authority on the relevant traditional history so as to enable the Court to resort, with justification, to its aid. (See Sections 58 and 73(2) of the Evidence Act, Cap. 62 and Adedibu v. Adewoyin 13 WACA 191 at page 192). Moreover, none of the authors of these books testified in support of the views stated therein and no explanation was given for this omission. For all these reasons, we share the apprehensions of the learned trial Judge about the value or weight of the traditional history as narrated by each of these authors, particularly as the authenticity and impartiality of the sources of their narratives cannot, for obvious reasons, be easily ascertained. Secondly, ownership of land may be proved by production of documents of title which must, of course be duly authenticated in the sense that their due execution must be proved, unless they are produced from proper custody in circumstances giving rise to the presumption in favour of due execution in the case of documents twenty years old or more at the date of the contract (see Section 129 of the Evidence Act and Johnson v. Lawanson (1971) 1 All NLR p.56). As the appellants' case was not based on any document of title, this requirement, in the circumstances of this case, is not particularly apposite. Thirdly, acts of the person (or persons) claiming the land such as selling, leasing or renting out all or part of the land, or farming on it or on a portion of it, are also evidence of ownership, provided the acts extend over a sufficient length of time and are numerous and positive enough as to warrant the inference that the person is the true owner (see Ekpo v. Ita 11 NLR p.68). It is clear from the judgment in the case in hand that the learned trial Judge completely, and for good reason, rejected the evidence in support of the acts of ownership put forward by the appellants while he accepted those given by the respondents. Fourthly, acts of long possession and enjoyment of the land may also be prima facie evidence of ownership of the particular piece or quantity of land with reference to which such acts are done (see Section 45 of the Evidence Act, Cap. 62). Such acts of long possession, in a claim of declaration of title (as distinct from a claim for trespass) are really a weapon more of defence than of offence; moreover under Section 145 of the Evidence Act, while possession may raise a presumption of ownership, it does not do more and cannot stand when another proves a good title (see Da Costa v. Ikomi (1968) 1 All NLR 394 at page 398). It cannot be gainsaid that, in the present case, not only did the learned trial Judge reject the appellants' evidence as to possession of any portion of the land in dispute, he also found that the respondents have proved by evidence, which he accepted, that they are the owners of the land in dispute. Finally, proof of possession of connected or adjacent land, in circumstances rendering it probable that the owner of such connected or adjacent land would, in addition, be the owner of the land in dispute, may also rank as a means of proving ownership of the land in dispute (see section 45 of the Evidence Act, Cap. 62).\"\n\nPer ATANDA FATAI-WILLIAMS ,JSC (Pp. 11-12, paras. A-A)"
     ],
     keyPrinciples: [
       'The five methods of proving title to land.',
@@ -848,160 +502,9 @@ export const LANDMARK_CASES: CaseLaw[] = [
     ],
     isLandmark: true,
   },
-  {
-    id: 'case-013',
-    title: 'Chief Obafemi Awolowo v. Alhaji Shehu Shagari & Ors',
-    citation: '(1979) LDLR (SC) pt 1013',
-    sourceUrl: 'https://nigerialii.org/akn/ng/judgment/ngsc/1979/11/eng%401979-09-26',
-    hasFullJudgment: true,
-    suitNumber: 'SC.62/1979',
-    court: 'Supreme Court of Nigeria',
-    year: 1979,
-    presidingJudges: ['Fatai-Williams, CJN', 'Sowemimo, JSC', 'Idigbe, JSC', 'Obaseki, JSC', 'Eso, JSC'],
-    areaOfLaw: 'Election Petitions',
-    subject: 'Interpretation of the "Two-Thirds of Nineteen States" Presidential Requirement',
-    factsSummary: 'Challenge to the 1979 presidential election result on the question whether the winner had satisfied the constitutional requirement of not less than one-quarter of the votes in at least two-thirds of the then nineteen States of the Federation.',
-    issuesForDetermination: [
-      'What constitutes two-thirds of nineteen States for the purpose of the presidential election requirement.'
-    ],
-    decisionSummary: 'By a majority, the Supreme Court upheld the declaration of the result, adopting the arithmetical interpretation applied by the electoral body in the circumstances of the case.',
-    ratioDecidendi: [
-      `(6) Furthermore, it is, we think, fallacious to talk of fractionalisation of the physical land area of a State when the operative words of Section 34(1)( c )(ii) relate undoubtedly to the votes cast by the voters in the State at the election.`,
-      `(7) It is also fallacious to talk of scaling down the votes cast for the 1st respondent in Kano State by one-third. That argument, if we may say so, overlooks the clear and unambiguous words of Section 34(1)( c )(ii) which provide FIRST for ascertaining the total number of votes cast for the 1st respondent by the voters of Kano State before comparing this figure obtained thereby with two-thirds of all the votes cast in Kano State in order to determine whether the votes received by him are not less than one-quarter of two-thirds of all the votes in Kano State.`,
-      `(8) We are prepared to say that the respondent was in error of his interpretation of what constitutes two-thirds of nineteen States. Moreover, until election returns can be computerized in this country, the "mathematical canon of interpretation" put forward by Professor Awojobi (1st petitioner's witness) in his testimony before the Tribunal will remain impractical and legally unacceptable.`,
-      `(9) Quite apart from the compliance with the provisions of Section 34A(1)( c )(ii) of the Decree as found by us, even if we had found that there had been non-compliance with the said provision we would have evoked the provisions of Section III Sub-section (1) of the Decree which provides that non-compliance with Part II of the Decree did not affect the result of the election, and held that the election to the office of the President was conducted substantially in accordance with the provisions of Section 34A(1)( c )(ii) which is within Part II of the Decree.`,
-    ],
-    obiterDicta: [
-      'The majority expressly stated that the decision should not be treated as a binding precedent for future elections given its peculiar facts.'
-    ],
-    keyPrinciples: [
-      'Geographical spread requirement in presidential elections.',
-      'Decisions on peculiar facts may be confined to those facts.'
-    ],
-    relatedCaseIds: ['case-001'],
-    isLandmark: true,
-  },
-  {
-    id: 'case-014',
-    title: 'Peter Obi v. Independent National Electoral Commission (INEC) & Ors',
-    citation: '(2007) LDLR (SC) pt 1014',
-    hasFullJudgment: true,
-    suitNumber: 'SC.123/2007',
-    court: 'Supreme Court of Nigeria',
-    year: 2007,
-    presidingJudges: ['Niki Tobi, JSC', 'Katsina-Alu, JSC', 'Aderemi, JSC'],
-    areaOfLaw: 'Election Petitions',
-    subject: 'Commencement and Computation of a Governor’s Four-Year Tenure',
-    factsSummary: 'Peter Obi, having been declared winner of the Anambra governorship election after protracted litigation, was sworn in in 2006. INEC sought to conduct a fresh election in 2007 on the basis of the general election cycle. Obi contended his four-year tenure should run from the date he actually took the oath of office.',
-    issuesForDetermination: [
-      'When does the four-year tenure of a Governor begin to run under the Constitution?'
-    ],
-    decisionSummary: 'The Supreme Court held that a Governor’s four-year term begins to run from the date he takes the oath of allegiance and oath of office, not from any earlier date, so Obi’s tenure had not expired.',
-    ratioDecidendi: [
-      'The tenure of office of a Governor under the Constitution is computed from the date the person elected takes and subscribes to the oath of allegiance and the oath of office.'
-    ],
-    keyPrinciples: [
-      'Executive tenure runs from date of oath of office.',
-      'Protection of validly elected officials’ constitutional term.'
-    ],
-    relatedCaseIds: ['case-001'],
-    isLandmark: true,
-  },
-  {
-    id: 'case-015',
-    title: 'Ukeje & Anor v. Ukeje',
-    citation: '(2014) LDLR (SC) pt 1015',
-    sourceUrl: 'https://lawcarenigeria.com/mrs-lois-chituru-ukeje-anor-v-mrs-gladys-ada-ukeje2014/',
-    hasFullJudgment: true,
-    suitNumber: 'SC.224/2004',
-    court: 'Supreme Court of Nigeria',
-    year: 2014,
-    presidingJudges: ['Ogunbiyi, JSC (Delivered Leading Judgment)', 'Fabiyi, JSC', 'Rhodes-Vivour, JSC'],
-    areaOfLaw: 'Family, Matrimonial & Probate',
-    subject: 'Female Inheritance Rights and Repugnancy of Discriminatory Custom',
-    factsSummary: 'A daughter was excluded from sharing in her late father’s estate on the basis of an Igbo customary law that denied female children the right to inherit from their father’s estate.',
-    issuesForDetermination: [
-      'Whether a customary law that disentitles a female child from inheriting her deceased father’s estate is valid.'
-    ],
-    decisionSummary: 'The Supreme Court held that the Igbo customary law which excludes a female child from inheriting her father’s estate is discriminatory, repugnant to natural justice, equity and good conscience, and unconstitutional as it conflicts with Section 42 of the Constitution.',
-    ratioDecidendi: [
-      `The position of the law is that once documentary evidence supports oral evidence, such oral evidence becomes more credible. The reasoning is premised on the fact and the law that documentary evidence serves as a hanger from which to assess oral testimony. See Kimdey & Ors v. Military Governor of Gongola State & Ors 1988 Vol.19 (Pt.1) NSCC P.827 Omoregbe v. Lawani 1980 5-4 SC P.117. PER OLABODE RHODES-VIVOUR, J.S.C.`,
-      `The long settled position of the law is that when fraud is being alleged in a suit it must be pleaded, particulars given and established in evidence by proof beyond reasonable doubt. PER OLABODE RHODES-VIVOUR, J.S.C.`,
-      `It is well settled that it is the duty of the trial court which saw and heard witnesses to evaluate the evidence and pronounce on their credibility and ascribe probative value. See Kim v. State (1992) 4 NWLR Pt 233 p.17 Sanusi v. Ameyogun (1992) 4 NWLR Pt.237 P.527. PER OLABODE RHODES-VIVOUR, J.S.C.`,
-      `Whether the respondent is a daughter of L.O. Ukeje (deceased). L.O. Ukeje deceased is subject to the Igbo Customary Law. Agreeing with the High Court the Court of Appeal correctly found that the Igbo native law and custom which disentitles a female from inheriting, in her late father’s estate is void as it conflicts with sections 39(1)(a) and (2) of the 1979 Constitution (as amended). This finding was affirmed by the Court of Appeal. There is no appeal on it. The finding remains inviolate. Section 39(1),(a) (2) of the 1979 Constitution is now contained in the 1999 Constitution as section 42(1), (a), (2) and it states that: “42(1) A citizen of Nigeria of a particular community, ethnic group, place of origin, sex, religion or political opinion shall not, by reason only that he is such a person:- (a) be subjected either expressly by, or in the practical application of, any law in force in Nigeria or any executive or administrative action of the government, to disabilities or restrictions to which citizens of Nigeria of other communities, ethnic groups places of origin, sex, religions or political opinions are made subject: or …………………. (2) No citizen of Nigeria shall be subjected to any disability or deprivation merely by reason of the circumstances of his birth.” No matter the circumstances of the birth of a female child, such a child is entitled to an inheritance from her late father’s estate. Consequently the Igbo customary law which disentitles a female child from partaking, in the sharing of her deceased lather’s estate is in breach of section 42 (1) and (2) of the Constitution, a fundamental rights provision guaranteed to every Nigerian. The said discriminatory customary law is void as it conflicts with section 42(1) and (2) of the Constitution. PER OLABODE RHODES-VIVOUR, J.S.C.`,
-      `It is settled law that unless there are special circumstances shown, this court will not disturb the concurrent findings of fact made by the lower courts – see Chinwedu vs Mbamali (1980) 3 – 4 S.C 31 at 75; Ogbu vs Wokoma (2005) 14 NWLR (pt. 944) 118 at 123. The circumstance or exceptions to the above general principle include the following:- (a) If such findings of fact are made on inadmissible evidence; or (b) If such findings of fact cannot be related to any evidence before the court; or (c) Where such findings of fact are on matters not pleaded; or (d) Where, on the whole facts before the trial court and the Court of Appeal, the findings are manifestly perverse – see Ogbu vs Wokoma supra. PER WALTER SAMUEL NKANU ONNOGHEN, J.S.C.`,
-    ],
-    keyPrinciples: [
-      'Female children have equal inheritance rights.',
-      'Discriminatory customs void under S.42 Constitution.'
-    ],
-    isLandmark: true,
-  },
-  {
-    id: 'case-017',
-    title: 'Nafiu Rabiu v. The State',
-    citation: '(1981) LDLR (SC) pt 1017',
-    sourceUrl: 'https://lawcarenigeria.com/nafiu-rabiu-v-kano-state/',
-    hasFullJudgment: true,
-    suitNumber: 'SC.13/1980',
-    court: 'Supreme Court of Nigeria',
-    year: 1981,
-    presidingJudges: ['Fatai-Williams, CJN', 'Bello, JSC', 'Idigbe, JSC', 'Obaseki, JSC', 'Eso, JSC'],
-    areaOfLaw: 'Constitutional & Human Rights',
-    subject: 'Principles of Constitutional Interpretation',
-    factsSummary: 'The case raised a question of jurisdiction and the proper approach a court should take when construing the provisions of the Constitution.',
-    issuesForDetermination: [
-      'What principles should guide the courts in the interpretation of the Constitution?'
-    ],
-    decisionSummary: 'The Supreme Court held that the provisions of the Constitution should be given a broad, liberal and purposive interpretation so as to advance, rather than defeat, its objects.',
-    ratioDecidendi: [
-      `“It is, however, my view that the validity of Section 284 (2) of the C. P. C. is preserved under the new Constitution by virtue of sub-section (1) (g) (v) of Section 220 thereof. [Yekini Onigbeden v. Ishola Balogun (1975) 1 all NLR 233 at 241; National Employers Mutual General Insurance Association v. Uchav (1973) 1 NMLR 170 at 172-3; Kiren v. Paschal and Ludwig Incorporate (1978) 11 and 12 S. C. 77] My Lords, the conclusion which I have reached, therefore, is that the prosecutor in the Northern States has a right of appeal from an order of acquittal, made by a High Court sitting at first instance, in criminal proceedings but only on points of law.” PER IDIGBE, J.S.C`,
-      `“…the case of Karuwa Takida (Supra) re-stated the general principle of law that no court is bound to speculate on what possible defences can be open to an accused person before it, but where in a trial for homicide, the evidence suggests a line of defence it is the duty of the trial court to consider and deal with that defence “whether or not the accused or his counsel expressly raised the defence by the legal terminology ascribed to it by lawyers.” PER IDIGBE, J.S.C.`,
-    ],
-    keyPrinciples: [
-      'Constitution to be construed broadly and purposively.',
-      'Interpretation should advance, not defeat, constitutional objects.'
-    ],
-    relatedCaseIds: ['case-003'],
-    isLandmark: true,
-  },
-  {
-    id: 'case-018',
-    title: 'Ransome-Kuti & Ors v. Attorney-General of the Federation & Ors',
-    citation: '(1985) LDLR (SC) pt 1018',
-    sourceUrl: 'https://lawcarenigeria.com/chief-dr-mrs-olufunmilayo-ransome-kuti-ors-v-the-attorney-general-of-the-federation-ors1985/',
-    hasFullJudgment: true,
-    suitNumber: 'SC.123/1984',
-    court: 'Supreme Court of Nigeria',
-    year: 1985,
-    presidingJudges: ['Bello, JSC', 'Obaseki, JSC', 'Eso, JSC', 'Nnamani, JSC', 'Uwais, JSC'],
-    areaOfLaw: 'Constitutional & Human Rights',
-    subject: 'Nature of Fundamental Rights and State Liability',
-    factsSummary: 'Arising from the invasion of the Kalakuta Republic and the death of Mrs. Funmilayo Ransome-Kuti, the action sought to hold the State liable for the violation of fundamental rights during the raid by soldiers.',
-    issuesForDetermination: [
-      'The nature and origin of fundamental rights under the Constitution.',
-      'Whether the State can be held liable for breaches of fundamental rights by its agents.'
-    ],
-    decisionSummary: 'The Supreme Court explained the character of fundamental rights and affirmed that the State is amenable to claims for the enforcement of fundamental rights breached by its agents.',
-    ratioDecidendi: [
-      `“No person shall be subjected to torture or to inhuman or degrading punishment or other treatment.”`,
-      `This is no doubt a right guaranteed to everyone including the appellants by the Constitution. But what is the nature of a fundamental right It is a right which stands above the ordinary laws of the land and which in fact is antecedent to the political society itself. It is a primary condition to a civilised existence and what has been done by our constitution, since independence, starting with the Independence Constitution, that is, the Nigeria (Constitution) Order in Council 1960 up to the present Constitution, that is, the Constitution of the Federal Republic of Nigeria, 1979 (the latter does not in fact apply to this case: it is the 1963 Constitution that applies) is to have these rights enshrined in the Constitution so that the rights could be “immutable” to the extent of the “non-immutability” of the Constitution itself.`,
-      `It is not in all countries that the Fundamental Rights guaranteed to the citizen are written into the Constitution. For instance, in England, where there is no written constitution, it stands to reason that a written code of fundamental rights could not be expected. But notwithstanding, there are fundamental rights. The guarantee against inhuman treatment, as specified in section 19 of the 1963 Constitution, would, for instance, appear to be the same as some of the fundamental rights guaranteed in England, contained in the Magna Carter 1215 – Articles 19 and 40 which provide –`,
-      `“no freeman may be taken or imprisoned, or disused of his freehold or liabilities in free customs or be outlawed or exiled or in any way molested nor judged or condemned except by lawful judgment or in accordance with the law of the land And the crown or its ministers may not imprison or coerce the subject in an arbitrary manner” (Underlining mine)`,
-      `In the United States, the Eighth Amendment to the United States Constitution provides –`,
-      `“Excessive bail shall not be required, nor excessive fines imposed, nor cruel and unusual punishment inflicted.” PER ESO, J.S.C.`,
-      `This is answered by s.32(2) and (3) which provide procedure for the enforcement or securing the enforcement of the right. It provides –`,
-      `“32(2)Subject to the provisions of section 115 of this Constitution, the High Court of a territory shall have original jurisdiction to hear and determine any application made to it in pursuance of this section and may make such orders, issue such writs and give such directions as it may consider appropriate for the purpose of enforcing, or securing the enforcement, within that territory of any rights to which the person who makes the application may be entitled under this chapter”. PER ESO, J.S.C.`,
-    ],
-    keyPrinciples: [
-      'Fundamental rights are antecedent to the State and stand above ordinary law.',
-      'State liable for rights violations by its agents.'
-    ],
-    relatedCaseIds: ['case-011'],
-    isLandmark: true,
-  },
-  {
-    id: 'case-019',
+
+{
+    id: 'case-002',
     title: 'Mrs Theresa Udo v. Dr Peter Idundun & Anor',
     citation: '(2022) LDLR (CA) pt 1043',
     hasFullJudgment: true,
@@ -1052,7 +555,7 @@ export const LANDMARK_CASES: CaseLaw[] = [
     ratioDecidendi: [
       `D		"I must necessarily recognize that this appeal is basically against findings of fact of the lower Court. That is an issue on which the appellate Court usually respects the decision of the trial judge who saw and listened to witnesses testify to the facts in issues on which he reached his conclusions. Katsina-Alu J.S.C. (later C.J.N.) stated proper attitude of an appellate Court to findings of fact of a trial Court when he said in Nwadiogbu v. Nnadozie (2001) F.W.L.R. (PT 61) 1625 @ 1636 that: "The position of the law is this: that an appellate Court should not interfere with the findings of the trial Court unless the findings are not supported by the pleadings and/or evidence or are perverse." See also Agbonifo v. Aiwereoba & Anor (1988) 1 NSCC 237 @ 245, Odofin v. Ayoola (1984) NSCC 711 @ 733, Olanrewaju v. Governor of Oyo State & Ors (1992) LPELR-2570 (SC) P.19 para E-F."
 
-Per BOLOUKUROMO MOSES UGO JCA (Pp. 11-12, paras. I-J)`
+Per BOLOUKUROMO MOSES UGO JCA (Pp. 9-10, paras. F-A)`
     ],
     authoritiesCited: [
       'Ugbe & 4 Ors. v. Edigbe & Ors.',
@@ -1077,11 +580,11 @@ Per BOLOUKUROMO MOSES UGO JCA (Pp. 11-12, paras. I-J)`
       'Proof of title to land may be established through traditional evidence, documents of title, acts of ownership, long possession, or connected/adjacent possession.',
       'Findings of fact by a trial court are rarely disturbed on appeal unless they are perverse, unsupported, or occasion a miscarriage of justice.'
     ],
-    relatedCaseIds: ['case-012'],
     isLandmark: true,
   },
-  {
-    id: 'case-020',
+
+{
+    id: 'case-003',
     title: 'Adewuyi v. Odukwe',
     citation: '(2005) LDLR (SC) pt 590',
     hasFullJudgment: true,
@@ -1171,11 +674,11 @@ Per BOLOUKUROMO MOSES UGO JCA (Pp. 11-12, paras. I-J)`
       'Minimum evidence can satisfy proof in a civil case where there is no credible evidence on the other side of the scale.',
       'Mere production of a title document is insufficient where the root of title is neither admitted nor established.'
     ],
-    relatedCaseIds: ['case-012'],
     isLandmark: true,
   },
-  {
-    id: 'case-021',
+
+{
+    id: 'case-004',
     title: 'Adekunle v. State',
     citation: '(2006) LDLR (SC) pt 67',
     hasFullJudgment: true,
@@ -1225,11 +728,11 @@ Per BOLOUKUROMO MOSES UGO JCA (Pp. 11-12, paras. I-J)`
       'A voluntary and credible confessional statement can support conviction.',
       'Cause of death may be proved by the totality of credible evidence.'
     ],
-    relatedCaseIds: ['case-023'],
     isLandmark: true,
   },
-  {
-    id: 'case-022',
+
+{
+    id: 'case-005',
     title: 'Adava & Anor v. State',
     citation: '(2006) LDLR (SC) pt 257',
     hasFullJudgment: true,
@@ -1279,11 +782,11 @@ Per BOLOUKUROMO MOSES UGO JCA (Pp. 11-12, paras. I-J)`
       'A bare or displaced alibi will not defeat credible prosecution evidence.',
       'Concurrent findings are rarely disturbed without perversity or miscarriage of justice.'
     ],
-    relatedCaseIds: ['case-024'],
     isLandmark: true,
   },
-  {
-    id: 'case-023',
+
+{
+    id: 'case-006',
     title: 'Adeoye Adekunle v. The State',
     citation: '(2018) LDLR (CA) pt 1200',
     hasFullJudgment: true,
@@ -1332,11 +835,11 @@ Per BOLOUKUROMO MOSES UGO JCA (Pp. 11-12, paras. I-J)`
       'A valid confessional statement can ground a conviction.',
       'Criminal appeals turn on whether the conviction is supported by admissible and credible evidence.'
     ],
-    relatedCaseIds: ['case-021'],
     isLandmark: true,
   },
-  {
-    id: 'case-024',
+
+{
+    id: 'case-007',
     title: 'Tunde Adava & Anor v. The State',
     citation: '(2002) LDLR (CA) pt 357',
     hasFullJudgment: true,
@@ -1385,7 +888,6 @@ Per BOLOUKUROMO MOSES UGO JCA (Pp. 11-12, paras. I-J)`
       'Credible eyewitness evidence can displace an alibi.',
       'Cause of death may be proved by direct and circumstantial evidence.'
     ],
-    relatedCaseIds: ['case-022'],
     isLandmark: true,
   }
 ];

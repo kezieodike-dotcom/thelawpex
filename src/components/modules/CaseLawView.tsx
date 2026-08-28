@@ -41,22 +41,7 @@ export const CASE_LAW_COURTS: { slug: string; name: CaseLaw['court']; blurb: str
     slug: 'court-of-appeal',
     name: 'Court of Appeal',
     blurb:
-      'Judgments of the penultimate court, binding on the High Courts, the Federal High Court, the National Industrial Court and all courts below.',
-  },
-  {
-    slug: 'federal-high-court',
-    name: 'Federal High Court',
-    blurb: 'Decisions in revenue, admiralty, companies, banking and federal agency matters.',
-  },
-  {
-    slug: 'national-industrial-court',
-    name: 'National Industrial Court',
-    blurb: 'Decisions in labour, employment, trade union and workplace matters.',
-  },
-  {
-    slug: 'state-high-court',
-    name: 'State High Court',
-    blurb: 'Decisions of the High Courts of the states and the Federal Capital Territory.',
+      'Judgments of the penultimate court, organised for appellate research with digest, principles, ratio decidendi and full judgment text.',
   },
 ];
 
@@ -87,7 +72,7 @@ const CourtDirectory: React.FC = () => (
         <div className="absolute inset-y-0 right-0 hidden w-1/3 bg-[linear-gradient(135deg,rgba(250,204,21,0.22),transparent_58%)] lg:block" />
         <div className="relative max-w-4xl">
           <span className="inline-flex items-center rounded-full bg-[#facc15] px-3 py-1 text-[11px] font-black uppercase tracking-[0.16em] text-neutral-950">
-            Nigerian case-law library
+            Nigerian case laws library
           </span>
           <h1 className="mt-4 text-3xl font-black tracking-tight text-neutral-950 sm:text-5xl">Case Laws</h1>
           <p className="mt-3 max-w-3xl text-base leading-8 text-neutral-700 sm:text-lg">
@@ -182,7 +167,7 @@ const CourtCaseList: React.FC<{ court: (typeof CASE_LAW_COURTS)[number] }> = ({ 
               type="text"
               value={query}
               onChange={(event) => setQuery(event.target.value)}
-              placeholder="Search case law/principles..."
+              placeholder="Search case laws/principles..."
               className="w-full rounded-2xl border border-amber-200 bg-[#fffdf6] py-4 pl-12 pr-4 text-base font-semibold text-neutral-950 shadow-inner outline-none focus:border-amber-400 focus:bg-white"
             />
           </div>
@@ -338,7 +323,7 @@ const CaseDetail: React.FC<{ judgment: CaseLaw }> = ({ judgment }) => {
                 {judgment.title}
               </h1>
               <p className="relative mt-2 max-w-5xl break-words text-sm font-black leading-6 text-amber-700 sm:text-base">
-                {judgment.citation} - {judgment.suitNumber} - {judgment.year}
+                {judgment.citation}
               </p>
 
               <div className="relative mt-4 grid grid-cols-2 gap-2 lg:grid-cols-[repeat(4,minmax(0,1fr))]">
@@ -607,7 +592,7 @@ const RatioPanel: React.FC<{ judgment: CaseLaw; onReadFullJudgment: () => void }
 };
 
 const RatioHeadingText: React.FC<{ heading: string }> = ({ heading }) => {
-  const parts = heading.split(/\s+-\s+/).map((part) => part.trim()).filter(Boolean);
+  const parts = heading.split(RATIO_HEADING_SEPARATOR).map((part) => part.trim()).filter(Boolean);
 
   if (parts.length < 2) {
     return (
@@ -671,13 +656,14 @@ const getJudgmentTextForCopy = (judgment: CaseLaw): string => {
 
   if (judgment.verbatimWholeCase || judgment.preserveSourceFormatting) {
     const bodyText = getSourceCaseBodyText(judgment.fullJudgmentText ?? '');
-    const sourcePages = paginateSourceJudgmentText(bodyText);
+    const sourcePages = paginateJudgmentSourceText(judgment, bodyText);
+    const sourcePagesWithCurrentCitations = withCurrentSourcePageCitations(judgment, sourcePages);
     const totalPages = sourcePages.length ? sourcePages.length + 1 : 1;
     if (!bodyText) return '';
 
     return [
       getCaseOpeningText(judgment, totalPages),
-      ...sourcePages.map((page, pageIndex) => [
+      ...sourcePagesWithCurrentCitations.map((page, pageIndex) => [
         page.blocks.map((block) => block.text).join('\n\n'),
         `page (${pageIndex + 2}) of (${totalPages})`,
       ].join('\n\n')),
@@ -700,9 +686,7 @@ const getJudgmentTextForCopy = (judgment: CaseLaw): string => {
 
   const bodyText = pages
     .map((page, pageIndex) => [
-      ...page.paragraphs.map((paragraph, index) =>
-        hasSourceLabels ? paragraph : paragraph,
-      ),
+      ...withCurrentReportCitations(judgment, page.paragraphs),
       `page (${pageIndex + 2}) of (${totalPages})`,
     ].join('\n\n'))
     .join('\n\n');
@@ -714,11 +698,13 @@ const getCaseOpeningText = (judgment: CaseLaw, totalPages: number) => {
   const parties = getFormalCaseParties(judgment);
 
   return [
+    judgment.title.toUpperCase(),
+    judgment.citation.replace(/\bpt\b/i, 'Pt.'),
     formatCourtHeading(judgment.court),
     judgment.judicialDivision ? formatDivision(judgment.judicialDivision) : '',
-    judgment.dateDelivered ? formatDeliveredDate(judgment.dateDelivered) : '',
+    judgment.dateDelivered ?? '',
     `Suit No: ${judgment.suitNumber}`,
-    'Before Their Lordship',
+    'BEFORE THEIR LORDSHIPS',
     ...judgment.presidingJudges.map((judge) => `${cleanJudgeName(judge)} | ${judgeRole(judgment.court)}`),
     'BETWEEN',
     `${parties.appellants.join('\n')} | APPELLANT(S)`,
@@ -915,10 +901,15 @@ type SourceJudgmentBlock = {
 };
 
 const normalizeSourceJudgmentMarkers = (text: string) =>
-  text.replace(
-    /([A-Z][A-Z\s.'-]+,\s+J\.?\s*(?:S\.?\s*C|C\.?\s*A)\.?\s*\(\s*Delivering)\s*\n+\s*[A-G]\s+the\s+Leading\s+Judgment\)\s*:/gi,
-    '$1 the Leading Judgment):',
-  );
+  text
+    .replace(
+      /(\(\s*Delivering)\s*\n+\s*(the\s+Leading\s+Judgment\)\s*:)/gi,
+      '$1 $2',
+    )
+    .replace(
+      /([A-Z][A-Z\s.'-]+,\s+J\.?\s*(?:S\.?\s*C|C\.?\s*A)\.?\s*\(\s*Delivering)\s*\n+\s*[A-G]\s+the\s+Leading\s+Judgment\)\s*:/gi,
+      '$1 the Leading Judgment):',
+    );
 
 const getSourceJudgmentBlocks = (text: string): SourceJudgmentBlock[] =>
   normalizeSourceJudgmentMarkers(text)
@@ -944,7 +935,7 @@ const getSourceJudgmentBlocks = (text: string): SourceJudgmentBlock[] =>
       };
     });
 
-const paginateSourceJudgmentText = (text: string) => {
+const paginateSourceJudgmentText = (text: string, sourceLinePadding = 90) => {
   const blocks = getSourceJudgmentBlocks(text);
   const pages: { blocks: SourceJudgmentBlock[] }[] = [];
   let current: SourceJudgmentBlock[] = [];
@@ -953,7 +944,7 @@ const paginateSourceJudgmentText = (text: string) => {
   const targetCharactersPerPage = 5000;
 
   blocks.forEach((block) => {
-    const weightedSize = block.text.length + (block.isHeading ? 220 : 90);
+    const weightedSize = block.text.length + (block.isHeading ? 220 : sourceLinePadding);
     const shouldForceLeadPage =
       current.length > 0 &&
       !hasForcedLeadingJudgmentPage &&
@@ -983,6 +974,11 @@ const paginateSourceJudgmentText = (text: string) => {
 
   return pages;
 };
+
+const denseSourceJudgmentIds = new Set(['case-003', 'case-004']);
+
+const paginateJudgmentSourceText = (judgment: CaseLaw, text: string) =>
+  paginateSourceJudgmentText(text, denseSourceJudgmentIds.has(judgment.id) ? 0 : 90);
 
 const exactSectionStops = [
   /^\(?READ FULL JUDGMENT\)?$/i,
@@ -1045,16 +1041,27 @@ type RatioPoint = {
   fullText: string;
 };
 
+const RATIO_HEADING_SEPARATOR = /\s+(?:-|\u2014|\u2013|\u00e2\u20ac\u201d|\u00e2\u20ac\u201c)\s+/;
+
 const isRatioPointHeading = (block: string) => {
   const clean = block.trim();
-  if (!clean || /^Per\b/i.test(clean) || clean.startsWith('"') || clean.startsWith('“')) return false;
-  return /^[A-Z0-9][A-Z0-9\s&/.,()'’-]+ - [A-Z0-9][A-Z0-9\s&/.,()'’-]+ - /i.test(clean);
+  if (
+    !clean ||
+    /^Per\b/i.test(clean) ||
+    clean.startsWith('"') ||
+    clean.startsWith('\u201c') ||
+    clean.startsWith('\u00e2\u20ac\u0153')
+  ) return false;
+  const parts = clean.split(RATIO_HEADING_SEPARATOR).map((part) => part.trim()).filter(Boolean);
+  return parts.length >= 3 && /^[A-Z0-9]/.test(parts[0]);
 };
 
 const stripSourceParagraphLead = (line: string) => line.replace(/^([A-G])\s+/, '').trim();
 
 const getSourceRatioBlocks = (judgment: CaseLaw) => {
-  const text = (judgment.fullJudgmentText ?? '').replace(/\r\n/g, '\n');
+  const text = normalizeSourceJudgmentMarkers(
+    (judgment.fullJudgmentText ?? '').replace(/\r\n/g, '\n'),
+  );
   if (!text.trim()) return [];
 
   const lines = text.split('\n');
@@ -1076,7 +1083,7 @@ const getSourceRatioBlocks = (judgment: CaseLaw) => {
 
 const ratioPointFromText = (text: string): RatioPoint => {
   const clean = text.trim();
-  const headingMatch = clean.match(/^([\s\S]{16,260}?-\s+Whether[\s\S]*?)(?=\n+["“])/i);
+  const headingMatch = clean.match(/^([\s\S]{16,260}?(?:-|\u2014|\u2013|\u00e2\u20ac\u201d|\u00e2\u20ac\u201c)\s+(?:Whether|Ingredients)[\s\S]*?)(?=\n+["\u201c\u00e2\u20ac\u0153])/i);
   const heading = headingMatch?.[1]?.replace(/\s+/g, ' ').trim() || clean.replace(/\s+/g, ' ').slice(0, 180);
   const body = headingMatch ? clean.slice(headingMatch[0].length).trim() : clean;
 
@@ -1219,24 +1226,341 @@ const reportCitationText = ({ start, end }: ReportCitationSpan) => {
     : `(Pp. ${start.pageNumber}-${end.pageNumber})`;
 };
 
+const normalizeRawReportCitationGrammar = (text: string) =>
+  text.replace(
+    /\((Pp?\.\s*[^)]*?),\s*paras?\.?\s*([A-G])\s*-\s*\2\)/gi,
+    '($1, para. $2)',
+  );
+
 const manualRatioCitation = (judgment: CaseLaw, point: RatioPoint) => {
+  const headingParts = point.heading.split(RATIO_HEADING_SEPARATOR).map((part) => part.trim());
+
   if (
-    judgment.id === 'case-023' &&
-    /^PRACTICE AND PROCEDURE\s+-\s+ISSUE OF JURISDICTION\s+-\s+Importance of resolving the issue of jurisdiction once it is raised/i.test(
-      point.heading,
+    judgment.id === 'case-001' &&
+    /^EVIDENCE$/i.test(headingParts[0] ?? '') &&
+    /^WRONGFUL ADMISSION\/REJECTION OF EVIDENCE$/i.test(headingParts[1] ?? '') &&
+    /^Whether a wrongfully admitted\/excluded evidence could constitute a ground/i.test(
+      headingParts[2] ?? '',
     )
   ) {
-    return '(P. 20, paras. D-G)';
+    return '(P. 10, para. F)';
   }
 
-  if (judgment.id === 'case-024') {
-    const tundeAdavaPageNineRatioHeadings = [
-      /^EVIDENCE\s+-\s+CALLING OF EVIDENCE\s+-\s+Whether in a criminal trial, a host of witnesses is required/i,
-      /^EVIDENCE\s+-\s+EVALUATION OF EVIDENCE\s+-\s+Duty of the trial Court as regards perception, evaluation and findings of fact/i,
-    ];
+  if (
+    judgment.id === 'case-001' &&
+    /^EVIDENCE$/i.test(headingParts[0] ?? '') &&
+    /^PROOF OF TITLE TO LAND$/i.test(headingParts[1] ?? '') &&
+    /^Ways of proving title\/ownership of land/i.test(headingParts[2] ?? '')
+  ) {
+    return '(Pp. 11-12, paras. A-A)';
+  }
 
-    if (tundeAdavaPageNineRatioHeadings.some((pattern) => pattern.test(point.heading))) {
+  if (
+    judgment.id === 'case-002' &&
+    /^APPEAL$/i.test(headingParts[0] ?? '') &&
+    /^INTERFERENCE WITH FINDING\(S\) OF FACT\(S\)$/i.test(headingParts[1] ?? '') &&
+    /^Attitude of appellate Courts to findings of fact made by a trial Court/i.test(
+      headingParts[2] ?? '',
+    )
+  ) {
+    return '(Pp. 8-9, paras. F-A)';
+  }
+
+  if (judgment.id === 'case-003') {
+    if (
+      /^EVIDENCE\s+-\s+BURDEN OF PROOF\/ONUS OF PROOF\s+-\s+Whether a plaintiff can rely on the weakness/i.test(
+        point.heading,
+      )
+    ) {
+      return '(P. 7, paras. C-D)';
+    }
+
+    if (
+      /^EVIDENCE\s+-\s+PROOF OF TITLE TO LAND\s+-\s+Ways by which ownership\/title to land may be proved/i.test(
+        point.heading,
+      )
+    ) {
+      return '(P. 7, paras. D-E)';
+    }
+
+    if (
+      /^EVIDENCE\s+-\s+STANDARD OF PROOF\s+-\s+When is the burden of proof on a plaintiff/i.test(
+        point.heading,
+      )
+    ) {
+      return '(P. 8, para. C)';
+    }
+
+    if (
+      /^EVIDENCE\s+-\s+STANDARD OF PROOF\s+-\s+Standard of proof in civil cases/i.test(
+        point.heading,
+      )
+    ) {
+      return '(P. 8, paras. C-D)';
+    }
+
+    if (
+      /^EVIDENCE\s+-\s+PROOF OF TITLE TO LAND\s+-\s+Whether a mere production of a deed of grant/i.test(
+        point.heading,
+      )
+    ) {
+      return '(P. 9, paras. B-C)';
+    }
+  }
+
+  if (judgment.id === 'case-004') {
+    if (
+      /^CRIMINAL LAW AND PROCEDURE\s+-\s+DEFENCE OF ACCIDENT\s+-\s+The test for the defence of accident/i.test(
+        point.heading,
+      )
+    ) {
+      return '(P. 7, paras. A-B)';
+    }
+
+    if (
+      /^CRIMINAL LAW AND PROCEDURE\s+-\s+DEFENCE OF ACCIDENT\s+-\s+What constitutes an event which occurs by accident/i.test(
+        point.heading,
+      )
+    ) {
+      return '(P. 7, paras. B-C)';
+    }
+
+    if (
+      /^CRIMINAL LAW AND PROCEDURE\s+-\s+OFFENCE OF MURDER\s+-\s+Essential ingredients that must be proved/i.test(
+        point.heading,
+      )
+    ) {
+      return '(Pp. 7-8, paras. B-A)';
+    }
+
+    if (
+      /^CRIMINAL LAW AND PROCEDURE\s+-\s+OFFENCE OF MURDER\s+-\s+The nature of evidence which can establish\/prove a charge of murder/i.test(
+        point.heading,
+      )
+    ) {
+      return '(P. 8, para. A)';
+    }
+
+    if (
+      /^EVIDENCE\s+-\s+BURDEN OF PROOF\/ONUS OF PROOF\s+-\s+Whether the onus of proof on the prosecution does shift/i.test(
+        point.heading,
+      )
+    ) {
+      return '(P. 8, para. B)';
+    }
+
+    if (
+      /^EVIDENCE\s+-\s+CIRCUMSTANTIAL EVIDENCE\s+-\s+Conditions that must be met/i.test(point.heading)
+    ) {
+      return '(P. 8, paras. B-C)';
+    }
+
+    if (
+      /^EVIDENCE\s+-\s+CAUSE OF DEATH\s+-\s+Circumstances where medical evidence would be dispensed/i.test(
+        point.heading,
+      )
+    ) {
+      return '(P. 8, paras. E-F)';
+    }
+
+    if (
+      /^APPEAL\s+-\s+INTERFERENCE WITH CONCURRENT FINDING\(S\) OF FACT\(S\)\s+-\s+Attitude of the appellate Court/i.test(
+        point.heading,
+      )
+    ) {
+      return '(Pp. 8-9, paras. C-B)';
+    }
+
+    if (
+      /^EVIDENCE\s+-\s+CAUSE OF DEATH\s+-\s+Effect of failure of the prosecution to establish the cause of death/i.test(
+        point.heading,
+      )
+    ) {
+      return '(P. 10, paras. B-C)';
+    }
+
+    if (
+      /^LEGAL PRACTITIONER\s+-\s+DUTY OF COUNSEL\s+-\s+Duty of Counsel to promptly take objection/i.test(
+        point.heading,
+      )
+    ) {
+      return '(P. 10, paras. G-A)';
+    }
+
+    if (
+      /^CONSTITUTIONAL LAW\s+-\s+RIGHT TO SILENCE\s+-\s+What the constitutional right to silence/i.test(
+        point.heading,
+      )
+    ) {
+      return '(P. 11, paras. E-F)';
+    }
+
+    if (
+      /^EVIDENCE\s+-\s+PROOF BEYOND REASONABLE DOUBT\s+-\s+Position of the law where an accused person asserts/i.test(
+        point.heading,
+      )
+    ) {
+      return '(P. 11, paras. G-A)';
+    }
+
+    if (
+      /^CRIMINAL LAW AND PROCEDURE\s+-\s+ACCUSED PERSON RESTING HIS CASE ON THE PROSECUTIONS CASE\s+-\s+Whether an accused person/i.test(
+        point.heading,
+      )
+    ) {
+      return '(P. 11, para. A)';
+    }
+
+    if (
+      /^CRIMINAL LAW AND PROCEDURE\s+-\s+DEFENCE OF ACCIDENT\s+-\s+Whether an accused person can raise a defence of accident/i.test(
+        point.heading,
+      )
+    ) {
+      return '(P. 12, paras. F-A)';
+    }
+  }
+
+  if (
+    judgment.id === 'case-005' &&
+    /^EVIDENCE$/i.test(headingParts[0] ?? '') &&
+    /^CREDIBILITY OF WITNESS$/i.test(headingParts[1] ?? '') &&
+    /^Whether the assessment of credibility of witnesses/i.test(headingParts[2] ?? '')
+  ) {
+    return '(P. 5, para. B)';
+  }
+
+  if (
+    judgment.id === 'case-005' &&
+    /^CRIMINAL LAW AND PROCEDURE$/i.test(headingParts[0] ?? '') &&
+    /^OFFENCE OF CULPABLE HOMICIDE PUNISHABLE WITH DEATH$/i.test(headingParts[1] ?? '') &&
+    /^Ingredients that must be proved/i.test(headingParts[2] ?? '')
+  ) {
+    return '(P. 5, para. C-D)';
+  }
+
+  if (
+    judgment.id === 'case-005' &&
+    /^CRIMINAL LAW AND PROCEDURE$/i.test(headingParts[0] ?? '') &&
+    /^CONVICTION FOR LESSER OFFENCE$/i.test(headingParts[1] ?? '') &&
+    /^Whether a court can convict an accused person of a lesser offence/i.test(headingParts[2] ?? '')
+  ) {
+    return '(P. 7, paras. A-C)';
+  }
+
+  if (
+    judgment.id === 'case-005' &&
+    /^CRIMINAL LAW AND PROCEDURE$/i.test(headingParts[0] ?? '') &&
+    /^OFFENCE OF CULPABLE HOMICIDE PUNISHABLE WITH DEATH$/i.test(headingParts[1] ?? '') &&
+    /^Ingredients that must co-exist before conviction/i.test(headingParts[2] ?? '')
+  ) {
+    return '(P. 7, paras. E-F)';
+  }
+
+  if (judgment.id === 'case-006') {
+    if (
+      /^PRACTICE AND PROCEDURE\s+-\s+ISSUE OF JURISDICTION\s+-\s+Importance of resolving the issue of jurisdiction once it is raised/i.test(
+        point.heading,
+      )
+    ) {
+      return '(P. 17, paras. D-G)';
+    }
+
+    if (
+      /^CRIMINAL LAW AND PROCEDURE\s+-\s+POWER OF THE ATTORNEY-GENERAL\s+-\s+Whether the Attorney General of a state has power to prosecute offences under a federal law/i.test(
+        point.heading,
+      )
+    ) {
+      return '(P. 18, paras. A-G)';
+    }
+
+    if (
+      /^CRIMINAL LAW AND PROCEDURE\s+-\s+LEAVE TO PREFER A CHARGE\s+-\s+What a Judge should consider in exercising power to grant leave/i.test(
+        point.heading,
+      )
+    ) {
+      return '(Pp. 19-21, paras. A-D)';
+    }
+
+    if (
+      /^EVIDENCE\s+-\s+EVIDENCE IN PREVIOUS PROCEEDINGS\s+-\s+Conditions for the admissibility of evidence given in previous proceedings/i.test(
+        point.heading,
+      )
+    ) {
+      return '(Pp. 21-22, paras. E-C)';
+    }
+
+    if (
+      /^EVIDENCE\s+-\s+DOCUMENTARY EVIDENCE\s+-\s+Effect of the failure of a party to object to the reception of a document/i.test(
+        point.heading,
+      )
+    ) {
+      return '(P. 22, paras. C-G)';
+    }
+
+    if (
+      /^EVIDENCE\s+-\s+CONTRADICTION IN EVIDENCE\s+-\s+Position of the law as regards contradictions in evidence/i.test(
+        point.heading,
+      )
+    ) {
+      return '(P. 23, paras. A-E)';
+    }
+
+    if (
+      /^EVIDENCE\s+-\s+CONFESSIONAL STATEMENT\s+-\s+Meaning of confession\/confessional statement/i.test(
+        point.heading,
+      )
+    ) {
+      return '(Pp. 23-24, paras. E-C)';
+    }
+
+    if (
+      /^CONSTITUTIONAL LAW\s+-\s+RIGHT TO FAIR HEARING\s+-\s+Principles of fair hearing/i.test(
+        point.heading,
+      )
+    ) {
+      return '(Pp. 24-25, paras. C-D)';
+    }
+
+    if (
+      /^CONSTITUTIONAL LAW\s+-\s+RIGHT TO FAIR HEARING\s+-\s+Whether a party who had an opportunity of being heard/i.test(
+        point.heading,
+      )
+    ) {
+      return '(Pp. 25-26, paras. E-E)';
+    }
+
+    if (
+      /^CONSTITUTIONAL LAW\s+-\s+RIGHT TO FAIR HEARING\s+-\s+Whether exercise of right to fair hearing must be within a reasonable time/i.test(
+        point.heading,
+      )
+    ) {
+      return '(Pp. 26-27, paras. E-C)';
+    }
+
+    if (
+      /^CRIMINAL LAW AND PROCEDURE\s+-\s+SENTENCING\s+-\s+Whether the Court has discretion to determine the sentence/i.test(
+        point.heading,
+      )
+    ) {
+      return '(Pp. 27-28, paras. C-D)';
+    }
+  }
+
+  if (judgment.id === 'case-007') {
+    if (
+      /^EVIDENCE\s+-\s+CALLING OF EVIDENCE\s+-\s+Whether in a criminal trial, a host of witnesses is required/i.test(
+        point.heading,
+      )
+    ) {
       return '(P. 9, para. A)';
+    }
+
+    if (
+      /^EVIDENCE\s+-\s+EVALUATION OF EVIDENCE\s+-\s+Duty of the trial Court as regards perception, evaluation and findings of fact/i.test(
+        point.heading,
+      )
+    ) {
+      return '(P. 9, para. B)';
     }
   }
 
@@ -1367,6 +1691,42 @@ const reportParagraphsFromStructuredPage = (
       .join(' '),
   );
 
+const citationTargetsFromLabelledSegments = (
+  pageNumber: number,
+  entries: Array<{ label?: string; text: string; isHeading?: boolean }>,
+) => {
+  const targets: ReportCitationTarget[] = [];
+  let current: ReportCitationTarget | undefined;
+
+  entries.forEach((entry) => {
+    const text = entry.text.trim();
+    if (!text || entry.isHeading) return;
+
+    if (entry.label) {
+      current = {
+        pageNumber,
+        label: entry.label.toUpperCase(),
+        text,
+      };
+      targets.push(current);
+      return;
+    }
+
+    if (current) {
+      current.text = `${current.text} ${text}`;
+    }
+  });
+
+  return targets;
+};
+
+const citationTargetsFromReportParagraphs = (pageNumber: number, paragraphs: ReportParagraph[]) =>
+  paragraphs.map((paragraph) => ({
+    pageNumber,
+    label: paragraph.label,
+    text: paragraph.text,
+  }));
+
 const sourceLeadingJudgmentPageIndex = (pages: { blocks: SourceJudgmentBlock[] }[]) => {
   const index = pages.findIndex((page) => page.blocks.some((block) => block.startsLeadingJudgment));
   return index > -1 ? index : Number.POSITIVE_INFINITY;
@@ -1384,7 +1744,7 @@ const structuredLeadingJudgmentPageIndex = (
 const currentReportCitationTargets = (judgment: CaseLaw): ReportCitationTarget[] => {
   if (judgment.verbatimWholeCase || judgment.preserveSourceFormatting) {
     const bodyText = getSourceCaseBodyText(judgment.fullJudgmentText ?? '');
-    const sourcePages = paginateSourceJudgmentText(bodyText);
+    const sourcePages = paginateJudgmentSourceText(judgment, bodyText);
     const leadPageIndex = sourceLeadingJudgmentPageIndex(sourcePages);
 
     return sourcePages.flatMap((page, pageIndex) => {
@@ -1393,11 +1753,18 @@ const currentReportCitationTargets = (judgment: CaseLaw): ReportCitationTarget[]
 
       if (!isLeadPage) return [];
 
-      return reportParagraphsFromSourceBlocks(page.blocks).map((paragraph) => ({
+      const labelledTargets = citationTargetsFromLabelledSegments(
         pageNumber,
-        label: paragraph.label,
-        text: paragraph.text,
-      }));
+        page.blocks.map((block) => ({
+          label: block.sourceLabel,
+          text: normalizeReportParagraphText(block.sourceText ?? block.text),
+          isHeading: block.isHeading,
+        })),
+      );
+
+      if (labelledTargets.length) return labelledTargets;
+
+      return citationTargetsFromReportParagraphs(pageNumber, reportParagraphsFromSourceBlocks(page.blocks));
     });
   }
 
@@ -1411,12 +1778,45 @@ const currentReportCitationTargets = (judgment: CaseLaw): ReportCitationTarget[]
 
     if (!isLeadPage) return [];
 
-    return reportParagraphsFromStructuredPage(page.paragraphs, hasSourceLabels).map((paragraph) => ({
+    if (hasSourceLabels) {
+      const labelledTargets = citationTargetsFromLabelledSegments(
+        pageNumber,
+        page.paragraphs.map((paragraph) => {
+          const sourceParagraph = parseSourceParagraph(paragraph);
+
+          return {
+            label: sourceParagraph.label,
+            text: normalizeReportParagraphText(sourceParagraph.text),
+          };
+        }),
+      );
+
+      if (labelledTargets.length) return labelledTargets;
+    }
+
+    return citationTargetsFromReportParagraphs(
       pageNumber,
-      label: paragraph.label,
-      text: paragraph.text,
-    }));
+      reportParagraphsFromStructuredPage(page.paragraphs, hasSourceLabels),
+    );
   });
+};
+
+const pageBandCitationTargets = (pageNumber: number, text: string): ReportCitationTarget[] => {
+  const words = normalizeCitationLookupText(text).split(' ').filter(Boolean);
+  if (!words.length) return [];
+
+  return PARAGRAPH_LABELS.map((label, index) => {
+    const start = Math.floor((index / PARAGRAPH_LABELS.length) * words.length);
+    const end = index === PARAGRAPH_LABELS.length - 1
+      ? words.length
+      : Math.floor(((index + 1) / PARAGRAPH_LABELS.length) * words.length);
+
+    return {
+      pageNumber,
+      label,
+      text: words.slice(start, Math.max(end, start + 1)).join(' '),
+    };
+  }).filter((target) => target.text);
 };
 
 const targetForNormalizedOffset = (
@@ -1471,34 +1871,81 @@ const findCurrentReportCitation = (judgment: CaseLaw, sourceText: string): Repor
 
 const withCurrentReportCitations = (judgment: CaseLaw, items: string[]) => {
   let previousQuote = '';
+  let activeRatioHeading = '';
+  let activeRatioBody = '';
 
   return items.map((item) => {
+    const clean = item.trim();
+    if (isRatioPointHeading(clean)) {
+      activeRatioHeading = clean;
+      activeRatioBody = '';
+      previousQuote = '';
+      return item;
+    }
+
     PAGE_CITATION_PATTERN.lastIndex = 0;
     const hasCitation = PAGE_CITATION_PATTERN.test(item);
     PAGE_CITATION_PATTERN.lastIndex = 0;
 
     if (!hasCitation) {
+      if (activeRatioHeading && clean) activeRatioBody = activeRatioBody ? `${activeRatioBody}\n\n${item}` : item;
       if (normalizeCitationText(item).length > 24) previousQuote = item;
       return item;
     }
 
+    if (activeRatioHeading && /^Per\b/i.test(clean)) {
+      const ratioPoint = withCurrentRatioCitation(judgment, {
+        heading: activeRatioHeading,
+        body: activeRatioBody,
+        attribution: item,
+        fullText: [activeRatioHeading, activeRatioBody, item].filter(Boolean).join('\n\n'),
+      });
+
+      return ratioPoint.attribution ?? item;
+    }
+
     const target = findCurrentReportCitation(judgment, item) ?? findCurrentReportCitation(judgment, previousQuote);
-    if (!target) return item;
+    if (!target) return normalizeRawReportCitationGrammar(item);
 
     return item.replace(PAGE_CITATION_PATTERN, reportCitationText(target));
   });
 };
 
+const withCurrentSourcePageCitations = (
+  judgment: CaseLaw,
+  pages: { blocks: SourceJudgmentBlock[] }[],
+) => {
+  const correctedTexts = withCurrentReportCitations(
+    judgment,
+    pages.flatMap((page) => page.blocks.map((block) => block.text)),
+  );
+  let cursor = 0;
+
+  return pages.map((page) => ({
+    ...page,
+    blocks: page.blocks.map((block) => ({
+      ...block,
+      text: correctedTexts[cursor++] ?? block.text,
+    })),
+  }));
+};
+
 const withCurrentRatioCitation = (judgment: CaseLaw, point: RatioPoint): RatioPoint => {
   const manualCitation = manualRatioCitation(judgment, point);
   const target =
-    manualCitation
-      ? undefined
-      : findCurrentReportCitation(judgment, point.body || point.fullText) ??
-        findCurrentReportCitation(judgment, point.fullText);
-  if (!manualCitation && !target) return point;
+    findCurrentReportCitation(judgment, point.body || point.fullText) ??
+    findCurrentReportCitation(judgment, point.fullText);
+  if (!manualCitation && !target) {
+    const attribution = normalizeRawReportCitationGrammar(point.attribution ?? '');
 
-  const currentCitation = manualCitation ?? reportCitationText(target as ReportCitationSpan);
+    return {
+      ...point,
+      attribution,
+      fullText: [point.heading, point.body, attribution].filter(Boolean).join('\n\n'),
+    };
+  }
+
+  const currentCitation = manualCitation ?? (target ? reportCitationText(target) : undefined);
   const replaceCitation = (text?: string) => {
     if (!text) return text;
     PAGE_CITATION_PATTERN.lastIndex = 0;
@@ -1529,8 +1976,9 @@ const WholeCasePanel: React.FC<{
   const sourceCaseBodyText = getSourceCaseBodyText(judgment.fullJudgmentText ?? '');
   const sourcePages =
     (judgment.verbatimWholeCase || judgment.preserveSourceFormatting) && judgment.fullJudgmentText
-      ? paginateSourceJudgmentText(sourceCaseBodyText)
+      ? paginateJudgmentSourceText(judgment, sourceCaseBodyText)
       : [];
+  const sourcePagesWithCurrentCitations = withCurrentSourcePageCitations(judgment, sourcePages);
   const sourceLeadPageIndex = sourceLeadingJudgmentPageIndex(sourcePages);
   const bodyLeadPageIndex = structuredLeadingJudgmentPageIndex(bodyPages);
   const totalPages = sourcePages.length
@@ -1608,15 +2056,20 @@ const WholeCasePanel: React.FC<{
           </div>
         ) : (judgment.verbatimWholeCase || judgment.preserveSourceFormatting) && judgment.fullJudgmentText ? (
           <div className="overflow-visible bg-white" data-case-report-id={judgment.id}>
-            <ReportPageTracker pageNumber={activeReportPage} totalPages={totalPages} />
-            <CaseCoatOfArmsHeader />
+            <ReportPageTracker judgment={judgment} pageNumber={activeReportPage} totalPages={totalPages} />
             <CaseOpeningPage judgment={judgment} />
-            {sourcePages.map((page, pageIndex) => {
+            {sourcePagesWithCurrentCitations.map((page, pageIndex) => {
               const shouldReparagraph = pageIndex >= sourceLeadPageIndex;
 
               return (
-                <CaseReportPage key={`source-page-${pageIndex + 2}`} pageNumber={pageIndex + 2}>
+                <CaseReportPage
+                  key={`source-page-${pageIndex + 2}`}
+                  judgment={judgment}
+                  pageNumber={pageIndex + 2}
+                  showMarkers={shouldReparagraph}
+                >
                   <SourceJudgmentText
+                    judgment={judgment}
                     blocks={page.blocks}
                     reparagraph={shouldReparagraph}
                   />
@@ -1626,39 +2079,51 @@ const WholeCasePanel: React.FC<{
           </div>
         ) : bodyPages.length ? (
           <div className="overflow-visible bg-white" data-case-report-id={judgment.id}>
-            <ReportPageTracker pageNumber={activeReportPage} totalPages={totalPages} />
-            <CaseCoatOfArmsHeader />
+            <ReportPageTracker judgment={judgment} pageNumber={activeReportPage} totalPages={totalPages} />
             <CaseOpeningPage judgment={judgment} />
             {bodyPages.map((page, pageIndex) => {
               const shouldReparagraph = pageIndex >= bodyLeadPageIndex;
+              const displayParagraphs = shouldReparagraph
+                ? page.paragraphs
+                : withCurrentReportCitations(judgment, page.paragraphs);
 
               return (
-                <CaseReportPage key={page.page} pageNumber={pageIndex + 2}>
+                <CaseReportPage
+                  key={page.page}
+                  judgment={judgment}
+                  pageNumber={pageIndex + 2}
+                  showMarkers={shouldReparagraph}
+                >
                   <div
                     className={
                       shouldReparagraph
-                        ? 'mx-auto w-full max-w-[64rem] space-y-0 font-[Georgia,ui-serif,serif] text-[15px] leading-7 text-neutral-900 sm:text-[17px] sm:leading-8'
-                        : 'mx-auto w-full max-w-[74rem] space-y-4 font-[Georgia,ui-serif,serif] text-[15px] leading-8 text-neutral-900 sm:text-[17px] sm:leading-9'
+                        ? 'mx-auto w-full max-w-[76rem] space-y-3 font-[Georgia,ui-serif,serif] text-base leading-8 text-neutral-900 sm:text-lg sm:leading-9'
+                        : 'mx-auto w-full max-w-[76rem] space-y-4 font-[Georgia,ui-serif,serif] text-[15px] leading-8 text-neutral-900 sm:text-[17px] sm:leading-9'
                     }
                   >
                     {shouldReparagraph ? (
                     <>
-                      {leadingJudgmentHeadingFromStructuredPage(page.paragraphs, hasSourceLabels) && (
-                        <p className="text-center font-[Georgia,ui-serif,serif] text-[13px] font-bold leading-6 text-neutral-950 sm:text-base sm:leading-7">
-                          {leadingJudgmentHeadingFromStructuredPage(page.paragraphs, hasSourceLabels)}
+                      {leadingJudgmentHeadingFromStructuredPage(displayParagraphs, hasSourceLabels) && (
+                        <p className="font-[Georgia,ui-serif,serif] text-base font-bold leading-8 text-neutral-950 sm:text-lg sm:leading-9">
+                          {leadingJudgmentHeadingFromStructuredPage(displayParagraphs, hasSourceLabels)}
                         </p>
                       )}
-                      {reportParagraphsFromStructuredPage(page.paragraphs, hasSourceLabels).map((paragraph, index) => (
-                        <ReportParagraphRow key={`${page.page}-report-${index}`} label={paragraph.label} text={paragraph.text} />
+                      {reportParagraphsFromStructuredPage(displayParagraphs, hasSourceLabels).map((paragraph, index) => (
+                        <ReportParagraphRow
+                          key={`${page.page}-report-${index}`}
+                          label={paragraph.label}
+                          text={paragraph.text}
+                          hideLabel
+                        />
                       ))}
                     </>
-                    ) : page.paragraphs.map((paragraph, index) => {
+                    ) : displayParagraphs.map((paragraph, index) => {
                       const sourceParagraph = parseSourceParagraph(paragraph);
                       const label = sourceParagraph.label;
                       const text = hasSourceLabels ? sourceParagraph.text : paragraph;
 
-                      return label ? (
-                        <ReportParagraphRow key={`${page.page}-${index}`} label={label} text={text} />
+                      return label && shouldReparagraph ? (
+                        <ReportParagraphRow key={`${page.page}-${index}`} label={label} text={text} hideLabel />
                       ) : (
                         <p
                           key={`${page.page}-${index}`}
@@ -1679,11 +2144,10 @@ const WholeCasePanel: React.FC<{
           </div>
         ) : (
           <div className="overflow-visible bg-white" data-case-report-id={judgment.id}>
-            <ReportPageTracker pageNumber={activeReportPage} totalPages={totalPages} />
-            <CaseCoatOfArmsHeader />
+            <ReportPageTracker judgment={judgment} pageNumber={activeReportPage} totalPages={totalPages} />
             <CaseOpeningPage judgment={judgment} />
             {judgment.fullJudgmentText ? (
-              <CaseReportPage pageNumber={2}>
+              <CaseReportPage judgment={judgment} pageNumber={2}>
                 <pre className="block w-full max-w-none overflow-x-auto whitespace-pre-wrap break-words font-mono text-sm leading-7 text-neutral-800 sm:text-base sm:leading-8">
                   {judgment.fullJudgmentText}
                 </pre>
@@ -1709,81 +2173,108 @@ const WholeCasePanel: React.FC<{
   );
 };
 
-const CaseCoatOfArmsHeader: React.FC = () => (
-  <div className="border-b border-amber-100 bg-[#fffdf6] px-5 py-5 text-center sm:px-8">
-    <img src="/nigeria-coat-of-arms.svg" alt="Nigeria coat of arms" className="mx-auto h-16 w-16 sm:h-20 sm:w-20" />
-    <p className="mt-3 text-[10px] font-black uppercase tracking-[0.18em] text-amber-700">
-      Judgment of the court
-    </p>
-  </div>
-);
-
-const ReportPageTracker: React.FC<{ pageNumber: number; totalPages: number }> = ({ pageNumber, totalPages }) => (
+const ReportPageTracker: React.FC<{
+  judgment: CaseLaw;
+  pageNumber: number;
+  totalPages: number;
+}> = ({ judgment, pageNumber, totalPages }) => (
   <div
     className="sticky top-16 z-30 border-b-2 border-neutral-300 bg-white/95 px-3 py-2 backdrop-blur sm:px-8"
     data-report-page-tracker
   >
-    <p className="text-right font-[Georgia,ui-serif,serif] text-[12px] font-semibold text-neutral-700 sm:text-sm">
-      Page{' '}
-      <span className="mx-1 inline-flex min-w-7 justify-center rounded-sm border border-neutral-300 bg-white px-1.5 py-0.5 font-sans text-[11px] font-bold leading-none text-neutral-800 sm:text-xs">
-        {pageNumber}
-      </span>{' '}
-      of {totalPages}
-    </p>
+    <div className="grid gap-1 sm:grid-cols-[1fr_auto_1fr] sm:items-center">
+      <span className="hidden sm:block" />
+      <p className="min-w-0 text-center font-[Georgia,ui-serif,serif] text-[11px] font-semibold uppercase tracking-[0.06em] text-neutral-600 sm:truncate sm:text-xs">
+        {reportTitle(judgment)}
+      </p>
+      <p className="shrink-0 text-center font-[Georgia,ui-serif,serif] text-[12px] font-semibold text-neutral-700 sm:text-right sm:text-sm">
+        Page{' '}
+        <span className="mx-1 inline-flex min-w-7 justify-center rounded-sm border border-neutral-300 bg-white px-1.5 py-0.5 font-sans text-[11px] font-bold leading-none text-neutral-800 sm:text-xs">
+          {pageNumber}
+        </span>{' '}
+        of {totalPages}
+      </p>
+    </div>
   </div>
 );
 
 const CaseReportPage: React.FC<{
+  judgment: CaseLaw;
   pageNumber: number;
+  showMarkers?: boolean;
   children: React.ReactNode;
-}> = ({ pageNumber, children }) => (
+}> = ({ pageNumber, showMarkers = false, children }) => (
   <article
-    className="lawpex-report-page flex min-h-[34rem] w-full flex-col border-b-4 border-amber-300 bg-white p-3.5 last:border-b-0 sm:min-h-[42rem] sm:p-8 lg:px-10 lg:py-9 xl:px-12"
+    className="lawpex-report-page relative flex min-h-[34rem] w-full flex-col border-b-4 border-amber-400 bg-white p-3.5 last:border-b-0 sm:min-h-[42rem] sm:p-8 lg:px-10 lg:py-8 xl:px-12"
     data-report-page-number={pageNumber}
   >
-    <div className="min-w-0 flex-1">{children}</div>
-    <p className="mt-8 text-center font-mono text-sm font-bold text-neutral-600">
+    {showMarkers && <ReportPageMarkers />}
+    <div className={`min-w-0 flex-1 ${showMarkers ? 'pl-8 sm:pl-10 lg:pl-12' : ''}`}>{children}</div>
+    <p className="mt-8 text-center font-mono text-base font-bold text-neutral-700 sm:text-lg">
       {pageNumber}
     </p>
   </article>
 );
 
-const ReportParagraphRow: React.FC<{ label: string; text: string }> = ({ label, text }) => (
-  <p className="grid w-full grid-cols-[2.35rem_minmax(0,1fr)] gap-2.5 sm:grid-cols-[3.25rem_minmax(0,1fr)] sm:gap-4">
-    <span className="pt-0.5 font-sans text-xl font-black leading-7 text-amber-700 sm:text-2xl sm:leading-8">{label}</span>
+const reportTitle = (judgment: CaseLaw) =>
+  `${judgment.title.toUpperCase()} • ${judgment.citation.replace(/\bpt\b/i, 'Pt.')}`;
+
+const ReportPageMarkers: React.FC = () => (
+  <div className="pointer-events-none absolute bottom-20 left-3 top-8 block w-7 select-none lg:left-6 lg:top-8">
+    {PARAGRAPH_LABELS.map((label, index) => (
+      <span
+        key={label}
+        className="absolute left-0 -translate-y-1 font-sans text-[20px] font-black leading-none text-[#1F4E79] sm:text-[22px]"
+        style={{ top: `${(index / PARAGRAPH_LABELS.length) * 100}%` }}
+      >
+        {label}
+      </span>
+    ))}
+  </div>
+);
+
+const ReportParagraphRow: React.FC<{ label: string; text: string; hideLabel?: boolean }> = ({ label, text, hideLabel }) => (
+  <p className={hideLabel ? 'w-full min-w-0 whitespace-normal break-normal text-justify' : 'grid w-full grid-cols-[2.35rem_minmax(0,1fr)] gap-2.5 sm:grid-cols-[3.25rem_minmax(0,1fr)] sm:gap-4'}>
+    {!hideLabel && (
+      <span className="pt-0.5 font-sans text-xl font-black leading-7 text-[#1F4E79] sm:text-2xl sm:leading-8">
+        {label}
+      </span>
+    )}
     <span className="min-w-0 whitespace-normal break-normal">{text}</span>
   </p>
 );
 
 const SourceJudgmentText: React.FC<{
+  judgment: CaseLaw;
   blocks: SourceJudgmentBlock[];
   reparagraph?: boolean;
-}> = ({ blocks, reparagraph = false }) => {
+}> = ({ judgment, blocks, reparagraph = false }) => {
   const leadingHeading = reparagraph ? leadingJudgmentHeadingFromBlocks(blocks) : undefined;
   const reportParagraphs = reparagraph ? reportParagraphsFromSourceBlocks(blocks) : [];
+  const displayBlocks = blocks;
 
   return (
     <div
       className={
         reparagraph
-          ? 'mx-auto w-full max-w-[64rem] space-y-0 font-[Georgia,ui-serif,serif] text-[15px] leading-7 text-neutral-900 sm:text-[17px] sm:leading-8'
-          : 'mx-auto w-full max-w-[74rem] space-y-4 font-[Georgia,ui-serif,serif] text-[15px] leading-8 text-neutral-900 sm:text-[17px] sm:leading-9'
+          ? 'mx-auto w-full max-w-[76rem] space-y-3 font-[Georgia,ui-serif,serif] text-base leading-8 text-neutral-900 sm:text-lg sm:leading-9'
+          : 'mx-auto w-full max-w-[76rem] space-y-4 font-[Georgia,ui-serif,serif] text-[15px] leading-8 text-neutral-900 sm:text-[17px] sm:leading-9'
       }
     >
       {reparagraph ? (
         <>
           {leadingHeading && (
-            <p className="text-center font-sans text-base font-black uppercase tracking-[0.08em] text-neutral-950 sm:text-lg">
+            <p className="font-sans text-base font-black uppercase tracking-[0.08em] text-neutral-950 sm:text-lg">
               {leadingHeading}
             </p>
           )}
           {reportParagraphs.map((paragraph, index) => (
-            <ReportParagraphRow key={`report-${paragraph.label}-${index}`} label={paragraph.label} text={paragraph.text} />
+            <ReportParagraphRow key={`report-${paragraph.label}-${index}`} label={paragraph.label} text={paragraph.text} hideLabel />
           ))}
         </>
-      ) : blocks.map((block, index) => {
-        if (block.sourceLabel) {
-          return <ReportParagraphRow key={`${block.text.slice(0, 28)}-${index}`} label={block.sourceLabel} text={block.sourceText ?? ''} />;
+      ) : displayBlocks.map((block, index) => {
+        if (block.sourceLabel && reparagraph) {
+          return <ReportParagraphRow key={`${block.text.slice(0, 28)}-${index}`} label={block.sourceLabel} text={block.sourceText ?? ''} hideLabel />;
         }
 
         return (
@@ -1807,18 +2298,23 @@ const CaseOpeningPage: React.FC<{ judgment: CaseLaw }> = ({ judgment }) => {
 
   return (
     <article
-      className="w-full border-b-4 border-amber-300 bg-white px-4 py-7 font-[Georgia,ui-serif,serif] text-neutral-950 sm:px-10 sm:py-12 lg:px-12 xl:px-16"
+      className="w-full border-b-4 border-amber-400 bg-white px-4 py-7 font-[Georgia,ui-serif,serif] text-neutral-950 sm:px-10 sm:py-10 lg:px-12 xl:px-16"
       data-report-page-number={1}
     >
       <div className="mx-auto w-full max-w-[76rem]">
         <header className="text-center text-sm leading-7 sm:text-[17px] sm:leading-8">
-          <p className="font-black">{formatCourtHeading(judgment.court)}</p>
+          <img src="/nigeria-coat-of-arms.svg" alt="Nigeria coat of arms" className="mx-auto h-14 w-14 sm:h-16 sm:w-16" />
+          <h1 className="mt-4 text-xl font-black uppercase leading-tight tracking-[0.03em] sm:text-3xl">
+            {judgment.title}
+          </h1>
+          <p className="mt-2 text-base font-bold sm:text-xl">{judgment.citation.replace(/\bpt\b/i, 'Pt.')}</p>
+          <p className="mt-7 font-black uppercase">{formatCourtHeading(judgment.court)}</p>
           {judgment.judicialDivision && (
             <p className="mt-1 font-semibold">{formatDivision(judgment.judicialDivision)}</p>
           )}
-          {judgment.dateDelivered && <p className="mt-5">{formatDeliveredDate(judgment.dateDelivered)}</p>}
+          {judgment.dateDelivered && <p className="mt-5">{judgment.dateDelivered}</p>}
           <p className="mt-3 font-semibold text-red-700">Suit No: {judgment.suitNumber}</p>
-          <p className="mt-5">Before Their Lordship</p>
+          <p className="mt-5 font-semibold uppercase tracking-[0.04em]">Before Their Lordships</p>
         </header>
 
         <div className="mt-7 space-y-6 text-sm sm:mt-10 sm:space-y-9 sm:text-[17px]">
@@ -1854,7 +2350,7 @@ const CaseOpeningPage: React.FC<{ judgment: CaseLaw }> = ({ judgment }) => {
           </div>
         </div>
 
-        <p className="mt-12 text-center font-mono text-sm font-bold text-neutral-600">
+        <p className="mt-12 text-center font-mono text-base font-bold text-neutral-700 sm:text-lg">
           1
         </p>
       </div>

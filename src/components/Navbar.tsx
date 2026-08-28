@@ -13,8 +13,8 @@ interface NavbarProps {
 }
 
 const PRIMARY_NAV = [
-  { id: 'case-law', label: 'Cases' },
-  { id: 'areas-of-law', label: 'Areas' },
+  { id: 'case-law', label: 'Case Laws' },
+  { id: 'areas-of-law', label: 'Forms' },
   { id: 'court-rules', label: 'Rules' },
   { id: 'laws', label: 'Laws' },
   { id: 'appeals', label: 'Appeals' },
@@ -25,7 +25,7 @@ const PRIMARY_NAV = [
 
 const MOBILE_NAV = [
   { id: 'case-law', label: 'Case Laws' },
-  { id: 'areas-of-law', label: 'Areas of Law' },
+  { id: 'areas-of-law', label: 'Forms and Precedents' },
   { id: 'court-rules', label: 'Rules' },
   { id: 'laws', label: 'Nigerian Laws' },
   { id: 'appeals', label: 'Appeals' },

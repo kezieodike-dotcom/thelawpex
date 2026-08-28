@@ -27,7 +27,7 @@ export const APP_ROUTES: AppRoute[] = [
     label: 'Home',
     title: `${SITE_NAME} — Nigeria's AI-Powered Litigation & Legal Research Platform`,
     description:
-      "LAWPEX is Nigeria's premier AI-powered litigation, legal research, court rules, case law, statutes and legal drafting platform for lawyers, judges, law firms and legal researchers.",
+      "LAWPEX is Nigeria's premier AI-powered litigation, legal research, court rules, case laws, statutes and legal drafting platform for lawyers, judges, law firms and legal researchers.",
   },
   {
     id: 'ai-assistant',
@@ -48,16 +48,16 @@ export const APP_ROUTES: AppRoute[] = [
   {
     id: 'areas-of-law',
     path: '/areas-of-law',
-    label: 'Areas of Law',
-    title: `Areas of Law — ${SITE_NAME}`,
+    label: 'Forms and Precedents',
+    title: `Forms and Precedents ? ${SITE_NAME}`,
     description:
-      'Explore 20+ Nigerian practice areas, each with drafts, applicable LFN statutes, court rules, legal principles, case law and practical checklists.',
+      'Explore Nigerian forms and precedents by practice area, each with drafts, applicable LFN statutes, court rules, legal principles, case laws and practical checklists.',
   },
   {
     id: 'case-law',
     path: '/case-law',
-    label: 'Case Law',
-    title: `Case Law Library — ${SITE_NAME}`,
+    label: 'Case Laws',
+    title: `Case Laws Library — ${SITE_NAME}`,
     description:
       'Structured Supreme Court and Court of Appeal judgments with facts, issues, decisions and ratio decidendi.',
   },

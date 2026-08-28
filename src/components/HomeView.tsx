@@ -24,9 +24,9 @@ interface HomeViewProps {
 }
 
 const MODULES = [
-  { id: 'areas-of-law', title: 'Areas of Law', desc: 'Search practice areas and open the full workflow for each subject.', icon: BookOpen, tone: 'light' },
+  { id: 'case-law', title: 'Case Laws', desc: 'Structured reports with facts, issues, ratio and principles.', icon: Scale, tone: 'sky' },
+  { id: 'areas-of-law', title: 'Forms and Precedents', desc: 'Search practice areas and open drafting forms, samples and precedents.', icon: BookOpen, tone: 'light' },
   { id: 'court-rules', title: 'Court Rules', desc: 'Magistrate, High Court, NICN, Federal High Court, CA and Supreme Court rules.', icon: Gavel, tone: 'light' },
-  { id: 'case-law', title: 'Case Law', desc: 'Structured reports with facts, issues, ratio and principles.', icon: Scale, tone: 'sky' },
   { id: 'laws', title: 'Nigerian Laws & Statutes', desc: 'Federal laws and the laws of the 36 states and the FCT.', icon: Landmark, tone: 'light' },
   { id: 'appeals', title: 'Appeals', desc: 'Rights of appeal, leave, timelines and appeal drafts across the court ladder.', icon: Newspaper, tone: 'light' },
   { id: 'drafts', title: 'Draft Library', desc: 'Court processes and agreements prepared for editing.', icon: FileText, tone: 'yellow' },
@@ -39,7 +39,7 @@ const MODULES = [
 const FAQS = [
   {
     q: 'What is LAWPEX?',
-    a: 'LAWPEX is an AI-powered Nigerian litigation workspace for legal research, statutes, court rules, court processes, affidavits, case law and legal education.',
+    a: 'LAWPEX is an AI-powered Nigerian litigation workspace for legal research, statutes, court rules, court processes, affidavits, case laws and legal education.',
   },
   {
     q: 'Is the AI output final legal advice?',

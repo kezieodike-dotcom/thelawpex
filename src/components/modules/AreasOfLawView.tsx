@@ -125,7 +125,7 @@ export const AreasOfLawView: React.FC<AreasOfLawViewProps> = ({
             className="inline-flex items-center gap-1.5 text-[11px] font-bold text-yellow-700 hover:text-yellow-800 uppercase tracking-wider"
           >
             <ArrowLeft className="w-3.5 h-3.5" />
-            All areas of law
+            All forms and precedents
           </Link>
 
           <h1 className="text-2xl sm:text-4xl font-black font-serif text-neutral-900 mt-2">
@@ -218,11 +218,11 @@ const AreaDirectory: React.FC<{
         <span className="bg-yellow-400 text-neutral-950 text-[10px] font-black px-2.5 py-0.5 rounded uppercase">
           Module 1
         </span>
-        <h1 className="text-2xl sm:text-4xl font-black font-serif text-neutral-900 mt-2">Areas of Law</h1>
+        <h1 className="text-2xl sm:text-4xl font-black font-serif text-neutral-900 mt-2">Forms and Precedents</h1>
         <p className="text-xs sm:text-sm text-neutral-700 max-w-3xl mt-1 leading-relaxed">
-          Choose a practice area. Every area opens with the same eight tools — demand letters,
+          Choose a practice area. Every forms and precedents space opens with the same eight tools — demand letters,
           sample processes for both sides, likely preliminary objections and counter affidavits, the
-          governing Acts and rules, an article, the case law and the courtroom procedure.
+          governing Acts and rules, an article, the case laws and the courtroom procedure.
         </p>
 
         <div className="mt-6 relative">
@@ -231,14 +231,14 @@ const AreaDirectory: React.FC<{
             type="text"
             value={query}
             onChange={(event) => onQueryChange(event.target.value)}
-            placeholder="Search areas of law e.g. Matrimonial Causes, Land, Criminal, CAMA, Tax..."
+            placeholder="Search forms and precedents e.g. Matrimonial Causes, Land, Criminal, CAMA, Tax..."
             className="w-full bg-white text-xs sm:text-sm pl-11 pr-4 py-3.5 rounded-xl border border-neutral-200 text-neutral-900 focus:outline-none focus:border-yellow-400"
           />
         </div>
       </div>
 
       {areas.length === 0 ? (
-        <p className="text-sm text-neutral-600">No area of law matches “{query}”.</p>
+        <p className="text-sm text-neutral-600">No form or precedent area matches “{query}”.</p>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">
           {areas.map((area) => (
@@ -449,14 +449,14 @@ const FeaturePanel: React.FC<{
         {cases.length === 0 ? (
           <div className="bg-white border border-neutral-200 rounded-xl p-5">
             <p className="text-xs text-neutral-600 leading-relaxed">
-              No judgment in the library is yet indexed to this area. Search the full case law
+              No judgment in the library is yet indexed to this area. Search the full case laws
               library for authorities on {areaTitle.toLowerCase()}.
             </p>
             <button
               onClick={() => setActiveTab('case-law')}
               className="mt-3 bg-yellow-400 hover:bg-yellow-300 text-neutral-950 font-bold text-xs px-4 py-2 rounded-lg transition"
             >
-              Search case law
+              Search case laws
             </button>
           </div>
         ) : (
