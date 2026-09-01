@@ -5,7 +5,7 @@ import test from 'node:test';
 const expectedCitations = [
   '(P. 7, paras. A-B)',
   '(P. 7, paras. B-C)',
-  '(Pp. 7-8, paras. B-A)',
+  '(Pp. 7-8, paras. G-A)',
   '(P. 8, para. A)',
   '(P. 8, para. B)',
   '(P. 8, paras. B-C)',

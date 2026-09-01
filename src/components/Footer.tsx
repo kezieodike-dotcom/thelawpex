@@ -47,7 +47,7 @@ export const Footer: React.FC = () => (
           <div className="mt-5 space-y-2 text-xs text-neutral-600">
             <p className="flex gap-2">
               <MapPin className="mt-0.5 h-4 w-4 shrink-0 text-amber-700" />
-              Abuja FCT and Lagos, Nigeria
+              Port Harcourt, Lagos, FCT
             </p>
             <p className="flex gap-2">
               <Mail className="mt-0.5 h-4 w-4 shrink-0 text-amber-700" />

@@ -38,6 +38,7 @@ import { AdminPanelView } from './components/modules/AdminPanelView';
 
 import { HOME_ROUTE, pathForTab, routeForPath, tabForPath } from './routes';
 import { UserRole, SubscriptionTier, LegalDraft } from './types';
+import { LANDMARK_CASES } from './data/legalData';
 
 /** Keeps the document title and meta description in sync with the current page. */
 const usePageMeta = (pathname: string) => {
@@ -69,6 +70,9 @@ const useScrollToTop = (pathname: string) => {
 const useScrollReveal = (pathname: string) => {
   useEffect(() => {
     let observer: IntersectionObserver | null = null;
+    let mutationObserver: MutationObserver | null = null;
+    let mutationFrame: number | null = null;
+    let revealIndex = 0;
 
     const clearRevealState = () => {
       document.querySelectorAll<HTMLElement>('.lawpex-reveal, .lawpex-reveal-in').forEach((element) => {
@@ -77,12 +81,7 @@ const useScrollReveal = (pathname: string) => {
       });
     };
 
-    if (pathname !== HOME_ROUTE.path) {
-      clearRevealState();
-      return undefined;
-    }
-
-    const selectors = [
+    const homeCardSelectors = [
       '[data-lawpex-reveal]',
       '.lawpex-card',
       '.lawpex-panel',
@@ -94,18 +93,50 @@ const useScrollReveal = (pathname: string) => {
       'footer button',
       'footer [class*="rounded"][class*="border"]',
     ];
+    const pageCardSelectors = [
+      '[data-lawpex-reveal]',
+      '.lawpex-card',
+      '.lawpex-panel',
+      'main a[class*="rounded"][class*="border"]',
+      'main button[class*="rounded"][class*="border"]',
+      'main article[class*="rounded"][class*="border"]',
+      'main [class*="grid"] > div[class*="rounded"][class*="border"]',
+    ];
+    const selectors = pathname === HOME_ROUTE.path ? homeCardSelectors : pageCardSelectors;
+    const selectorList = selectors.join(',');
+
+    const revealElement = (element: Element) => {
+      window.requestAnimationFrame(() => {
+        window.requestAnimationFrame(() => element.classList.add('lawpex-reveal-in'));
+      });
+    };
+
+    const registerElements = () => {
+      const elements = Array.from(document.querySelectorAll<HTMLElement>(selectorList))
+        .filter((element, index, list) => list.indexOf(element) === index)
+        .filter((element) => !element.classList.contains('lawpex-reveal'))
+        .filter((element) => !element.classList.contains('lawpex-case-motion'))
+        .filter((element) => !element.closest(
+          '.lawpex-hero-motion, .lawpex-no-reveal, .lawpex-report-page, [role="dialog"], aside, nav',
+        ))
+        .filter((element) => element.hasAttribute('data-lawpex-reveal') || !element.querySelector(selectorList));
+
+      elements.forEach((element) => {
+        element.classList.add('lawpex-reveal');
+        element.style.setProperty('--reveal-delay', `${Math.min(revealIndex % 6, 5) * 80}ms`);
+        revealIndex += 1;
+
+        const box = element.getBoundingClientRect();
+        if (box.top < window.innerHeight * 0.94 && box.bottom > 0) {
+          revealElement(element);
+          return;
+        }
+
+        observer?.observe(element);
+      });
+    };
 
     const timer = window.setTimeout(() => {
-      const elements = Array.from(document.querySelectorAll<HTMLElement>(selectors.join(',')))
-        .filter((element, index, list) => list.indexOf(element) === index)
-        .filter((element) => !element.closest('.lawpex-hero-motion, .lawpex-no-reveal, [role="dialog"]'));
-
-      const revealElement = (element: Element) => {
-        window.requestAnimationFrame(() => {
-          window.requestAnimationFrame(() => element.classList.add('lawpex-reveal-in'));
-        });
-      };
-
       observer = new IntersectionObserver(
         (entries) => {
           entries.forEach((entry) => {
@@ -116,24 +147,25 @@ const useScrollReveal = (pathname: string) => {
         },
         { threshold: 0.12, rootMargin: '0px 0px -8% 0px' },
       );
+      registerElements();
 
-      elements.forEach((element, index) => {
-        element.classList.add('lawpex-reveal');
-        element.style.setProperty('--reveal-delay', `${Math.min(index % 8, 7) * 95}ms`);
-
-        const box = element.getBoundingClientRect();
-        if (box.top < window.innerHeight * 0.92 && box.bottom > 0) {
-          revealElement(element);
-          return;
-        }
-
-        observer?.observe(element);
+      mutationObserver = new MutationObserver(() => {
+        if (mutationFrame !== null) return;
+        mutationFrame = window.requestAnimationFrame(() => {
+          mutationFrame = null;
+          registerElements();
+        });
       });
+      const pageRoot = document.querySelector('main');
+      if (pageRoot) mutationObserver.observe(pageRoot, { childList: true, subtree: true });
     }, 40);
 
     return () => {
       window.clearTimeout(timer);
+      if (mutationFrame !== null) window.cancelAnimationFrame(mutationFrame);
+      mutationObserver?.disconnect();
       observer?.disconnect();
+      clearRevealState();
     };
   }, [pathname]);
 };
@@ -174,7 +206,20 @@ export function AppShell() {
     setSearchInitialQuery(query.trim());
     setIsSearchOpen(true);
   }, []);
-  const openViewer = useCallback((item: any) => setViewingItem(item), []);
+  const openCase = useCallback(
+    (caseId: string) => navigate(`/case-law/case/${caseId}`),
+    [navigate],
+  );
+  const openViewer = useCallback(
+    (item: any) => {
+      if (item?.id && LANDMARK_CASES.some((caseItem) => caseItem.id === item.id)) {
+        openCase(item.id);
+        return;
+      }
+      setViewingItem(item);
+    },
+    [openCase],
+  );
   const openAuthModal = useCallback((mode: AuthMode = 'login') => {
     navigate(mode === 'register' ? '/register' : mode === 'forgot' ? '/recover-access' : '/sign-in');
   }, [navigate]);
@@ -223,6 +268,7 @@ export function AppShell() {
               <HomeView
                 setActiveTab={setActiveTab}
                 onOpenSearch={openSearch}
+                onOpenCase={openCase}
                 onOpenViewer={openViewer}
               />
             }

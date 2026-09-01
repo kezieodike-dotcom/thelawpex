@@ -1,5 +1,5 @@
 import React from 'react';
-import { motion } from 'motion/react';
+import { motion, useReducedMotion } from 'motion/react';
 import { BadgeCheck } from 'lucide-react';
 
 interface Testimonial {
@@ -74,16 +74,19 @@ const TestimonialsColumn: React.FC<{
   className?: string;
   testimonials: Testimonial[];
   duration?: number;
-}> = ({ className, testimonials, duration = 16 }) => (
+}> = ({ className, testimonials, duration = 16 }) => {
+  const shouldReduceMotion = useReducedMotion();
+
+  return (
   <div className={className}>
     <motion.ul
-      animate={{ translateY: '-50%' }}
-      transition={{
-        duration,
-        repeat: Infinity,
-        ease: 'linear',
-        repeatType: 'loop',
-      }}
+      animate={shouldReduceMotion ? undefined : { translateY: '-50%' }}
+      transition={shouldReduceMotion ? undefined : {
+          duration,
+          repeat: Infinity,
+          ease: 'linear',
+          repeatType: 'loop',
+        }}
       className="m-0 flex list-none flex-col gap-5 bg-transparent p-0 pb-5"
     >
       {new Array(2).fill(0).map((_, setIndex) => (
@@ -103,7 +106,7 @@ const TestimonialsColumn: React.FC<{
                 y: -8,
                 transition: { type: 'spring', stiffness: 360, damping: 22 },
               }}
-              className="lawpex-card w-full max-w-sm cursor-default select-none rounded-[1.6rem] p-6 outline-none focus:ring-2 focus:ring-amber-300/60 sm:p-7"
+              className="lawpex-testimonial-card w-full max-w-sm cursor-default select-none rounded-lg border border-[#181411]/10 bg-white p-6 outline-none focus:ring-2 focus:ring-amber-300/60 sm:p-7"
             >
               <blockquote>
                 <div className="mb-5 flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.16em] text-amber-700">
@@ -131,11 +134,11 @@ const TestimonialsColumn: React.FC<{
       ))}
     </motion.ul>
   </div>
-);
+  );
+};
 
 export const TestimonialsSection: React.FC = () => (
-  <section aria-labelledby="testimonials-heading" className="relative overflow-hidden py-16 sm:py-20">
-    <div className="absolute inset-x-0 top-12 -z-10 mx-auto h-80 max-w-5xl rounded-full bg-amber-200/28 blur-3xl" />
+  <section aria-labelledby="testimonials-heading" className="relative overflow-hidden bg-[#181411] py-16 text-white sm:py-20">
     <motion.div
       initial={{ opacity: 0, y: 42 }}
       whileInView={{ opacity: 1, y: 0 }}
@@ -144,16 +147,16 @@ export const TestimonialsSection: React.FC = () => (
       className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8"
     >
       <div className="mx-auto mb-12 max-w-2xl text-center">
-        <div className="inline-flex rounded-full border border-amber-300/70 bg-white/72 px-4 py-1.5 text-[11px] font-black uppercase tracking-[0.16em] text-amber-800 backdrop-blur-xl">
+        <div className="inline-flex border-l-4 border-[#f7c915] px-3 py-1 text-[11px] font-bold uppercase text-[#f7c915]">
           Testimonials
         </div>
         <h2
           id="testimonials-heading"
-          className="mt-5 text-3xl font-black tracking-tight text-neutral-950 sm:text-4xl md:text-5xl"
+          className="mt-5 text-3xl font-bold leading-tight text-white sm:text-4xl md:text-5xl"
         >
           What our users say
         </h2>
-        <p className="mx-auto mt-4 max-w-xl text-sm leading-7 text-neutral-600 sm:text-base">
+        <p className="mx-auto mt-4 max-w-xl text-sm leading-7 text-neutral-300 sm:text-base">
           Nigerian lawyers, chambers and court-facing teams use LAWPEX to research faster, draft
           cleaner and keep authorities close to the work.
         </p>

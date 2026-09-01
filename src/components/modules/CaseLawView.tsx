@@ -131,7 +131,6 @@ const CourtCaseList: React.FC<{ court: (typeof CASE_LAW_COURTS)[number] }> = ({ 
           !needle ||
           judgment.title.toLowerCase().includes(needle) ||
           judgment.citation.toLowerCase().includes(needle) ||
-          judgment.suitNumber.toLowerCase().includes(needle) ||
           judgment.subject.toLowerCase().includes(needle) ||
           judgment.areaOfLaw.toLowerCase().includes(needle) ||
           judgment.factsSummary.toLowerCase().includes(needle) ||
@@ -207,7 +206,7 @@ const CourtCaseList: React.FC<{ court: (typeof CASE_LAW_COURTS)[number] }> = ({ 
                   </h2>
 
                   <p className="text-sm font-black text-amber-700">
-                    {judgment.citation} - {judgment.suitNumber}
+                    {judgment.citation}
                   </p>
 
                   <p className="line-clamp-3 text-sm leading-7 text-neutral-600">
@@ -263,12 +262,12 @@ const CaseDetail: React.FC<{ judgment: CaseLaw }> = ({ judgment }) => {
     };
   }, [document, judgment.hasFullJudgment, judgment.id, tab]);
 
-  const caseSectionTabs: { id: CaseDetailTab; icon: React.ElementType; label: string; kicker: string }[] = [
-    { id: 'ratio', icon: Award, label: 'Ratio decidendi', kicker: 'Binding reasons' },
-    { id: 'digest', icon: ClipboardList, label: 'Case digest', kicker: 'Facts and decision' },
-    { id: 'principles', icon: Scale, label: 'Principles of law', kicker: 'Legal propositions' },
-    { id: 'authorities', icon: Library, label: 'Authorities & notes', kicker: 'Cases, statutes, practice' },
-    { id: 'whole', icon: BookOpen, label: 'Read the whole case', kicker: 'Full judgment' },
+  const caseSectionTabs: { id: CaseDetailTab; icon: React.ElementType; label: string; mobileLabel: string; kicker: string }[] = [
+    { id: 'ratio', icon: Award, label: 'Ratio decidendi', mobileLabel: 'Ratio', kicker: 'Binding reasons' },
+    { id: 'digest', icon: ClipboardList, label: 'Case digest', mobileLabel: 'Digest', kicker: 'Facts and decision' },
+    { id: 'principles', icon: Scale, label: 'Principles of law', mobileLabel: 'Principles', kicker: 'Legal propositions' },
+    { id: 'authorities', icon: Library, label: 'Authorities & notes', mobileLabel: 'Notes', kicker: 'Cases, statutes, practice' },
+    { id: 'whole', icon: BookOpen, label: 'Read the whole case', mobileLabel: 'Whole case', kicker: 'Full judgment' },
   ];
   const selectCaseSection = (nextTab: CaseDetailTab) => {
     setTab(nextTab);
@@ -279,11 +278,11 @@ const CaseDetail: React.FC<{ judgment: CaseLaw }> = ({ judgment }) => {
 
   return (
     <div className={`lawpex-case-section ${CASE_PAGE_BG} min-h-screen py-4 text-neutral-900 sm:py-12`}>
-      <div className="mx-auto max-w-[112rem] px-3 sm:px-6 2xl:px-10">
-        <div className="grid gap-4 lg:grid-cols-[18rem_minmax(0,1fr)] xl:grid-cols-[19.5rem_minmax(0,1fr)] lg:items-start">
-          <aside className="sticky top-0 z-20 -mx-3 bg-[#fffdf6]/96 px-3 py-2 backdrop-blur-xl sm:-mx-6 sm:px-6 lg:top-4 lg:z-auto lg:mx-0 lg:bg-transparent lg:px-0 lg:py-0">
-            <div className="overflow-hidden rounded-[1.15rem] border border-amber-200 bg-white/96 shadow-[0_20px_60px_-48px_rgba(24,20,17,0.8)] backdrop-blur-xl">
-              <div className="border-b border-amber-100 bg-[#fff8dc] px-4 py-4">
+      <div className="mx-auto max-w-[112rem] px-2 sm:px-6 2xl:px-10">
+        <div className="grid grid-cols-[4.75rem_minmax(0,1fr)] items-start gap-2.5 sm:gap-4 lg:grid-cols-[18rem_minmax(0,1fr)] xl:grid-cols-[19.5rem_minmax(0,1fr)]">
+          <aside className="lawpex-case-mobile-rail sticky top-[4.5rem] z-20 self-start lg:top-4 lg:z-auto">
+            <div className="overflow-hidden rounded-xl border border-amber-200 bg-white/96 shadow-[0_20px_60px_-48px_rgba(24,20,17,0.8)] backdrop-blur-xl lg:rounded-[1.15rem]">
+              <div className="hidden border-b border-amber-100 bg-[#fff8dc] px-4 py-4 lg:block">
                 <Link
                   to={court ? `/case-law/${court.slug}` : '/case-law'}
                   className="lawpex-focus-ring inline-flex items-center gap-1.5 rounded-full bg-white px-2.5 py-1 text-[10px] font-black uppercase tracking-[0.13em] text-amber-800 hover:bg-amber-50"
@@ -300,13 +299,15 @@ const CaseDetail: React.FC<{ judgment: CaseLaw }> = ({ judgment }) => {
                 <p className="mt-1 text-xs font-black leading-5 text-amber-800">{judgment.citation}</p>
               </div>
 
-              <nav className="lawpex-scrollbar-hide flex snap-x gap-2 overflow-x-auto p-2 lg:flex-col lg:overflow-visible" aria-label="Case sections">
+              <nav className="lawpex-scrollbar-hide flex max-h-[calc(100dvh-5.5rem)] flex-col gap-1.5 overflow-y-auto p-1.5 lg:max-h-none lg:gap-2 lg:overflow-visible lg:p-2" aria-label="Case sections">
                 {caseSectionTabs.map((item, index) => (
                   <TabButton
                     key={item.id}
                     active={tab === item.id}
                     icon={item.icon}
-                    label={`${index + 1}. ${item.label}`}
+                    number={index + 1}
+                    label={item.label}
+                    mobileLabel={item.mobileLabel}
                     description={item.kicker}
                     onClick={() => selectCaseSection(item.id)}
                   />
@@ -326,7 +327,7 @@ const CaseDetail: React.FC<{ judgment: CaseLaw }> = ({ judgment }) => {
                 {judgment.citation}
               </p>
 
-              <div className="relative mt-4 grid grid-cols-2 gap-2 lg:grid-cols-[repeat(4,minmax(0,1fr))]">
+              <div className="relative mt-4 grid grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-[repeat(4,minmax(0,1fr))]">
                 <MetaCard icon={Landmark} label="Court" value={judgment.court} />
                 <MetaCard icon={MapPin} label="Division" value={judgment.judicialDivision ?? 'Not supplied'} />
                 <MetaCard icon={CalendarDays} label="Delivered" value={judgment.dateDelivered ?? String(judgment.year)} />
@@ -1330,7 +1331,7 @@ const manualRatioCitation = (judgment: CaseLaw, point: RatioPoint) => {
         point.heading,
       )
     ) {
-      return '(Pp. 7-8, paras. B-A)';
+      return '(Pp. 7-8, paras. G-A)';
     }
 
     if (
@@ -1652,19 +1653,56 @@ const splitIntoReportParagraphs = (text: string, targetCharacters = 640): Report
   return paragraphs;
 };
 
-const reportParagraphsFromSourceBlocks = (blocks: SourceJudgmentBlock[]) =>
-  splitIntoReportParagraphs(
-    blocks
-      .filter((block) => !block.isHeading)
-      .map((block) => normalizeReportParagraphText(block.sourceText ?? block.text))
-      .filter(Boolean)
-      .join(' '),
-  );
+type ReportSection = {
+  heading?: string;
+  paragraphs: ReportParagraph[];
+};
 
-const leadingJudgmentHeadingFromBlocks = (blocks: SourceJudgmentBlock[]) =>
-  blocks
-    .map((block) => extractLeadingJudgmentHeading(block.sourceText ?? block.text))
-    .find(Boolean);
+const reportSectionsFromSourceBlocks = (blocks: SourceJudgmentBlock[]): ReportSection[] => {
+  const sections: ReportSection[] = [];
+  let heading: string | undefined;
+  let textParts: string[] = [];
+
+  const flushSection = () => {
+    const text = textParts.filter(Boolean).join(' ').trim();
+    if (heading || text) {
+      sections.push({
+        heading,
+        paragraphs: splitIntoReportParagraphs(text),
+      });
+    }
+    heading = undefined;
+    textParts = [];
+  };
+
+  blocks.forEach((block) => {
+    const blockText = block.sourceText ?? block.text;
+    const judgeHeading = extractLeadingJudgmentHeading(blockText);
+
+    if (judgeHeading) {
+      flushSection();
+      heading = judgeHeading;
+      const opinionOpening = stripLeadingJudgmentHeading(blockText);
+      if (opinionOpening) textParts.push(opinionOpening);
+      return;
+    }
+
+    if (block.isHeading) {
+      flushSection();
+      heading = block.text;
+      return;
+    }
+
+    const normalizedText = normalizeReportParagraphText(blockText);
+    if (normalizedText) textParts.push(normalizedText);
+  });
+
+  flushSection();
+  return sections;
+};
+
+const reportParagraphsFromSourceBlocks = (blocks: SourceJudgmentBlock[]) =>
+  reportSectionsFromSourceBlocks(blocks).flatMap((section) => section.paragraphs);
 
 const leadingJudgmentHeadingFromStructuredPage = (
   paragraphs: string[],
@@ -2249,8 +2287,6 @@ const SourceJudgmentText: React.FC<{
   blocks: SourceJudgmentBlock[];
   reparagraph?: boolean;
 }> = ({ judgment, blocks, reparagraph = false }) => {
-  const leadingHeading = reparagraph ? leadingJudgmentHeadingFromBlocks(blocks) : undefined;
-  const reportParagraphs = reparagraph ? reportParagraphsFromSourceBlocks(blocks) : [];
   const displayBlocks = blocks;
 
   return (
@@ -2263,13 +2299,22 @@ const SourceJudgmentText: React.FC<{
     >
       {reparagraph ? (
         <>
-          {leadingHeading && (
-            <p className="font-sans text-base font-black uppercase tracking-[0.08em] text-neutral-950 sm:text-lg">
-              {leadingHeading}
-            </p>
-          )}
-          {reportParagraphs.map((paragraph, index) => (
-            <ReportParagraphRow key={`report-${paragraph.label}-${index}`} label={paragraph.label} text={paragraph.text} hideLabel />
+          {reportSectionsFromSourceBlocks(blocks).map((section, sectionIndex) => (
+            <React.Fragment key={`report-section-${sectionIndex}`}>
+              {section.heading && (
+                <p className="font-sans text-base font-black uppercase tracking-[0.08em] text-neutral-950 sm:text-lg">
+                  {section.heading}
+                </p>
+              )}
+              {section.paragraphs.map((paragraph, paragraphIndex) => (
+                <ReportParagraphRow
+                  key={`report-${sectionIndex}-${paragraph.label}-${paragraphIndex}`}
+                  label={paragraph.label}
+                  text={paragraph.text}
+                  hideLabel
+                />
+              ))}
+            </React.Fragment>
           ))}
         </>
       ) : displayBlocks.map((block, index) => {
@@ -2361,29 +2406,38 @@ const CaseOpeningPage: React.FC<{ judgment: CaseLaw }> = ({ judgment }) => {
 const TabButton: React.FC<{
   active: boolean;
   icon: React.ElementType;
+  number: number;
   label: string;
+  mobileLabel: string;
   description?: string;
   onClick: () => void;
-}> = ({ active, icon: Icon, label, description, onClick }) => (
+}> = ({ active, icon: Icon, number, label, mobileLabel, description, onClick }) => (
   <button
     onClick={onClick}
-    className={`flex min-h-14 min-w-[13rem] shrink-0 snap-start items-center gap-3 rounded-xl px-3.5 py-3 text-left transition active:scale-[0.99] sm:min-w-[14rem] lg:w-full lg:min-w-0 ${
+    aria-current={active ? 'page' : undefined}
+    aria-label={`${number}. ${label}`}
+    title={`${number}. ${label}`}
+    className={`relative flex min-h-[4.65rem] w-full flex-col items-center justify-center gap-1 rounded-lg px-1 py-2 text-center transition duration-300 active:scale-[0.97] lg:min-h-14 lg:flex-row lg:justify-start lg:gap-3 lg:rounded-xl lg:px-3.5 lg:py-3 lg:text-left ${
       active
-        ? 'bg-[#facc15] text-neutral-950 shadow-[0_12px_30px_-20px_rgba(180,126,18,0.9)]'
+        ? 'bg-[#facc15] text-neutral-950 shadow-[0_12px_30px_-20px_rgba(180,126,18,0.9)] ring-1 ring-amber-500/35'
         : 'border border-amber-200 bg-white text-neutral-700 hover:border-amber-400 hover:bg-amber-50'
     }`}
   >
+    <span className={`absolute left-1.5 top-1.5 text-[9px] font-black leading-none lg:hidden ${active ? 'text-neutral-800' : 'text-amber-700'}`}>
+      {number}
+    </span>
     <span
-      className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-lg ${
+      className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-md lg:h-8 lg:w-8 lg:rounded-lg ${
         active ? 'bg-white/55 text-neutral-950' : 'bg-amber-50 text-amber-700'
       }`}
     >
       <Icon className="h-4 w-4" />
     </span>
-    <span className="min-w-0">
-      <span className="block truncate text-xs font-black leading-5 sm:text-[13px]">{label}</span>
+    <span className="min-w-0 max-w-full">
+      <span className="block text-[9px] font-black leading-[1.05] lg:hidden">{mobileLabel}</span>
+      <span className="hidden truncate text-xs font-black leading-5 lg:block lg:text-[13px]">{number}. {label}</span>
       {description && (
-        <span className={`block truncate text-[10px] font-bold leading-4 ${active ? 'text-neutral-800' : 'text-neutral-500'}`}>
+        <span className={`hidden truncate text-[10px] font-bold leading-4 lg:block ${active ? 'text-neutral-800' : 'text-neutral-500'}`}>
           {description}
         </span>
       )}

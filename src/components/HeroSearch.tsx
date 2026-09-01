@@ -1,5 +1,6 @@
 import React, { useRef, useState } from 'react';
 import {
+  ArrowRight,
   Mic,
   MicOff,
   Search,
@@ -57,13 +58,6 @@ declare global {
 interface HeroSearchProps {
   onSearch: (query?: string, category?: string) => void;
 }
-
-const QUICK_PROMPTS = [
-  { label: 'Salu v. Egeibon on locus standi' },
-  { label: 'Section 84 Evidence Act certificate' },
-  { label: 'Interlocutory injunction motion' },
-  { label: 'Court of Appeal notice on jurisdiction' },
-];
 
 const METRICS = [
   { label: 'Authority format', value: 'LDLR' },
@@ -164,48 +158,43 @@ export const HeroSearch: React.FC<HeroSearchProps> = ({ onSearch }) => {
   };
 
   return (
-    <section className="lawpex-hero-motion relative isolate overflow-hidden border-b border-amber-200 bg-[#fffbea] text-[#181411]">
+    <section className="lawpex-hero-motion lawpex-home-hero relative isolate overflow-hidden border-b border-white/10 bg-[#003f37] text-white">
       <div className="absolute inset-0 -z-10" aria-hidden="true">
         <img
           src="/hero-justice.jpg"
           alt=""
           loading="eager"
           fetchPriority="high"
-          className="lawpex-hero-image absolute inset-0 h-full w-full scale-[1.05] object-cover object-[56%_42%] opacity-[0.32] sm:object-[62%_45%] lg:opacity-[0.42]"
+          className="lawpex-hero-image absolute inset-0 h-full w-full scale-[1.03] object-cover object-[55%_48%] opacity-75 sm:object-[58%_46%] lg:opacity-85"
         />
-        <div className="lawpex-hero-wash absolute inset-0 bg-[linear-gradient(180deg,rgba(255,251,234,0.96)_0%,rgba(255,244,184,0.46)_46%,rgba(255,253,246,0.98)_100%)]" />
-        <div className="lawpex-hero-aurora absolute inset-0 bg-[radial-gradient(circle_at_50%_22%,rgba(250,204,21,0.34),transparent_28rem),radial-gradient(circle_at_82%_18%,rgba(251,191,36,0.16),transparent_25rem)]" />
+        <div className="lawpex-hero-wash absolute inset-0" />
       </div>
 
-      <div className="mx-auto flex max-w-7xl flex-col items-center px-5 pb-20 pt-24 text-center sm:px-8 sm:pb-28 sm:pt-32 lg:px-12 lg:pb-32 lg:pt-36">
-        <div>
-          <div className="lawpex-hero-reveal inline-flex items-center gap-2 rounded-lg border border-amber-300 bg-yellow-100/90 px-3 py-1.5 text-xs font-semibold uppercase tracking-[0.12em] text-[#6f4d08] shadow-sm backdrop-blur-xl sm:text-sm [--hero-delay:80ms]">
+      <div className="mx-auto flex min-h-[620px] max-w-7xl flex-col items-center justify-center px-5 pb-14 pt-16 text-center sm:min-h-[680px] sm:px-8 sm:pb-16 sm:pt-20 lg:px-12 lg:pb-20 lg:pt-24">
+        <div className="max-w-[820px]">
+          <div className="lawpex-hero-reveal inline-flex items-center gap-2 rounded-full border border-white/15 bg-black/45 px-4 py-2 text-xs font-bold uppercase text-white/85 shadow-lg backdrop-blur-md [--hero-delay:80ms]">
             <Sparkles className="h-3.5 w-3.5" />
-            LAWPEX Research Workspace
+            Nigerian litigation workspace
           </div>
 
-          <h1 className="lawpex-hero-reveal mx-auto mt-4 max-w-[44rem] text-[2.25rem] font-bold leading-[1.15] tracking-[-0.025em] text-[#181411] sm:mt-5 sm:text-[4rem] sm:leading-[1.1] [--hero-delay:190ms]">
-            Nigerian litigation <span className="text-amber-600">intelligence</span>
+          <h1 className="lawpex-hero-reveal mx-auto mt-5 max-w-[780px] text-[2.5rem] font-bold leading-[1.08] text-white drop-shadow-[0_3px_18px_rgba(0,0,0,0.72)] sm:mt-6 sm:text-[4rem] sm:leading-[1.08] [--hero-delay:190ms]">
+            Nigerian litigation, <span className="lawpex-hero-highlight">clearly connected.</span>
           </h1>
-
-          <p className="lawpex-hero-reveal mx-auto mt-5 max-w-[38rem] text-[17px] font-normal leading-[26px] text-neutral-800 sm:mt-6 sm:text-xl sm:leading-[30px] [--hero-delay:310ms]">
-            Research Nigerian law, prepare stronger arguments, and draft with confidence.
-          </p>
         </div>
 
         <form
           onSubmit={submitSearch}
-          className="lawpex-hero-search-shell lawpex-hero-reveal mt-8 w-full max-w-4xl rounded-xl border border-amber-200 bg-white/92 p-1.5 text-left shadow-[inset_0_1px_0_rgba(255,255,255,0.95),0_34px_90px_-58px_rgba(180,126,18,0.56)] backdrop-blur-2xl sm:mt-9 sm:p-2 [--hero-delay:430ms]"
+          className="lawpex-hero-search-shell lawpex-hero-reveal mt-8 w-full max-w-4xl rounded-[1.15rem] border border-white/15 bg-[#171717]/95 p-1.5 text-left shadow-[0_28px_70px_-24px_rgba(0,0,0,0.9)] backdrop-blur-xl sm:mt-9 sm:p-2 [--hero-delay:340ms]"
         >
           <div className="grid grid-cols-[minmax(0,1fr)_3rem_3rem] items-center gap-1.5 sm:flex sm:gap-2 sm:items-center">
             <label className="relative min-w-0 flex-1">
               <span className="sr-only">Search LAWPEX</span>
-              <Search className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-amber-700 sm:left-5 sm:h-5 sm:w-5" />
+              <Search className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-white/55 sm:left-5 sm:h-5 sm:w-5" />
               <input
                 value={searchQuery}
                 onChange={(event) => setSearchQuery(event.target.value)}
                 placeholder="Ask a legal question, search a citation, statute, rule or draft..."
-                className="lawpex-focus-ring min-h-[50px] w-full rounded-lg border border-transparent bg-yellow-50/82 py-3 pl-10 pr-2 text-base font-normal text-neutral-900 placeholder:text-neutral-500 focus:border-amber-300 focus:bg-white focus:outline-none sm:min-h-[52px] sm:rounded-xl sm:py-3.5 sm:pl-13 sm:pr-4"
+                className="lawpex-focus-ring min-h-[52px] w-full rounded-xl border border-transparent bg-transparent py-3 pl-10 pr-2 text-base font-medium text-white placeholder:text-white/45 focus:border-white/10 focus:bg-white/5 focus:outline-none sm:min-h-[58px] sm:py-3.5 sm:pl-13 sm:pr-4"
               />
             </label>
 
@@ -214,10 +203,10 @@ export const HeroSearch: React.FC<HeroSearchProps> = ({ onSearch }) => {
               onClick={toggleVoiceInput}
               aria-label={isListening ? 'Stop voice search' : 'Start voice search'}
               aria-pressed={isListening}
-              className={`lawpex-focus-ring inline-flex min-h-[50px] min-w-[50px] items-center justify-center rounded-lg border text-base font-semibold transition active:scale-[0.98] sm:min-h-[52px] sm:min-w-[52px] sm:rounded-xl ${
+              className={`lawpex-focus-ring inline-flex min-h-[52px] min-w-[48px] items-center justify-center rounded-xl border text-base font-semibold transition active:scale-[0.98] sm:min-h-[58px] sm:min-w-[58px] ${
                 isListening
-                  ? 'border-yellow-300 bg-[#facc15] text-[#181411]'
-                  : 'border-amber-200 bg-white text-amber-800 hover:border-amber-400 hover:bg-yellow-50'
+                  ? 'border-[#f7c915] bg-[#f7c915] text-[#181411]'
+                  : 'border-white/10 bg-white/5 text-white/80 hover:border-white/25 hover:bg-white/10'
               }`}
             >
               {isListening ? <MicOff className="h-[18px] w-[18px] sm:h-5 sm:w-5" /> : <Mic className="h-[18px] w-[18px] sm:h-5 sm:w-5" />}
@@ -226,16 +215,16 @@ export const HeroSearch: React.FC<HeroSearchProps> = ({ onSearch }) => {
             <button
               type="submit"
               aria-label="Search LAWPEX"
-              className="lawpex-focus-ring inline-flex min-h-[50px] min-w-[50px] items-center justify-center rounded-lg border border-amber-300 bg-[#facc15] text-[#181411] transition hover:bg-yellow-300 active:scale-[0.98] sm:min-h-[52px] sm:min-w-[52px] sm:rounded-xl"
+              className="lawpex-focus-ring inline-flex min-h-[52px] min-w-[48px] items-center justify-center rounded-xl border border-[#f7c915] bg-[#f7c915] text-[#181411] shadow-[0_8px_24px_-12px_rgba(247,201,21,0.8)] transition hover:bg-[#ffe05a] active:scale-[0.98] sm:min-h-[58px] sm:min-w-[58px]"
             >
-              <Search className="h-[18px] w-[18px] sm:h-5 sm:w-5" />
+              <ArrowRight className="h-[18px] w-[18px] sm:h-5 sm:w-5" />
             </button>
           </div>
 
           {voiceMessage && (
             <p
               className={`px-2 pt-2 text-xs font-bold ${
-                isListening ? 'text-amber-800' : 'text-neutral-600'
+                isListening ? 'text-[#f7d94c]' : 'text-white/65'
               }`}
               aria-live="polite"
             >
@@ -244,32 +233,17 @@ export const HeroSearch: React.FC<HeroSearchProps> = ({ onSearch }) => {
           )}
         </form>
 
-        <div className="mt-4 flex w-full max-w-4xl flex-nowrap justify-start gap-2 overflow-x-auto px-1 pb-1 sm:flex-wrap sm:justify-center sm:overflow-visible sm:px-0 sm:pb-0">
-          {QUICK_PROMPTS.map((prompt, index) => (
-            <button
-              key={prompt.label}
-              onClick={() => {
-                setSearchQuery(prompt.label);
-              }}
-              style={{ '--hero-delay': `${560 + index * 85}ms` } as React.CSSProperties}
-              className="lawpex-hero-reveal lawpex-focus-ring shrink-0 rounded-full border border-amber-200 bg-white/78 px-3 py-1.5 text-[11px] font-bold text-[#6f4d08] shadow-sm backdrop-blur hover:border-amber-400 hover:bg-yellow-100 hover:text-neutral-950"
-            >
-              {prompt.label}
-            </button>
-          ))}
-        </div>
-
-        <div className="lawpex-hero-reveal mt-6 grid w-full max-w-2xl grid-cols-3 divide-x divide-amber-200 overflow-hidden rounded-2xl border border-amber-200 bg-white/66 py-3 backdrop-blur sm:mt-8 sm:rounded-none sm:border-x-0 sm:py-4 [--hero-delay:920ms]">
+        <div className="lawpex-hero-reveal mt-7 flex w-full max-w-2xl flex-wrap justify-center gap-2 sm:mt-9 [--hero-delay:520ms]">
           {METRICS.map((metric, index) => (
             <div
               key={metric.label}
-              style={{ '--hero-delay': `${1020 + index * 90}ms` } as React.CSSProperties}
-              className="lawpex-hero-reveal px-3"
+              style={{ '--hero-delay': `${620 + index * 90}ms` } as React.CSSProperties}
+              className="lawpex-hero-reveal min-w-[104px] rounded-full border border-white/12 bg-black/55 px-4 py-2.5 text-left shadow-lg backdrop-blur-md sm:min-w-[132px]"
             >
-              <div className="text-xl font-black tracking-tight text-[#181411] sm:text-2xl">
+              <div className="text-base font-black text-white sm:text-lg">
                 {metric.value}
               </div>
-              <div className="mt-1 text-[10px] font-bold uppercase tracking-[0.12em] text-amber-800 sm:text-[11px]">
+              <div className="mt-0.5 text-[10px] font-bold uppercase text-white/65 sm:text-[11px]">
                 {metric.label}
               </div>
             </div>
