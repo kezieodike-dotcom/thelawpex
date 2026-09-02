@@ -12,6 +12,7 @@ import {
   searchRuleBook,
 } from '../../data/courtRules';
 import { DocumentActions } from '../DocumentActions';
+import { OfficialPdfReader } from '../OfficialPdfReader';
 import { buildWordSection } from '../../lib/copyToWord';
 
 interface CourtRulesViewProps {
@@ -211,6 +212,29 @@ const RuleBookPage: React.FC<{ book: CourtRuleBook; categoryLabel: string }> = (
           <p className="text-[11px] text-yellow-700 font-mono mt-1">{editionLabel(book)}</p>
           <p className="text-xs sm:text-sm text-neutral-700 max-w-3xl mt-2 leading-relaxed">
             {book.summary}
+          </p>
+        </div>
+
+        {book.documentPath && (
+          <div className="mb-8">
+            <OfficialPdfReader
+              title={editionLabel(book)}
+              documentPath={book.documentPath}
+              pageCount={book.documentPages}
+            />
+          </div>
+        )}
+
+        <div className="bg-yellow-100 border border-yellow-400/70 rounded-2xl p-6 sm:p-8 mb-8 shadow-xl">
+          <p className="text-[11px] font-bold uppercase tracking-wider text-yellow-700">
+            Research aid
+          </p>
+          <h2 className="mt-1 text-xl font-black font-serif text-neutral-900 sm:text-2xl">
+            Searchable rule digest
+          </h2>
+          <p className="mt-1 max-w-3xl text-xs leading-relaxed text-neutral-600 sm:text-sm">
+            Search the structured working digest by rule, Order or area of court process. Refer to
+            the official PDF above for the complete gazetted text.
           </p>
 
           <div className="mt-6 relative">

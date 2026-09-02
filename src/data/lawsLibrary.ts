@@ -19,6 +19,9 @@ export interface FederalLawEntry {
   year: number;
   category: FederalLawCategory;
   description: string;
+  /** Public path to the official gazetted Act where the complete PDF is available. */
+  documentPath?: string;
+  documentPages?: number;
   /** Id into NIGERIAN_LAWS_DATA where the full sectioned text is available. */
   fullTextId?: string;
 }
@@ -709,6 +712,8 @@ export const FEDERAL_LAWS: FederalLawEntry[] = [
     category: 'Energy, Environment & Transport',
     description:
       'Regulation of civil aviation by the NCAA, licensing of operators, the domestication of the Montreal Convention and the liability of carriers to passengers.',
+    documentPath: '/documents/laws/civil-aviation-act-2022.pdf',
+    documentPages: 95,
   },
   {
     id: 'minerals-mining-2007',
@@ -722,6 +727,18 @@ export const FEDERAL_LAWS: FederalLawEntry[] = [
   },
 
   // Public Law & Administration
+  {
+    id: 'electoral-act-2026',
+    title: 'Electoral Act 2026',
+    shortTitle: 'Electoral Act 2026',
+    citation: 'Act No. 1 of 2026',
+    year: 2026,
+    category: 'Public Law & Administration',
+    description:
+      'The current federal framework for elections administered by INEC, including voter registration, nomination, polling, collation, election offences and election petitions.',
+    documentPath: '/documents/laws/electoral-act-2026.pdf',
+    documentPages: 121,
+  },
   {
     id: 'electoral-act-2022',
     title: 'Electoral Act 2022',

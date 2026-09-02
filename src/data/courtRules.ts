@@ -46,6 +46,10 @@ export interface CourtRuleBook {
   edition: string;
   /** Year of the edition, where a single edition applies nationwide. */
   year?: number;
+  /** Public path to the gazetted rules where the source document is available. */
+  documentPath?: string;
+  /** Page count displayed by the in-page document reader. */
+  documentPages?: number;
   summary: string;
   orders: CourtOrder[];
 }
@@ -1344,10 +1348,12 @@ export const COURT_RULE_BOOKS: CourtRuleBook[] = [
     id: 'supreme-court',
     courtName: 'Supreme Court of Nigeria',
     category: 'supreme-court',
-    edition: 'Supreme Court Rules 1985 (as amended)',
-    year: 2014,
+    edition: 'Supreme Court Rules',
+    year: 2024,
+    documentPath: '/documents/court-rules/supreme-court-rules-2024.pdf',
+    documentPages: 104,
     summary:
-      'Practice in the apex court: appeals as of right under Section 233(2) and by leave, records of appeal, briefs of argument and applications.',
+      'The gazetted 2024 Rules governing practice in the apex court, including appeals, records, briefs, applications and hearings.',
     orders: SUPREME_COURT_ORDERS,
   },
 ];

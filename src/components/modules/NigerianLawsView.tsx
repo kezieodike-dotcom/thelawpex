@@ -7,6 +7,7 @@ import {
   ChevronRight,
   ArrowLeft,
   BookOpen,
+  FileText,
   Landmark,
 } from 'lucide-react';
 import {
@@ -19,6 +20,7 @@ import {
   stateLawBookBySlug,
 } from '../../data/lawsLibrary';
 import { DocumentActions } from '../DocumentActions';
+import { OfficialPdfReader } from '../OfficialPdfReader';
 import { buildWordSection } from '../../lib/copyToWord';
 
 interface NigerianLawsViewProps {
@@ -72,7 +74,7 @@ const LibraryDirectory: React.FC = () => (
           </h2>
           <p className="text-[11px] text-neutral-600 mt-1.5 leading-relaxed">
             The federal Acts — the 1999 Constitution, CAMA 2020, the Evidence Act 2011, ACJA 2015,
-            the Land Use Act, the Electoral Act 2022 and the rest of the statute book.
+            the Land Use Act, the Electoral Act 2026 and the rest of the statute book.
           </p>
           <div className="mt-4 pt-3 border-t border-neutral-200 flex items-center justify-between">
             <span className="text-[11px] text-neutral-500">{FEDERAL_LAWS.length} federal laws</span>
@@ -222,6 +224,12 @@ const FederalLawCard: React.FC<{
                 Full text — {fullText.sections.length} sections
               </span>
             )}
+            {law.documentPath && (
+              <span className="inline-flex items-center gap-1 bg-white text-neutral-800 border border-yellow-400/70 text-[10px] font-black px-2 py-0.5 rounded uppercase">
+                <FileText className="h-3 w-3 text-yellow-700" />
+                Official PDF
+              </span>
+            )}
           </div>
           <h2 className="text-base font-black font-serif text-neutral-900 mt-1.5">{law.title}</h2>
           <p className="text-[11px] text-neutral-500 font-mono mt-0.5">{law.citation}</p>
@@ -237,6 +245,14 @@ const FederalLawCard: React.FC<{
 
       {isOpen && (
         <div className="border-t border-neutral-200 p-5 space-y-3">
+          {law.documentPath && (
+            <OfficialPdfReader
+              title={law.title}
+              documentPath={law.documentPath}
+              pageCount={law.documentPages}
+            />
+          )}
+
           {fullText ? (
             <>
               {fullText.sections.map((section) => {
@@ -283,13 +299,13 @@ const FederalLawCard: React.FC<{
                 );
               })}
             </>
-          ) : (
+          ) : !law.documentPath ? (
             <p className="text-xs text-neutral-600 leading-relaxed bg-white border border-neutral-200 rounded-xl p-4">
               The sectioned text of this Act is being loaded into the statute database. The summary
               above states its scope and the matters it governs; cite the Act by its short title and
               citation, {law.citation}.
             </p>
-          )}
+          ) : null}
 
           <DocumentActions
             html={buildWordSection(law.title, law.citation, [law.description])}
