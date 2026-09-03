@@ -1,5 +1,6 @@
 import { NIGERIAN_STATES, highCourtName, stateSlug } from './nigeria';
 import { NIGERIAN_LAWS_DATA } from './legalData';
+import { constitution1999Text } from './constitution1999Text';
 
 /**
  * Two law libraries:
@@ -22,6 +23,7 @@ export interface FederalLawEntry {
   /** Public path to the official gazetted Act where the complete PDF is available. */
   documentPath?: string;
   documentPages?: number;
+  documentText?: string;
   /** Id into NIGERIAN_LAWS_DATA where the full sectioned text is available. */
   fullTextId?: string;
 }
@@ -64,6 +66,9 @@ export const FEDERAL_LAWS: FederalLawEntry[] = [
     category: 'Constitution & Courts',
     description:
       'The supreme law of the Federation. Chapter IV guarantees fundamental rights; Sections 230–296 establish the courts and their jurisdiction; Section 6(6) vests judicial powers; Section 36 guarantees fair hearing.',
+    documentPath: '/documents/laws/constitution-1999-as-amended.pdf',
+    documentPages: 280,
+    documentText: constitution1999Text,
     fullTextId: 'const-1999',
   },
   {

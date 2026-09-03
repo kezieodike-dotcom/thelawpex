@@ -21,6 +21,7 @@ import {
 } from '../../data/lawsLibrary';
 import { DocumentActions } from '../DocumentActions';
 import { OfficialPdfReader } from '../OfficialPdfReader';
+import { OfficialTextReader } from '../OfficialTextReader';
 import { buildWordSection } from '../../lib/copyToWord';
 
 interface NigerianLawsViewProps {
@@ -245,13 +246,21 @@ const FederalLawCard: React.FC<{
 
       {isOpen && (
         <div className="border-t border-neutral-200 p-5 space-y-3">
-          {law.documentPath && (
+          {law.documentText ? (
+            <OfficialTextReader
+              title={law.title}
+              documentText={law.documentText}
+              documentPath={law.documentPath}
+              pageCount={law.documentPages}
+              documentLabel={law.citation}
+            />
+          ) : law.documentPath ? (
             <OfficialPdfReader
               title={law.title}
               documentPath={law.documentPath}
               pageCount={law.documentPages}
             />
-          )}
+          ) : null}
 
           {fullText ? (
             <>

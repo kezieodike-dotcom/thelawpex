@@ -30,7 +30,7 @@ test('federal-law cards display official documents inside an accessible in-page 
   const reader = await readFile(projectFile('src/components/OfficialPdfReader.tsx'), 'utf8');
 
   assert.match(view, /OfficialPdfReader/);
-  assert.match(view, /law\.documentPath &&/);
+  assert.match(view, /law\.documentPath \?/);
   assert.match(reader, /Official PDF/);
   assert.match(reader, /<iframe/);
   assert.match(reader, /src=\{`\$\{documentPath\}#view=FitH`\}/);

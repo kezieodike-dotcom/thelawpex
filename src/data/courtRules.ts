@@ -1,4 +1,5 @@
 import { NIGERIAN_STATES, highCourtName, magistrateCourtName, stateSlug } from './nigeria';
+import { courtOfAppealRules2021Text } from './courtOfAppealRules2021Text';
 import { supremeCourtRules2024Text } from './supremeCourtRules2024Text';
 
 /**
@@ -1343,6 +1344,9 @@ export const COURT_RULE_BOOKS: CourtRuleBook[] = [
     category: 'court-of-appeal',
     edition: 'Court of Appeal Rules',
     year: 2021,
+    documentPath: '/documents/court-rules/court-of-appeal-rules-2021.pdf',
+    documentPages: 97,
+    documentText: courtOfAppealRules2021Text,
     summary:
       'Appellate practice: notice and grounds of appeal, time to appeal, compilation and transmission of records, briefs of argument, motions and hearing.',
     orders: COURT_OF_APPEAL_ORDERS,
