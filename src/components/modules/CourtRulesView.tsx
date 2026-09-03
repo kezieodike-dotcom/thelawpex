@@ -13,6 +13,7 @@ import {
 } from '../../data/courtRules';
 import { DocumentActions } from '../DocumentActions';
 import { OfficialPdfReader } from '../OfficialPdfReader';
+import { OfficialTextReader } from '../OfficialTextReader';
 import { buildWordSection } from '../../lib/copyToWord';
 
 interface CourtRulesViewProps {
@@ -215,7 +216,16 @@ const RuleBookPage: React.FC<{ book: CourtRuleBook; categoryLabel: string }> = (
           </p>
         </div>
 
-        {book.documentPath && (
+        {book.documentText ? (
+          <div className="mb-8">
+            <OfficialTextReader
+              title={editionLabel(book)}
+              documentText={book.documentText}
+              documentPath={book.documentPath}
+              pageCount={book.documentPages}
+            />
+          </div>
+        ) : book.documentPath ? (
           <div className="mb-8">
             <OfficialPdfReader
               title={editionLabel(book)}
@@ -223,100 +233,102 @@ const RuleBookPage: React.FC<{ book: CourtRuleBook; categoryLabel: string }> = (
               pageCount={book.documentPages}
             />
           </div>
-        )}
+        ) : null}
 
-        <div className="bg-yellow-100 border border-yellow-400/70 rounded-2xl p-6 sm:p-8 mb-8 shadow-xl">
-          <p className="text-[11px] font-bold uppercase tracking-wider text-yellow-700">
-            Research aid
-          </p>
-          <h2 className="mt-1 text-xl font-black font-serif text-neutral-900 sm:text-2xl">
-            Searchable rule digest
-          </h2>
-          <p className="mt-1 max-w-3xl text-xs leading-relaxed text-neutral-600 sm:text-sm">
-            Search the structured working digest by rule, Order or area of court process. Refer to
-            the official PDF above for the complete gazetted text.
-          </p>
+        {!book.documentText && (
+          <>
+            <div className="bg-yellow-100 border border-yellow-400/70 rounded-2xl p-6 sm:p-8 mb-8 shadow-xl">
+              <p className="text-[11px] font-bold uppercase tracking-wider text-yellow-700">
+                Research aid
+              </p>
+              <h2 className="mt-1 text-xl font-black font-serif text-neutral-900 sm:text-2xl">
+                Searchable rule digest
+              </h2>
+              <p className="mt-1 max-w-3xl text-xs leading-relaxed text-neutral-600 sm:text-sm">
+                Search the structured working digest by rule, Order or area of court process.
+              </p>
 
-          <div className="mt-6 relative">
-            <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-yellow-700" />
-            <input
-              type="text"
-              value={query}
-              onChange={(event) => setQuery(event.target.value)}
-              placeholder="Search rule / order / area of court process e.g. 'Order 25', 'rule 2', 'summary judgment', 'service'..."
-              className="w-full bg-white text-xs sm:text-sm pl-11 pr-4 py-3.5 rounded-xl border border-neutral-200 text-neutral-900 focus:outline-none focus:border-yellow-400"
-            />
-          </div>
-
-          <div className="mt-4 flex flex-wrap gap-2">
-            {processAreas.map((area) => (
-              <button
-                key={area}
-                onClick={() => setQuery(area)}
-                className="bg-white border border-neutral-200 hover:border-yellow-500/80 text-neutral-700 text-[11px] px-2.5 py-1 rounded-lg transition"
-              >
-                {area}
-              </button>
-            ))}
-            {query && (
-              <button
-                onClick={() => setQuery('')}
-                className="bg-yellow-400 text-neutral-950 font-bold text-[11px] px-2.5 py-1 rounded-lg"
-              >
-                Clear search
-              </button>
-            )}
-          </div>
-
-          <p className="text-[11px] text-neutral-500 mt-4">
-            Showing {hits.length} of {totalRules} rules across {book.orders.length} Orders.
-            {book.state && ' Order numbering varies between editions — confirm against the edition currently gazetted in your state before filing.'}
-          </p>
-        </div>
-
-        {/* Results */}
-        {hits.length === 0 ? (
-          <p className="text-sm text-neutral-600">
-            No rule in {book.courtName} matches “{query}”.
-          </p>
-        ) : (
-          <div className="space-y-4">
-            {hits.map(({ order, rule }) => (
-              <div
-                key={`${order.orderNumber}-${rule.ruleNumber}-${rule.title}`}
-                className="bg-yellow-100 border border-neutral-200 hover:border-yellow-500/80 p-6 rounded-2xl transition shadow-lg space-y-3"
-              >
-                <div className="flex flex-wrap items-start justify-between gap-2">
-                  <div>
-                    <div className="flex flex-wrap items-center gap-2">
-                      <span className="bg-yellow-400/20 text-yellow-700 font-bold text-[10px] px-2 py-0.5 rounded border border-yellow-400/60">
-                        Order {order.orderNumber} Rule {rule.ruleNumber}
-                      </span>
-                      <span className="bg-yellow-200 text-neutral-700 text-[10px] px-2 py-0.5 rounded">
-                        {order.processArea}
-                      </span>
-                    </div>
-                    <h3 className="text-base font-bold font-serif text-neutral-900 mt-1.5">{rule.title}</h3>
-                    <p className="text-xs text-yellow-700 font-medium">{order.title}</p>
-                  </div>
-                </div>
-
-                <div className="bg-white p-4 rounded-xl border border-neutral-200 text-xs text-neutral-700 leading-relaxed">
-                  {rule.content}
-                </div>
-
-                <DocumentActions
-                  html={buildWordSection(
-                    `Order ${order.orderNumber} Rule ${rule.ruleNumber} — ${rule.title}`,
-                    `${book.courtName} — ${editionLabel(book)}`,
-                    [rule.content],
-                  )}
-                  filename={`${book.courtName} Order ${order.orderNumber} Rule ${rule.ruleNumber}`}
-                  hint="Copy this rule to MS Word for your written address."
+              <div className="mt-6 relative">
+                <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-yellow-700" />
+                <input
+                  type="text"
+                  value={query}
+                  onChange={(event) => setQuery(event.target.value)}
+                  placeholder="Search rule / order / area of court process e.g. 'Order 25', 'rule 2', 'summary judgment', 'service'..."
+                  className="w-full bg-white text-xs sm:text-sm pl-11 pr-4 py-3.5 rounded-xl border border-neutral-200 text-neutral-900 focus:outline-none focus:border-yellow-400"
                 />
               </div>
-            ))}
-          </div>
+
+              <div className="mt-4 flex flex-wrap gap-2">
+                {processAreas.map((area) => (
+                  <button
+                    key={area}
+                    onClick={() => setQuery(area)}
+                    className="bg-white border border-neutral-200 hover:border-yellow-500/80 text-neutral-700 text-[11px] px-2.5 py-1 rounded-lg transition"
+                  >
+                    {area}
+                  </button>
+                ))}
+                {query && (
+                  <button
+                    onClick={() => setQuery('')}
+                    className="bg-yellow-400 text-neutral-950 font-bold text-[11px] px-2.5 py-1 rounded-lg"
+                  >
+                    Clear search
+                  </button>
+                )}
+              </div>
+
+              <p className="text-[11px] text-neutral-500 mt-4">
+                Showing {hits.length} of {totalRules} rules across {book.orders.length} Orders.
+                {book.state && ' Order numbering varies between editions — confirm against the edition currently gazetted in your state before filing.'}
+              </p>
+            </div>
+
+            {hits.length === 0 ? (
+              <p className="text-sm text-neutral-600">
+                No rule in {book.courtName} matches “{query}”.
+              </p>
+            ) : (
+              <div className="space-y-4">
+                {hits.map(({ order, rule }) => (
+                  <div
+                    key={`${order.orderNumber}-${rule.ruleNumber}-${rule.title}`}
+                    className="bg-yellow-100 border border-neutral-200 hover:border-yellow-500/80 p-6 rounded-2xl transition shadow-lg space-y-3"
+                  >
+                    <div className="flex flex-wrap items-start justify-between gap-2">
+                      <div>
+                        <div className="flex flex-wrap items-center gap-2">
+                          <span className="bg-yellow-400/20 text-yellow-700 font-bold text-[10px] px-2 py-0.5 rounded border border-yellow-400/60">
+                            Order {order.orderNumber} Rule {rule.ruleNumber}
+                          </span>
+                          <span className="bg-yellow-200 text-neutral-700 text-[10px] px-2 py-0.5 rounded">
+                            {order.processArea}
+                          </span>
+                        </div>
+                        <h3 className="text-base font-bold font-serif text-neutral-900 mt-1.5">{rule.title}</h3>
+                        <p className="text-xs text-yellow-700 font-medium">{order.title}</p>
+                      </div>
+                    </div>
+
+                    <div className="bg-white p-4 rounded-xl border border-neutral-200 text-xs text-neutral-700 leading-relaxed">
+                      {rule.content}
+                    </div>
+
+                    <DocumentActions
+                      html={buildWordSection(
+                        `Order ${order.orderNumber} Rule ${rule.ruleNumber} — ${rule.title}`,
+                        `${book.courtName} — ${editionLabel(book)}`,
+                        [rule.content],
+                      )}
+                      filename={`${book.courtName} Order ${order.orderNumber} Rule ${rule.ruleNumber}`}
+                      hint="Copy this rule to MS Word for your written address."
+                    />
+                  </div>
+                ))}
+              </div>
+            )}
+          </>
         )}
       </div>
     </div>

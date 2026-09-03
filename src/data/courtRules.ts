@@ -1,4 +1,5 @@
 import { NIGERIAN_STATES, highCourtName, magistrateCourtName, stateSlug } from './nigeria';
+import { supremeCourtRules2024Text } from './supremeCourtRules2024Text';
 
 /**
  * The Rules of Court library.
@@ -50,6 +51,8 @@ export interface CourtRuleBook {
   documentPath?: string;
   /** Page count displayed by the in-page document reader. */
   documentPages?: number;
+  /** OCR or extracted official text rendered as selectable in-page content. */
+  documentText?: string;
   summary: string;
   orders: CourtOrder[];
 }
@@ -1352,6 +1355,7 @@ export const COURT_RULE_BOOKS: CourtRuleBook[] = [
     year: 2024,
     documentPath: '/documents/court-rules/supreme-court-rules-2024.pdf',
     documentPages: 104,
+    documentText: supremeCourtRules2024Text,
     summary:
       'The gazetted 2024 Rules governing practice in the apex court, including appeals, records, briefs, applications and hearings.',
     orders: SUPREME_COURT_ORDERS,
