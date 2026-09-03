@@ -5,7 +5,7 @@ import { LogoMark } from './LogoMark';
 import { pathForTab } from '../routes';
 
 const LITIGATION_LINKS = [
-  { id: 'ai-assistant', label: 'AI Legal Assistant' },
+  { id: 'ai-assistant', label: 'Ai Draft Wizard' },
   { id: 'case-law', label: 'Case Laws Library' },
   { id: 'court-rules', label: 'Court Rules' },
   { id: 'laws', label: 'Nigerian Laws' },

@@ -3,6 +3,7 @@ import path from "path";
 import { createServer as createViteServer } from "vite";
 import { GoogleGenAI } from "@google/genai";
 import dotenv from "dotenv";
+import { extractSupportingDocumentText, parseMultipartForm } from "./src/server/draftWizard";
 
 dotenv.config();
 
@@ -130,6 +131,110 @@ Ensure full formal Nigerian court process formatting, including court heading, s
       return res.status(500).json({ error: error.message || "Failed to generate draft" });
     }
   });
+
+  // No uploaded document is persisted: the multipart body is parsed and processed in memory.
+  app.post(
+    "/api/ai/draft-wizard",
+    express.raw({ type: 'multipart/form-data', limit: '64mb' }),
+    async (req, res) => {
+      try {
+        if (!Buffer.isBuffer(req.body)) {
+          return res.status(400).json({ error: "A multipart drafting request is required." });
+        }
+
+        const { fields, files } = parseMultipartForm(req.body, req.headers["content-type"] || "");
+        const facts = fields.facts?.trim();
+        const instructions = fields.instructions?.trim();
+        if (!facts || !instructions) {
+          return res.status(400).json({ error: "Case facts and drafting instructions are required." });
+        }
+
+        if (files.length > 8) {
+          return res.status(400).json({ error: "Upload no more than 8 supporting documents." });
+        }
+
+        const allowedExtensions = new Set(["pdf", "docx", "txt", "md"]);
+        const invalid = files.find((file) => {
+          const extension = file.filename.split(".").pop()?.toLowerCase() || "";
+          return file.fieldName !== "documents" || !allowedExtensions.has(extension) || file.data.length > 10 * 1024 * 1024;
+        });
+        if (invalid) {
+          return res.status(400).json({ error: `Unsupported or oversized document: ${invalid.filename}` });
+        }
+
+        const ai = getGenAI();
+        if (!ai) {
+          return res.status(503).json({
+            error: "Ai Draft Wizard is unavailable until GEMINI_API_KEY is configured on the server.",
+          });
+        }
+
+        const textDocuments = files
+          .filter((file) => !file.filename.toLowerCase().endsWith(".pdf"))
+          .map((file) => ({ file, text: extractSupportingDocumentText(file).slice(0, 160_000) }));
+        const supportingText = textDocuments
+          .map(({ file, text }) => `\n--- ${file.filename} ---\n${text}`)
+          .join("\n");
+        const pdfParts = files
+          .filter((file) => file.filename.toLowerCase().endsWith(".pdf"))
+          .map((file) => ({
+            inlineData: {
+              mimeType: "application/pdf",
+              data: file.data.toString("base64"),
+            },
+          }));
+
+        const prompt = `Prepare the appropriate Nigerian legal or court document from this matter brief.
+
+MATTER TITLE: ${fields.matterTitle || "Not supplied"}
+COURT / JURISDICTION: ${fields.court || "Not supplied"}
+CLAIMANT / APPLICANT: ${fields.claimant || "Not supplied"}
+DEFENDANT / RESPONDENT: ${fields.defendant || "Not supplied"}
+
+CASE SCENARIO AND ISSUES:
+${facts}
+
+LAWYER'S DRAFTING INSTRUCTIONS:
+${instructions}
+
+SUPPORTING DOCUMENTS:
+${supportingText || (pdfParts.length ? "The attached PDF documents form part of the brief." : "None supplied.")}
+
+Return only the complete draft. Use clear [TO BE SUPPLIED] placeholders for missing filing information.`;
+
+        const response = await ai.models.generateContent({
+          model: AI_MODEL,
+          contents: [{ role: "user", parts: [{ text: prompt }, ...pdfParts] }],
+          config: {
+            systemInstruction: `You are LAWPEX Ai Draft Wizard, a meticulous Nigerian legal drafting assistant.
+- Select and prepare the court process or legal document requested by counsel.
+- Follow formal Nigerian drafting conventions, court headings, party designations, reliefs, grounds, supporting depositions, addresses and signature blocks where applicable.
+- Reconcile the case facts with every supporting document. Do not omit material facts supplied by counsel.
+- Never invent a citation, statutory provision, court rule, suit number, date, party, quotation or fact.
+- Where authority or procedural information is uncertain, insert a conspicuous [COUNSEL TO VERIFY: ...] note.
+- Do not describe your reasoning and do not include markdown fences. Return the document itself.
+- The output is a professional working draft that counsel must settle and verify before filing.`,
+            temperature: 0.15,
+          },
+        });
+
+        const draftText = response.text?.trim();
+        if (!draftText) {
+          return res.status(502).json({ error: "The drafting service returned an empty document." });
+        }
+
+        return res.json({
+          documentTitle: fields.matterTitle || "LAWPEX Legal Draft",
+          draftText,
+          documentCount: files.length,
+          notice: "Review every fact, authority, court rule, relief and filing requirement before professional use.",
+        });
+      } catch (error: any) {
+        console.error("Error in /api/ai/draft-wizard:", error);
+        return res.status(500).json({ error: error.message || "Failed to generate the legal draft." });
+      }
+    },
+  );
 
   // AI Judgment Summarizer Endpoint
   app.post("/api/ai/summarize", async (req, res) => {

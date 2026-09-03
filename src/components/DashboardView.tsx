@@ -56,7 +56,7 @@ const recentSearches = [
   { query: 'leave to appeal out of time trinity prayers', scope: 'Appeals Centre', time: '22 July 2026' },
 ];
 
-const aiConversations = [
+const draftSessions = [
   { query: 'Draft a Motion on Notice for injunction under Lagos High Court Rules 2019', timestamp: 'Today at 09:15', tokensUsed: 420, status: 'Exportable' },
   { query: 'Compare Madukolu v. Nkemdilim and Salu v. Egeibon on jurisdiction', timestamp: '22 July 2026', tokensUsed: 318, status: 'Saved' },
   { query: 'Generate cross-examination questions for police IPO', timestamp: '18 July 2026', tokensUsed: 280, status: 'Needs verification' },
@@ -88,7 +88,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
     { id: 'searches', label: 'Recent Searches', icon: Search },
     { id: 'bookmarks', label: 'Bookmarks', icon: Bookmark },
     { id: 'drafts', label: 'Saved Drafts', icon: FileText },
-    { id: 'ai', label: 'AI Chats', icon: Bot },
+    { id: 'ai', label: 'Wizard Drafts', icon: Bot },
     { id: 'downloads', label: 'Downloads', icon: Download },
     { id: 'subscription', label: 'Subscription', icon: Zap },
     { id: 'notifications', label: 'Notifications', icon: Bell },
@@ -159,7 +159,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
                 <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
                   <Metric icon={Bookmark} label="Saved cases" value={String(savedCases.length)} detail="Curated authority folders" />
                   <Metric icon={FileText} label="Saved drafts" value={String(savedDrafts.length)} detail="Work-in-progress processes" />
-                  <Metric icon={Bot} label="AI conversations" value={String(aiConversations.length)} detail="Persistent assistant threads" />
+                  <Metric icon={Bot} label="Wizard drafts" value={String(draftSessions.length)} detail="Saved drafting sessions" />
                   <Metric icon={Download} label="Downloads" value={String(downloads.length)} detail="Export audit trail" />
                 </div>
               </Panel>
@@ -168,7 +168,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
                 <div className="space-y-2">
                   <Action label="Resume case-law research" onClick={() => setActiveSubTab('searches')} />
                   <Action label="Open draft library" onClick={() => setActiveTab('drafts')} />
-                  <Action label="Launch AI assistant" onClick={() => setActiveTab('ai-assistant')} />
+                  <Action label="Launch Ai Draft Wizard" onClick={() => setActiveTab('ai-assistant')} />
                   <Action label="Review subscription usage" onClick={() => setActiveSubTab('subscription')} />
                 </div>
               </Panel>
@@ -200,8 +200,8 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
           )}
 
           {activeSubTab === 'ai' && (
-            <ListPanel title="Saved AI Conversations" subtitle="Persistent assistant threads retained per user and exportable.">
-              {aiConversations.map((item) => (
+            <ListPanel title="Saved Wizard Drafts" subtitle="Drafting sessions retained per user and exportable to Word.">
+              {draftSessions.map((item) => (
                 <Row key={item.query} title={item.query} meta={`${item.timestamp} · ${item.tokensUsed} tokens · ${item.status}`} onClick={() => setActiveTab('ai-assistant')} />
               ))}
             </ListPanel>

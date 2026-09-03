@@ -182,7 +182,7 @@ export const AreasOfLawView: React.FC<AreasOfLawViewProps> = ({
                 onClick={() => setActiveTab('ai-assistant')}
                 className="w-full bg-yellow-100 hover:bg-yellow-200 border border-yellow-400/70 text-neutral-900 text-xs font-bold px-4 py-3 rounded-xl transition"
               >
-                Ask the AI assistant about {currentArea.title.toLowerCase()}
+                Open Ai Draft Wizard for {currentArea.title.toLowerCase()}
               </button>
             </div>
           </div>

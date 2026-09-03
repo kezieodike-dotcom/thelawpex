@@ -391,8 +391,8 @@ export function AppShell() {
       {/* Footer */}
       <Footer />
 
-      {/* AI assistant, pinned to the right edge of every page */}
-      <AssistantLauncher />
+      {/* Ai Draft Wizard launcher is redundant inside the wizard itself. */}
+      {activeTab !== 'ai-assistant' && <AssistantLauncher />}
 
       {/* Modals & Overlays */}
       <UniversalSearchModal

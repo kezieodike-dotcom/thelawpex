@@ -1,10 +1,9 @@
-import React, { useEffect, useMemo, useState } from 'react';
-import { Link } from 'react-router-dom';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
+import { Link, Navigate, useNavigate } from 'react-router-dom';
 import {
   Search,
   ChevronRight,
   ArrowLeft,
-  Gavel,
   Award,
   Scale,
   BookOpen,
@@ -15,9 +14,11 @@ import {
   MapPin,
   FileText,
   Landmark,
+  X,
 } from 'lucide-react';
 import { LANDMARK_CASES } from '../../data/legalData';
 import { CaseJudgmentDocument, loadCaseJudgmentDocument, mergeCaseJudgmentDocument } from '../../data/judgmentLoader';
+import { searchCaseLaws } from '../../lib/caseSearch';
 import { CaseLaw } from '../../types';
 import { DocumentActions } from '../DocumentActions';
 import { buildWordDraft, buildWordList, buildWordSection } from '../../lib/copyToWord';
@@ -29,27 +30,6 @@ interface CaseLawViewProps {
   caseId?: string;
 }
 
-/** The court tiers the library is organised by, in order of precedence. */
-export const CASE_LAW_COURTS: { slug: string; name: CaseLaw['court']; blurb: string }[] = [
-  {
-    slug: 'supreme-court',
-    name: 'Supreme Court of Nigeria',
-    blurb:
-      'Judgments of the apex court. Binding on every other court in the Federation and the final word on the interpretation of the Constitution.',
-  },
-  {
-    slug: 'court-of-appeal',
-    name: 'Court of Appeal',
-    blurb:
-      'Judgments of the penultimate court, organised for appellate research with digest, principles, ratio decidendi and full judgment text.',
-  },
-];
-
-const courtBySlug = (slug: string) => CASE_LAW_COURTS.find((court) => court.slug === slug);
-
-export const casesForCourt = (name: CaseLaw['court']): CaseLaw[] =>
-  LANDMARK_CASES.filter((judgment) => judgment.court === name);
-
 const CASE_PAGE_BG =
   'bg-[radial-gradient(circle_at_12%_0%,rgba(250,204,21,0.22),transparent_30rem),linear-gradient(180deg,#fffdf6,#ffffff_24rem)]';
 
@@ -59,171 +39,249 @@ export const CaseLawView: React.FC<CaseLawViewProps> = ({ courtSlug, caseId }) =
     if (judgment) return <CaseDetail judgment={judgment} />;
   }
 
-  const court = courtSlug ? courtBySlug(courtSlug) : undefined;
-  if (court) return <CourtCaseList court={court} />;
+  if (courtSlug) return <Navigate replace to="/case-law" />;
 
-  return <CourtDirectory />;
+  return <UnifiedCaseSearch />;
 };
 
-const CourtDirectory: React.FC = () => (
-  <div className={`${CASE_PAGE_BG} text-neutral-900 min-h-screen py-8 sm:py-12`}>
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <div className="lawpex-case-motion relative overflow-hidden rounded-[2rem] border border-amber-200 bg-white p-6 shadow-[0_26px_80px_-58px_rgba(24,20,17,0.72)] sm:p-8 lg:p-10">
-        <div className="absolute inset-y-0 right-0 hidden w-1/3 bg-[linear-gradient(135deg,rgba(250,204,21,0.22),transparent_58%)] lg:block" />
-        <div className="relative max-w-4xl">
-          <span className="inline-flex items-center rounded-full bg-[#facc15] px-3 py-1 text-[11px] font-black uppercase tracking-[0.16em] text-neutral-950">
-            Nigerian case laws library
-          </span>
-          <h1 className="mt-4 text-3xl font-black tracking-tight text-neutral-950 sm:text-5xl">Case Laws</h1>
-          <p className="mt-3 max-w-3xl text-base leading-8 text-neutral-700 sm:text-lg">
-            Open a court to research judgments in a readable legal digest: summary, principles,
-            ratio decidendi, authorities and the whole case, ready for MS Word.
-          </p>
-        </div>
-      </div>
+const courtLabel = (court: CaseLaw['court']): string =>
+  court === 'Supreme Court of Nigeria' ? 'Supreme Court' : court;
 
-      <div className="mt-8 grid grid-cols-1 gap-5 md:grid-cols-2">
-        {CASE_LAW_COURTS.map((court, index) => {
-          const count = casesForCourt(court.name).length;
-
-          return (
-            <Link
-              key={court.slug}
-              to={`/case-law/${court.slug}`}
-              className="lawpex-case-motion group flex min-h-[13rem] flex-col justify-between rounded-[1.5rem] border border-amber-200 bg-white p-5 shadow-[0_18px_55px_-44px_rgba(24,20,17,0.7)] transition hover:-translate-y-1 hover:border-amber-400 hover:shadow-[0_28px_70px_-46px_rgba(180,126,18,0.76)] sm:p-6"
-              style={{ '--case-delay': `${120 + index * 85}ms` } as React.CSSProperties}
-            >
-              <div className="flex gap-4">
-                <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl border border-amber-300 bg-amber-50">
-                  <Gavel className="w-5 h-5 text-yellow-700" />
-                </div>
-                <div>
-                  <h2 className="text-xl font-black tracking-tight text-neutral-950 transition group-hover:text-amber-700">
-                    {court.name}
-                  </h2>
-                  <p className="mt-2 text-sm leading-7 text-neutral-600">{court.blurb}</p>
-                </div>
-              </div>
-
-              <div className="mt-5 flex items-center justify-between border-t border-amber-100 pt-4">
-                <span className="text-sm font-bold text-neutral-600">
-                  {count} {count === 1 ? 'judgment' : 'judgments'} in the library
-                </span>
-                <ChevronRight className="w-4 h-4 text-yellow-700" />
-              </div>
-            </Link>
-          );
-        })}
-      </div>
-    </div>
-  </div>
-);
-
-const CourtCaseList: React.FC<{ court: (typeof CASE_LAW_COURTS)[number] }> = ({ court }) => {
+const UnifiedCaseSearch: React.FC = () => {
   const [query, setQuery] = useState('');
-  const all = useMemo(() => casesForCourt(court.name), [court.name]);
-
-  const needle = query.trim().toLowerCase();
-  const cases = useMemo(
-    () =>
-      all.filter(
-        (judgment) =>
-          !needle ||
-          judgment.title.toLowerCase().includes(needle) ||
-          judgment.citation.toLowerCase().includes(needle) ||
-          judgment.subject.toLowerCase().includes(needle) ||
-          judgment.areaOfLaw.toLowerCase().includes(needle) ||
-          judgment.factsSummary.toLowerCase().includes(needle) ||
-          judgment.catchwords?.some((catchword) => catchword.toLowerCase().includes(needle)) ||
-          judgment.authoritiesCited?.some((authority) => authority.toLowerCase().includes(needle)) ||
-          judgment.statutesConsidered?.some((statute) => statute.toLowerCase().includes(needle)) ||
-          judgment.keyPrinciples.some((principle) => principle.toLowerCase().includes(needle)) ||
-          judgment.ratioDecidendi.some((ratio) => ratio.toLowerCase().includes(needle)),
-      ),
-    [all, needle],
+  const [suggestionsOpen, setSuggestionsOpen] = useState(false);
+  const [activeSuggestion, setActiveSuggestion] = useState(-1);
+  const searchRef = useRef<HTMLDivElement>(null);
+  const navigate = useNavigate();
+  const trimmedQuery = query.trim();
+  const results = useMemo(
+    () => searchCaseLaws(LANDMARK_CASES, trimmedQuery),
+    [trimmedQuery],
   );
+  const suggestions = trimmedQuery.length >= 2 ? results.slice(0, 6) : [];
+
+  useEffect(() => {
+    const closeSuggestions = (event: PointerEvent) => {
+      if (!searchRef.current?.contains(event.target as Node)) setSuggestionsOpen(false);
+    };
+
+    document.addEventListener('pointerdown', closeSuggestions);
+    return () => document.removeEventListener('pointerdown', closeSuggestions);
+  }, []);
+
+  const openJudgment = (caseId: string) => {
+    setSuggestionsOpen(false);
+    navigate(`/case-law/case/${caseId}`);
+    window.scrollTo({ top: 0, behavior: 'auto' });
+  };
+
+  const handleSubmit = (event: React.FormEvent) => {
+    event.preventDefault();
+    const selected = suggestions[activeSuggestion] ?? results[0];
+    if (selected) openJudgment(selected.judgment.id);
+  };
+
+  const handleSearchKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
+    if (!suggestions.length) return;
+
+    if (event.key === 'ArrowDown') {
+      event.preventDefault();
+      setSuggestionsOpen(true);
+      setActiveSuggestion((current) => (current + 1) % suggestions.length);
+    } else if (event.key === 'ArrowUp') {
+      event.preventDefault();
+      setSuggestionsOpen(true);
+      setActiveSuggestion((current) => (current <= 0 ? suggestions.length - 1 : current - 1));
+    } else if (event.key === 'Enter') {
+      event.preventDefault();
+      const selected = suggestions[activeSuggestion] ?? suggestions[0];
+      if (selected) openJudgment(selected.judgment.id);
+    } else if (event.key === 'Escape') {
+      setSuggestionsOpen(false);
+      setActiveSuggestion(-1);
+    }
+  };
 
   return (
-    <div className={`${CASE_PAGE_BG} text-neutral-900 min-h-screen py-8 sm:py-12`}>
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="rounded-[2rem] border border-amber-200 bg-white p-6 shadow-[0_26px_80px_-58px_rgba(24,20,17,0.72)] sm:p-8">
-          <Link
-            to="/case-law"
-            className="inline-flex items-center gap-1.5 rounded-full bg-amber-50 px-3 py-1.5 text-xs font-black uppercase tracking-[0.14em] text-amber-800 hover:bg-amber-100"
-          >
-            <ArrowLeft className="w-3.5 h-3.5" />
-            All courts
-          </Link>
-
-          <h1 className="mt-4 text-3xl font-black tracking-tight text-neutral-950 sm:text-5xl">{court.name}</h1>
-          <p className="mt-3 max-w-3xl text-base leading-8 text-neutral-700 sm:text-lg">
-            {court.blurb}
-          </p>
-
-          <div className="relative mt-7">
-            <Search className="absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-yellow-700" />
-            <input
-              type="text"
-              value={query}
-              onChange={(event) => setQuery(event.target.value)}
-              placeholder="Search case laws/principles..."
-              className="w-full rounded-2xl border border-amber-200 bg-[#fffdf6] py-4 pl-12 pr-4 text-base font-semibold text-neutral-950 shadow-inner outline-none focus:border-amber-400 focus:bg-white"
-            />
+    <div className={`${CASE_PAGE_BG} min-h-screen py-7 text-neutral-900 sm:py-12`}>
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <header className="lawpex-case-motion relative z-20 overflow-visible border-b border-amber-200 pb-8 sm:pb-10">
+          <div className="max-w-4xl">
+            <span className="inline-flex items-center bg-[#facc15] px-3 py-1.5 text-xs font-black uppercase text-neutral-950">
+              Unified Nigerian law reports
+            </span>
+            <h1 className="mt-5 text-4xl font-black leading-[1.05] text-neutral-950 sm:text-6xl">
+              Search Nigerian Case Laws
+            </h1>
+            <p className="mt-4 max-w-3xl text-base leading-7 text-neutral-700 sm:text-lg sm:leading-8">
+              Find the authority you need by party, citation, keyword, legal principle or ratio decidendi.
+            </p>
           </div>
 
-          <p className="mt-3 text-sm leading-6 text-neutral-600">
-            {cases.length} of {all.length} judgments - search runs across facts, ratio,
-            principles, authorities and catchwords.
-          </p>
-        </div>
-
-        {cases.length === 0 ? (
-          <p className="mt-6 rounded-2xl border border-amber-200 bg-white p-6 text-base text-neutral-700">
-            No judgment of the {court.name} in the library matches "{query}".
-          </p>
-        ) : (
-          <div className="mt-6 grid grid-cols-1 gap-5 lg:grid-cols-2">
-            {cases.map((judgment) => (
-              <Link
-                key={judgment.id}
-                to={`/case-law/case/${judgment.id}`}
-                className="group flex min-h-[16rem] flex-col justify-between rounded-[1.5rem] border border-amber-200 bg-white p-5 shadow-[0_18px_55px_-44px_rgba(24,20,17,0.72)] transition hover:-translate-y-1 hover:border-amber-400 sm:p-6"
+          <form className="mt-8 max-w-5xl" onSubmit={handleSubmit} role="search">
+            <label htmlFor="case-law-search" className="mb-2 block text-sm font-black text-neutral-800">
+              Search the case library
+            </label>
+            <div ref={searchRef} className="relative">
+              <Search className="pointer-events-none absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-amber-700 sm:left-5 sm:h-6 sm:w-6" />
+              <input
+                id="case-law-search"
+                type="text"
+                inputMode="search"
+                value={query}
+                onChange={(event) => {
+                  setQuery(event.target.value);
+                  setSuggestionsOpen(true);
+                  setActiveSuggestion(-1);
+                }}
+                onFocus={() => setSuggestionsOpen(true)}
+                onKeyDown={handleSearchKeyDown}
+                placeholder="Search by party, keyword, principle or ratio"
+                autoComplete="off"
+                role="combobox"
+                aria-autocomplete="list"
+                aria-expanded={suggestionsOpen && suggestions.length > 0}
+                aria-controls="case-law-suggestions"
+                aria-activedescendant={activeSuggestion >= 0 ? `case-suggestion-${activeSuggestion}` : undefined}
+                className={`lawpex-focus-ring h-16 w-full rounded-xl border-2 border-neutral-900 bg-white pl-12 text-base font-bold text-neutral-950 shadow-[0_22px_52px_-38px_rgba(24,20,17,0.65)] outline-none placeholder:font-medium placeholder:text-neutral-500 sm:h-[4.75rem] sm:pl-16 sm:text-lg ${query ? 'pr-24 sm:pr-32' : 'pr-16 sm:pr-20'}`}
+              />
+              {query && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    setQuery('');
+                    setActiveSuggestion(-1);
+                  }}
+                  className="lawpex-focus-ring absolute right-14 top-1/2 flex h-9 w-9 -translate-y-1/2 items-center justify-center rounded-lg text-neutral-600 hover:bg-neutral-100 hover:text-neutral-950 sm:right-20"
+                  aria-label="Clear case search"
+                  title="Clear search"
+                >
+                  <X className="h-5 w-5" />
+                </button>
+              )}
+              <button
+                type="submit"
+                disabled={!results.length || !trimmedQuery}
+                className="lawpex-focus-ring absolute right-2 top-1/2 flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-lg bg-[#facc15] text-neutral-950 transition hover:bg-[#eab308] active:scale-[0.98] disabled:cursor-not-allowed disabled:bg-neutral-200 disabled:text-neutral-500 sm:right-3 sm:h-12 sm:w-12"
+                aria-label="Open first matching case"
+                title="Open first matching case"
               >
-                <div className="space-y-3">
-                  <div className="flex justify-between items-start gap-2">
-                    <span className="rounded-full border border-amber-300 bg-amber-50 px-3 py-1 text-[11px] font-black text-amber-800">
-                      {judgment.year} - {judgment.areaOfLaw}
-                    </span>
-                    {judgment.isLandmark && (
-                      <span className="flex shrink-0 items-center gap-1 rounded-full bg-[#facc15] px-2.5 py-1 text-[11px] font-black text-neutral-950">
-                        <Award className="w-3 h-3" /> Landmark
+                <Search className="h-5 w-5" />
+              </button>
+
+              {suggestionsOpen && suggestions.length > 0 && (
+                <div
+                  id="case-law-suggestions"
+                  role="listbox"
+                  className="absolute inset-x-0 top-[calc(100%+0.5rem)] z-30 max-h-[21rem] overflow-y-auto rounded-xl border border-amber-200 bg-white p-1.5 shadow-[0_28px_70px_-34px_rgba(24,20,17,0.55)] sm:max-h-[26rem]"
+                >
+                  {suggestions.map((suggestion, index) => (
+                    <Link
+                      id={`case-suggestion-${index}`}
+                      key={suggestion.judgment.id}
+                      to={`/case-law/case/${suggestion.judgment.id}`}
+                      role="option"
+                      aria-selected={activeSuggestion === index}
+                      onMouseEnter={() => setActiveSuggestion(index)}
+                      onClick={() => {
+                        setSuggestionsOpen(false);
+                        window.scrollTo({ top: 0, behavior: 'auto' });
+                      }}
+                      className={`lawpex-focus-ring grid gap-1 rounded-lg px-3 py-3 transition sm:grid-cols-[minmax(0,1fr)_auto] sm:items-center sm:px-4 ${
+                        activeSuggestion === index ? 'bg-amber-50' : 'hover:bg-neutral-50'
+                      }`}
+                    >
+                      <span className="min-w-0">
+                        <span className="block truncate text-sm font-black text-neutral-950 sm:text-base">
+                          {suggestion.judgment.title}
+                        </span>
+                        <span className="mt-0.5 block truncate text-xs font-semibold text-neutral-600 sm:text-sm">
+                          {suggestion.matchedField}: {suggestion.excerpt}
+                        </span>
                       </span>
-                    )}
-                  </div>
-
-                  <h2 className="text-xl font-black leading-snug tracking-tight text-neutral-950 transition group-hover:text-amber-700">
-                    {judgment.title}
-                  </h2>
-
-                  <p className="text-sm font-black text-amber-700">
-                    {judgment.citation}
-                  </p>
-
-                  <p className="line-clamp-3 text-sm leading-7 text-neutral-600">
-                    {judgment.subject}
-                  </p>
+                      <span className="text-xs font-black text-amber-800">{suggestion.judgment.citation}</span>
+                    </Link>
+                  ))}
                 </div>
+              )}
+            </div>
+          </form>
 
-                <div className="mt-5 flex items-center justify-between border-t border-amber-100 pt-4">
-                  <span className="text-sm font-bold text-neutral-600">
-                    {judgment.keyPrinciples.length} principles of law
-                  </span>
-                  <ChevronRight className="w-4 h-4 text-yellow-700" />
-                </div>
-              </Link>
-            ))}
+          <div className="mt-5 flex flex-wrap gap-x-6 gap-y-2 text-sm font-bold text-neutral-600">
+            <span>{LANDMARK_CASES.length} verified reports</span>
+            <span>Full judgments</span>
+            <span>Ratios and principles</span>
           </div>
-        )}
+        </header>
+
+        <section className="mt-8 sm:mt-10" aria-live="polite" aria-label="Case law search results">
+          <div className="flex flex-wrap items-end justify-between gap-3 border-b border-neutral-300 pb-4">
+            <div>
+              <p className="text-xs font-black uppercase text-amber-700">
+                {trimmedQuery ? 'Best matches' : 'Case library'}
+              </p>
+              <h2 className="mt-1 text-2xl font-black text-neutral-950 sm:text-3xl">
+                {trimmedQuery ? `Results for “${trimmedQuery}”` : 'All uploaded cases'}
+              </h2>
+            </div>
+            <p className="text-sm font-bold text-neutral-600">
+              {results.length} {results.length === 1 ? 'case' : 'cases'}
+            </p>
+          </div>
+
+          {results.length === 0 ? (
+            <div className="py-14 sm:py-20">
+              <Search className="h-8 w-8 text-amber-700" />
+              <h3 className="mt-4 text-xl font-black text-neutral-950">No matching case found</h3>
+              <p className="mt-2 max-w-xl text-base leading-7 text-neutral-600">
+                Try another party name, a shorter legal phrase, a citation, or a related principle.
+              </p>
+            </div>
+          ) : (
+            <div className="divide-y divide-amber-200">
+              {results.map((result, index) => (
+                <Link
+                  key={result.judgment.id}
+                  to={`/case-law/case/${result.judgment.id}`}
+                  className="lawpex-case-motion group grid gap-4 py-6 transition hover:bg-amber-50/60 active:translate-y-px sm:grid-cols-[3rem_minmax(0,1fr)_auto] sm:px-3 sm:py-7"
+                  style={{ '--case-delay': `${80 + Math.min(index, 7) * 55}ms` } as React.CSSProperties}
+                  onClick={() => window.scrollTo({ top: 0, behavior: 'auto' })}
+                >
+                  <span className="hidden pt-1 text-sm font-black text-amber-700 sm:block">
+                    {String(index + 1).padStart(2, '0')}
+                  </span>
+                  <span className="min-w-0">
+                    <span className="flex flex-wrap items-center gap-2">
+                      <span className="border border-amber-300 bg-amber-50 px-2.5 py-1 text-[11px] font-black text-amber-800">
+                        {courtLabel(result.judgment.court)}
+                      </span>
+                      {result.judgment.isLandmark && (
+                        <span className="inline-flex items-center gap-1 bg-[#facc15] px-2.5 py-1 text-[11px] font-black text-neutral-950">
+                          <Award className="h-3 w-3" /> Landmark
+                        </span>
+                      )}
+                    </span>
+                    <span className="mt-3 block text-xl font-black leading-tight text-neutral-950 transition group-hover:text-amber-800 sm:text-2xl">
+                      {result.judgment.title}
+                    </span>
+                    <span className="mt-1.5 block text-sm font-black text-amber-800 sm:text-base">
+                      {result.judgment.citation}
+                    </span>
+                    <span className="mt-3 block max-w-4xl text-sm leading-7 text-neutral-700 sm:text-base">
+                      {trimmedQuery && result.matchedField !== 'Party name'
+                        ? `${result.matchedField}: ${result.excerpt}`
+                        : result.judgment.subject}
+                    </span>
+                  </span>
+                  <span className="flex items-center gap-2 self-center text-sm font-black text-neutral-700 transition group-hover:text-amber-800">
+                    Open case
+                    <ChevronRight className="h-4 w-4" />
+                  </span>
+                </Link>
+              ))}
+            </div>
+          )}
+        </section>
       </div>
     </div>
   );
@@ -237,7 +295,6 @@ const CaseDetail: React.FC<{ judgment: CaseLaw }> = ({ judgment }) => {
     judgment.hasFullJudgment ? 'idle' : 'ready',
   );
   const fullJudgment = useMemo(() => mergeCaseJudgmentDocument(judgment, document), [document, judgment]);
-  const court = CASE_LAW_COURTS.find((item) => item.name === judgment.court);
   const [tab, setTab] = useState<CaseDetailTab>('ratio');
 
   useEffect(() => {
@@ -284,11 +341,11 @@ const CaseDetail: React.FC<{ judgment: CaseLaw }> = ({ judgment }) => {
             <div className="overflow-hidden rounded-xl border border-amber-200 bg-white/96 shadow-[0_20px_60px_-48px_rgba(24,20,17,0.8)] backdrop-blur-xl lg:rounded-[1.15rem]">
               <div className="hidden border-b border-amber-100 bg-[#fff8dc] px-4 py-4 lg:block">
                 <Link
-                  to={court ? `/case-law/${court.slug}` : '/case-law'}
+                  to="/case-law"
                   className="lawpex-focus-ring inline-flex items-center gap-1.5 rounded-full bg-white px-2.5 py-1 text-[10px] font-black uppercase tracking-[0.13em] text-amber-800 hover:bg-amber-50"
                 >
                   <ArrowLeft className="h-3.5 w-3.5" />
-                  {judgment.court}
+                  Case Laws search
                 </Link>
                 <p className="mt-4 text-[10px] font-black uppercase tracking-[0.18em] text-amber-700">
                   Case sections

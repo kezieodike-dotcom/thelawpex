@@ -18,7 +18,7 @@ export const PricingView: React.FC<PricingViewProps> = ({ currentTier, onUpgrade
       priceAnnual: '₦0',
       description: 'Ideal for law students and initial exploration of Nigerian statutes.',
       features: [
-        '3 AI Legal Assistant Queries per day',
+        '3 Ai Draft Wizard documents per day',
         'Access to basic 1999 Constitution & LFN',
         'Standard Case Law Search summaries',
         'Read-only draft template previews'
@@ -79,7 +79,7 @@ export const PricingView: React.FC<PricingViewProps> = ({ currentTier, onUpgrade
 
   const comparisonRows = [
     ['Search allowance', 'Limited', 'Unlimited', 'Unlimited', 'Priority'],
-    ['AI assistant', 'Limited daily use', 'Full access', 'Priority pool', 'Bench suite'],
+    ['Ai Draft Wizard', 'Limited daily use', 'Full access', 'Priority pool', 'Bench suite'],
     ['Draft exports', 'Preview only', 'Word + PDF', 'Firm repository', 'Institutional exports'],
     ['Shared folders', 'No', 'Personal only', 'Included', 'Institutional'],
     ['Internal notes', 'No', 'Personal notes', 'Firm notes', 'Bench notes'],

@@ -32,10 +32,10 @@ export const APP_ROUTES: AppRoute[] = [
   {
     id: 'ai-assistant',
     path: '/ai-assistant',
-    label: 'AI Legal Assistant',
-    title: `AI Legal Assistant — ${SITE_NAME}`,
+    label: 'Ai Draft Wizard',
+    title: `Ai Draft Wizard — ${SITE_NAME}`,
     description:
-      'Ask Nigerian law questions, generate court processes and summarise judgments with an AI assistant grounded in LFN statutes, court rules and Supreme Court authority.',
+      'Provide a case scenario, supporting documents and drafting instructions to prepare a professional Nigerian legal or court document for review and Word export.',
   },
   {
     id: 'dashboard',

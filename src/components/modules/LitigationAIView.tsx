@@ -254,7 +254,7 @@ const LessonDetail: React.FC<{ lesson: AiLitigationLesson }> = ({ lesson }) => (
 
         <Panel
           title="Prompts to send"
-          subtitle="Open one in the AI assistant, then replace the bracketed parts with your matter."
+          subtitle="Open one in the Ai Draft Wizard, then replace the bracketed parts with your matter."
           icon={Wand2}
         >
           <div className="space-y-3">
@@ -272,7 +272,7 @@ const LessonDetail: React.FC<{ lesson: AiLitigationLesson }> = ({ lesson }) => (
                     className="inline-flex items-center gap-1.5 bg-yellow-400 hover:bg-yellow-300 text-neutral-950 font-bold text-[11px] px-3 py-1.5 rounded-lg transition"
                   >
                     <Bot className="w-3.5 h-3.5" />
-                    Open in the AI assistant
+                    Open in Ai Draft Wizard
                   </Link>
 
                   <DocumentActions
