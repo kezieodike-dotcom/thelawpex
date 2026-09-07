@@ -268,11 +268,28 @@ Return only the complete draft. Use clear [TO BE SUPPLIED] placeholders for miss
 
   // Vite middleware in dev or static files in prod
   if (process.env.NODE_ENV !== "production") {
-    const vite = await createViteServer({
-      server: { middlewareMode: true },
-      appType: "spa",
+    let viteReady: ReturnType<typeof createViteServer> | null = null;
+    const getViteReady = () =>
+      (viteReady ??= createViteServer({
+        server: { middlewareMode: true },
+        appType: "spa",
+      }));
+
+    app.use(async (req, res, next) => {
+      try {
+        const vite = await Promise.race([
+          getViteReady(),
+          new Promise<null>((resolve) => setTimeout(() => resolve(null), 5000)),
+        ]);
+        if (!vite) {
+          return res.status(503).send("Vite middleware is still starting. Refresh this page shortly.");
+        }
+        return vite.middlewares(req, res, next);
+      } catch (error) {
+        console.error("Vite middleware failed to start:", error);
+        return res.status(503).send("Vite middleware is unavailable. Check the dev server console.");
+      }
     });
-    app.use(vite.middlewares);
   } else {
     const distPath = path.join(process.cwd(), "dist");
     app.use(express.static(distPath));

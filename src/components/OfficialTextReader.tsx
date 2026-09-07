@@ -9,6 +9,9 @@ interface OfficialTextReaderProps {
   documentLabel?: string;
 }
 
+const legalDocumentFont =
+  '"Book Antiqua", "Palatino Linotype", Palatino, Georgia, "Times New Roman", serif';
+
 export const OfficialTextReader: React.FC<OfficialTextReaderProps> = ({
   title,
   documentText,
@@ -32,10 +35,10 @@ export const OfficialTextReader: React.FC<OfficialTextReaderProps> = ({
 
   return (
     <section
-      className="lawpex-no-reveal overflow-hidden rounded-xl border border-neutral-300 bg-white shadow-sm"
+      className="lawpex-no-reveal overflow-hidden rounded-lg border border-neutral-300 bg-white shadow-sm"
       aria-label={`${title} text reader`}
     >
-      <div className="flex flex-col gap-3 border-b border-neutral-200 bg-neutral-950 px-4 py-3 text-white sm:flex-row sm:items-center sm:justify-between">
+      <div className="flex flex-col gap-3 border-b border-neutral-200 bg-neutral-950 px-4 py-4 text-white sm:flex-row sm:items-center sm:justify-between sm:px-5">
         <div className="flex min-w-0 items-center gap-3">
           <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-yellow-400 text-neutral-950">
             <FileText className="h-4 w-4" />
@@ -61,19 +64,22 @@ export const OfficialTextReader: React.FC<OfficialTextReaderProps> = ({
         )}
       </div>
 
-      <div className="max-h-[72vh] overflow-y-auto bg-neutral-50 px-3 py-5 sm:max-h-[52rem] sm:px-6 lg:px-8">
-        <div className="mx-auto max-w-4xl space-y-5">
+      <div className="max-h-[72vh] overflow-y-auto bg-neutral-100 px-2 py-4 sm:max-h-[52rem] sm:px-6 sm:py-7 lg:px-8">
+        <div className="mx-auto max-w-5xl space-y-6">
           {pages.map((page, index) => (
             <article
               key={`${page.pageNumber || 'page'}-${index}`}
-              className="rounded-lg border border-neutral-200 bg-white px-4 py-5 text-neutral-900 sm:px-7 sm:py-8"
+              className="rounded-md border border-neutral-200 bg-white px-4 py-6 text-neutral-900 shadow-[0_10px_30px_-24px_rgba(15,23,42,0.45)] sm:px-8 sm:py-9 lg:px-12"
             >
               {page.pageNumber && (
-                <p className="mb-4 border-b border-neutral-200 pb-2 text-[11px] font-black uppercase tracking-wider text-yellow-700">
+                <p className="mb-5 border-b border-neutral-200 pb-3 text-[11px] font-black uppercase tracking-wider text-yellow-700">
                   Page {page.pageNumber}
                 </p>
               )}
-              <pre className="whitespace-pre-wrap break-words font-serif text-[15px] leading-8 text-neutral-800 sm:text-base">
+              <pre
+                className="whitespace-pre-wrap break-words text-[16px] leading-[1.9] text-neutral-900 sm:text-[17px]"
+                style={{ fontFamily: legalDocumentFont }}
+              >
                 {page.rawText}
               </pre>
             </article>

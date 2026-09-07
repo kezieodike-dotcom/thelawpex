@@ -96,10 +96,10 @@ export const APP_ROUTES: AppRoute[] = [
   {
     id: 'affidavits',
     path: '/affidavits',
-    label: 'Affidavits',
-    title: `All Manner of Affidavits — ${SITE_NAME}`,
+    label: 'Sample Agreements and Affidavits',
+    title: `Sample Agreements and Affidavits — ${SITE_NAME}`,
     description:
-      'Every Nigerian affidavit — civil, criminal, land, matrimonial, probate, corporate, election, garnishee and fundamental rights — with the full sworn text, the Oaths Act basis and copy-to-Word.',
+      'Sample Nigerian agreements and affidavits with editable agreement forms, full sworn affidavit text, statutory basis and copy-to-Word.',
   },
   {
     id: 'practicals',

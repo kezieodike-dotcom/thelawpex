@@ -1,6 +1,10 @@
 import { NIGERIAN_STATES, highCourtName, stateSlug } from './nigeria';
 import { NIGERIAN_LAWS_DATA } from './legalData';
 import { constitution1999Text } from './constitution1999Text';
+import { electoralAct2026Text } from './electoralAct2026Text';
+import { civilAviationAct2022Text } from './civilAviationAct2022Text';
+import { nationalIndustrialCourtActText } from './nationalIndustrialCourtActText';
+import { camaNoteBookFullVersionText } from './camaNoteBookFullVersionText';
 
 /**
  * Two law libraries:
@@ -110,6 +114,9 @@ export const FEDERAL_LAWS: FederalLawEntry[] = [
     category: 'Constitution & Courts',
     description:
       'Establishment and jurisdiction of the National Industrial Court over labour, employment, trade union and industrial relations matters, read with Section 254C of the Constitution.',
+    documentPath: '/documents/laws/national-industrial-court-act.pdf',
+    documentPages: 19,
+    documentText: nationalIndustrialCourtActText,
   },
   {
     id: 'sheriffs-civil-process-act',
@@ -331,6 +338,9 @@ export const FEDERAL_LAWS: FederalLawEntry[] = [
     category: 'Corporate & Financial',
     description:
       'Incorporation and management of companies, limited liability partnerships, business names and incorporated trustees; directors’ duties, minority protection, insolvency and business rescue.',
+    documentPath: '/documents/laws/cama-note-book-full-version.pdf',
+    documentPages: 528,
+    documentText: camaNoteBookFullVersionText,
     fullTextId: 'cama-2020',
   },
   {
@@ -719,6 +729,7 @@ export const FEDERAL_LAWS: FederalLawEntry[] = [
       'Regulation of civil aviation by the NCAA, licensing of operators, the domestication of the Montreal Convention and the liability of carriers to passengers.',
     documentPath: '/documents/laws/civil-aviation-act-2022.pdf',
     documentPages: 95,
+    documentText: civilAviationAct2022Text,
   },
   {
     id: 'minerals-mining-2007',
@@ -743,6 +754,7 @@ export const FEDERAL_LAWS: FederalLawEntry[] = [
       'The current federal framework for elections administered by INEC, including voter registration, nomination, polling, collation, election offences and election petitions.',
     documentPath: '/documents/laws/electoral-act-2026.pdf',
     documentPages: 121,
+    documentText: electoralAct2026Text,
   },
   {
     id: 'electoral-act-2022',

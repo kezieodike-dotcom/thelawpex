@@ -67,7 +67,7 @@ const MODULES = [
   { id: 'laws', title: 'Nigerian Laws & Statutes', desc: 'Federal laws and the laws of the 36 states and the FCT.', icon: Landmark, tone: 'light' },
   { id: 'appeals', title: 'Appeals', desc: 'Rights of appeal, leave, timelines and appeal drafts across the court ladder.', icon: Newspaper, tone: 'light' },
   { id: 'drafts', title: 'Draft Library', desc: 'Court processes and agreements prepared for editing.', icon: FileText, tone: 'yellow' },
-  { id: 'affidavits', title: 'All Manner of Affidavits', desc: 'Sworn depositions with statutory basis and practice warnings.', icon: ShieldCheck, tone: 'light' },
+  { id: 'affidavits', title: 'Sample Agreements and Affidavits', desc: 'Agreement samples and sworn depositions with statutory basis.', icon: ShieldCheck, tone: 'light' },
   { id: 'practicals', title: 'Different Courtroom Procedures', desc: 'Courtroom steps and what counsel says in court.', icon: Video, tone: 'light' },
   { id: 'learn-litigation-ai', title: 'Learn Litigation with AI Tools', desc: 'Prompt-led lessons for research, drafting and advocacy.', icon: Sparkles, tone: 'light' },
   { id: 'articles', title: 'Legal Articles', desc: 'Practice notes and commentary for Nigerian practitioners.', icon: Newspaper, tone: 'light' },

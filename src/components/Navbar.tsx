@@ -18,7 +18,7 @@ const PRIMARY_NAV = [
   { id: 'court-rules', label: 'Rules' },
   { id: 'laws', label: 'Laws' },
   { id: 'appeals', label: 'Appeals' },
-  { id: 'affidavits', label: 'Affidavits' },
+  { id: 'affidavits', label: 'Samples' },
   { id: 'practicals', label: 'Procedures' },
   { id: 'learn-litigation-ai', label: 'Learn AI' },
 ];
@@ -29,7 +29,7 @@ const MOBILE_NAV = [
   { id: 'court-rules', label: 'Rules' },
   { id: 'laws', label: 'Nigerian Laws' },
   { id: 'appeals', label: 'Appeals' },
-  { id: 'affidavits', label: 'All Affidavits' },
+  { id: 'affidavits', label: 'Sample Agreements and Affidavits' },
   { id: 'practicals', label: 'Courtroom Procedures' },
   { id: 'learn-litigation-ai', label: 'Learn Litigation with AI' },
 ];

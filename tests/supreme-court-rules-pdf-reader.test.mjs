@@ -47,7 +47,8 @@ test('Supreme Court Rules page exposes the official rules as selectable text', a
   assert.match(reader, /lawpex-no-reveal/);
   assert.doesNotMatch(reader, /parseProse/);
   assert.doesNotMatch(reader, /font-mono text-\[12px\]/);
-  assert.match(reader, /font-serif text-\[15px\]/);
+  assert.match(reader, /fontFamily: legalDocumentFont/);
+  assert.match(reader, /text-\[16px\]/);
   assert.match(reader, /<pre/);
   assert.match(reader, /rawText/);
   assert.match(text, /ORDER 1/);

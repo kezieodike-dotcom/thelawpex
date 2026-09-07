@@ -9,6 +9,7 @@ import {
   AlertTriangle,
   BookOpen,
   UserCheck,
+  FileText,
 } from 'lucide-react';
 import {
   AFFIDAVITS,
@@ -30,6 +31,117 @@ interface AffidavitsViewProps {
   affidavitId?: string;
 }
 
+const SAMPLE_AGREEMENTS: LegalDraft[] = [
+  {
+    id: 'agreement-tenancy',
+    title: 'Residential Tenancy Agreement',
+    category: 'Property',
+    areaOfLaw: 'Landlord and Tenant',
+    description: 'A sample lease for residential premises covering rent, term, repairs, use, default and recovery of possession.',
+    courtHeadingRequired: false,
+    sampleText: `RESIDENTIAL TENANCY AGREEMENT
+
+THIS AGREEMENT is made this [DAY] day of [MONTH], 20[__]
+
+BETWEEN:
+[LANDLORD NAME] of [ADDRESS] (the Landlord)
+
+AND
+
+[TENANT NAME] of [ADDRESS] (the Tenant)
+
+1. The Landlord lets to the Tenant the premises known as [PROPERTY ADDRESS].
+2. The tenancy shall be for [TERM] commencing on [DATE].
+3. The rent shall be N[AMOUNT] per [MONTH/YEAR], payable [PAYMENT TERMS].
+4. The Tenant shall use the premises for residential purposes only.
+5. Either party may terminate this tenancy by the notice required by law.`,
+    variables: ['landlord', 'tenant', 'propertyAddress', 'rent', 'term'],
+    downloadCount: 1840,
+    isCustomizableWithAI: true,
+  },
+  {
+    id: 'agreement-sale-of-land',
+    title: 'Sale of Land Agreement',
+    category: 'Property',
+    areaOfLaw: 'Real Estate Transactions',
+    description: 'A sample agreement for sale of land with purchase price, completion, title documents and possession clauses.',
+    courtHeadingRequired: false,
+    sampleText: `AGREEMENT FOR SALE OF LAND
+
+THIS AGREEMENT is made this [DAY] day of [MONTH], 20[__]
+
+BETWEEN:
+[VENDOR NAME] of [ADDRESS] (the Vendor)
+
+AND
+
+[PURCHASER NAME] of [ADDRESS] (the Purchaser)
+
+1. The Vendor agrees to sell and the Purchaser agrees to purchase all that parcel of land at [PROPERTY DESCRIPTION].
+2. The purchase price is N[AMOUNT].
+3. Completion shall take place upon payment of the balance and delivery of title documents.
+4. Possession shall be delivered to the Purchaser on completion.
+5. The parties shall execute all instruments necessary to perfect title.`,
+    variables: ['vendor', 'purchaser', 'propertyDescription', 'purchasePrice'],
+    downloadCount: 1325,
+    isCustomizableWithAI: true,
+  },
+  {
+    id: 'agreement-service',
+    title: 'Service Agreement',
+    category: 'Commercial',
+    areaOfLaw: 'Commercial Contracts',
+    description: 'A sample services contract covering scope of work, fees, deliverables, confidentiality and termination.',
+    courtHeadingRequired: false,
+    sampleText: `SERVICE AGREEMENT
+
+THIS AGREEMENT is made this [DAY] day of [MONTH], 20[__]
+
+BETWEEN:
+[CLIENT NAME] of [ADDRESS] (the Client)
+
+AND
+
+[SERVICE PROVIDER NAME] of [ADDRESS] (the Service Provider)
+
+1. The Service Provider shall provide [DESCRIPTION OF SERVICES].
+2. The Client shall pay N[AMOUNT] in accordance with [PAYMENT TERMS].
+3. Each party shall keep confidential all non-public information received under this Agreement.
+4. Either party may terminate this Agreement by [NOTICE PERIOD] written notice.
+5. This Agreement shall be governed by the laws of the Federal Republic of Nigeria.`,
+    variables: ['client', 'serviceProvider', 'services', 'fees', 'noticePeriod'],
+    downloadCount: 1094,
+    isCustomizableWithAI: true,
+  },
+  {
+    id: 'agreement-partnership',
+    title: 'Partnership Agreement',
+    category: 'Commercial',
+    areaOfLaw: 'Business Organisations',
+    description: 'A sample partnership deed covering capital contribution, profit sharing, management and exit arrangements.',
+    courtHeadingRequired: false,
+    sampleText: `PARTNERSHIP AGREEMENT
+
+THIS AGREEMENT is made this [DAY] day of [MONTH], 20[__]
+
+BETWEEN:
+[PARTNER ONE NAME]
+
+AND
+
+[PARTNER TWO NAME]
+
+1. The parties agree to carry on business under the name [BUSINESS NAME].
+2. Each partner shall contribute capital as set out in Schedule 1.
+3. Profits and losses shall be shared in the ratio [RATIO].
+4. Decisions shall be made by [DECISION PROCESS].
+5. A partner may retire by giving [NOTICE PERIOD] written notice.`,
+    variables: ['partners', 'businessName', 'capital', 'profitRatio'],
+    downloadCount: 876,
+    isCustomizableWithAI: true,
+  },
+];
+
 export const AffidavitsView: React.FC<AffidavitsViewProps> = ({
   onCustomizeDraft,
   categoryId,
@@ -41,17 +153,30 @@ export const AffidavitsView: React.FC<AffidavitsViewProps> = ({
   const category = categoryId ? affidavitCategoryById(categoryId) : undefined;
   if (category) return <CategoryPage categoryId={category.id} />;
 
-  return <AffidavitDirectory />;
+  return <AffidavitDirectory onCustomizeDraft={onCustomizeDraft} />;
 };
 
 // ---------------------------------------------------------------------------
 // Level 1 — the search space and every category of affidavit
 // ---------------------------------------------------------------------------
 
-const AffidavitDirectory: React.FC = () => {
+const AffidavitDirectory: React.FC<{ onCustomizeDraft: (draft: LegalDraft) => void }> = ({
+  onCustomizeDraft,
+}) => {
   const [query, setQuery] = useState('');
   const needle = query.trim();
   const matches = useMemo(() => searchAffidavits(needle), [needle]);
+  const agreementMatches = useMemo(() => {
+    const normalized = needle.toLowerCase();
+    if (!normalized) return SAMPLE_AGREEMENTS;
+
+    return SAMPLE_AGREEMENTS.filter((agreement) =>
+      [agreement.title, agreement.description, agreement.areaOfLaw, agreement.sampleText]
+        .join(' ')
+        .toLowerCase()
+        .includes(normalized),
+    );
+  }, [needle]);
 
   return (
     <div className="bg-white text-neutral-900 min-h-screen py-8">
@@ -61,12 +186,12 @@ const AffidavitDirectory: React.FC = () => {
             Module 6
           </span>
           <h1 className="text-2xl sm:text-4xl font-black font-serif text-neutral-900 mt-2">
-            All Manner of Affidavits
+            SAMPLE AGREEMENTS AND AFFIDAVITS
           </h1>
           <p className="text-xs sm:text-sm text-neutral-700 max-w-3xl mt-1 leading-relaxed">
-            Every affidavit a Nigerian practitioner swears — from a change of name at the registry to
-            a counter affidavit that defeats an injunction. Each carries the full sworn text, the law
-            it is sworn under, and the defects that get depositions struck out.
+            Sample agreements and sworn depositions for Nigerian practice. Open an agreement for a
+            drafting sample or open an affidavit category for the full sworn text, statutory basis
+            and practice notes.
           </p>
 
           <div className="mt-6 relative">
@@ -75,77 +200,167 @@ const AffidavitDirectory: React.FC = () => {
               type="text"
               value={query}
               onChange={(event) => setQuery(event.target.value)}
-              placeholder="Search affidavits e.g. 'bail', 'urgency', 'loss of C of O', 'counter affidavit', 'Oaths Act'..."
+              placeholder="Search agreements or affidavits e.g. 'tenancy', 'bail', 'sale of land', 'counter affidavit'..."
               className="w-full bg-white text-xs sm:text-sm pl-11 pr-4 py-3.5 rounded-xl border border-neutral-200 text-neutral-900 focus:outline-none focus:border-yellow-400"
             />
           </div>
 
           <p className="text-[11px] text-neutral-500 mt-3">
-            {AFFIDAVITS.length} affidavits across {AFFIDAVIT_CATEGORIES.length} categories — search
-            runs across the sworn text itself.
+            {SAMPLE_AGREEMENTS.length} sample agreements and {AFFIDAVITS.length} affidavits across{' '}
+            {AFFIDAVIT_CATEGORIES.length} affidavit categories.
           </p>
         </div>
 
-        {/* A search turns the page into a flat list of hits */}
         {needle ? (
-          <div className="space-y-4">
-            <h2 className="text-xs font-bold text-yellow-700 uppercase tracking-wider">
-              {matches.length} {matches.length === 1 ? 'affidavit' : 'affidavits'} matching “{needle}”
-            </h2>
+          <div className="grid grid-cols-1 lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)] gap-5">
+            <DirectoryColumn
+              title="Sample agreements"
+              subtitle={`${agreementMatches.length} agreement${agreementMatches.length === 1 ? '' : 's'} matching "${needle}"`}
+            >
+              {agreementMatches.length === 0 ? (
+                <EmptyDirectoryResult label="agreement" query={needle} />
+              ) : (
+                agreementMatches.map((agreement) => (
+                  <AgreementCard
+                    key={agreement.id}
+                    agreement={agreement}
+                    onCustomizeDraft={onCustomizeDraft}
+                  />
+                ))
+              )}
+            </DirectoryColumn>
 
-            {matches.length === 0 ? (
-              <p className="text-sm text-neutral-600">
-                No affidavit in the library matches “{needle}”.
-              </p>
-            ) : (
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {matches.map((affidavit) => (
+            <DirectoryColumn
+              title="Sample affidavits"
+              subtitle={`${matches.length} affidavit${matches.length === 1 ? '' : 's'} matching "${needle}"`}
+            >
+              {matches.length === 0 ? (
+                <EmptyDirectoryResult label="affidavit" query={needle} />
+              ) : (
+                matches.map((affidavit) => (
                   <AffidavitCard key={affidavit.id} affidavit={affidavit} />
-                ))}
-              </div>
-            )}
+                ))
+              )}
+            </DirectoryColumn>
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">
-            {AFFIDAVIT_CATEGORIES.map((category) => {
-              const count = affidavitsInCategory(category.id).length;
+          <div className="grid grid-cols-1 lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)] gap-5">
+            <DirectoryColumn
+              title="Sample agreements"
+              subtitle={`${SAMPLE_AGREEMENTS.length} editable agreement samples`}
+            >
+              {SAMPLE_AGREEMENTS.map((agreement) => (
+                <AgreementCard
+                  key={agreement.id}
+                  agreement={agreement}
+                  onCustomizeDraft={onCustomizeDraft}
+                />
+              ))}
+            </DirectoryColumn>
 
-              return (
-                <Link
-                  key={category.id}
-                  to={`/affidavits/${category.id}`}
-                  className="bg-yellow-100 border border-neutral-200 hover:border-yellow-500/50 rounded-2xl p-5 transition shadow-lg group flex flex-col justify-between"
-                >
-                  <div>
-                    <div className="flex items-center gap-2 mb-2">
-                      <ShieldCheck className="w-4 h-4 text-yellow-700" />
-                      <span className="text-[10px] font-bold text-yellow-700 uppercase tracking-wider">
-                        Sworn under the Oaths Act
-                      </span>
+            <DirectoryColumn
+              title="Sample affidavits"
+              subtitle={`${AFFIDAVIT_CATEGORIES.length} affidavit categories`}
+            >
+              {AFFIDAVIT_CATEGORIES.map((category) => {
+                const count = affidavitsInCategory(category.id).length;
+
+                return (
+                  <Link
+                    key={category.id}
+                    to={`/affidavits/${category.id}`}
+                    className="bg-yellow-100 border border-neutral-200 hover:border-yellow-500/50 rounded-xl p-4 transition shadow-sm group flex flex-col justify-between"
+                  >
+                    <div>
+                      <div className="flex items-center gap-2 mb-2">
+                        <ShieldCheck className="w-4 h-4 text-yellow-700" />
+                        <span className="text-[10px] font-bold text-yellow-700 uppercase tracking-wider">
+                          Sworn under the Oaths Act
+                        </span>
+                      </div>
+                      <h2 className="text-sm font-black font-serif text-neutral-900 group-hover:text-yellow-700 transition">
+                        {category.label}
+                      </h2>
+                      <p className="text-[11px] text-neutral-600 mt-1.5 leading-relaxed">
+                        {category.description}
+                      </p>
                     </div>
-                    <h2 className="text-base font-black font-serif text-neutral-900 group-hover:text-yellow-700 transition">
-                      {category.label}
-                    </h2>
-                    <p className="text-[11px] text-neutral-600 mt-1.5 leading-relaxed">
-                      {category.description}
-                    </p>
-                  </div>
 
-                  <div className="mt-4 pt-3 border-t border-neutral-200 flex items-center justify-between">
-                    <span className="text-[11px] text-neutral-500">
-                      {count} {count === 1 ? 'affidavit' : 'affidavits'}
-                    </span>
-                    <ChevronRight className="w-4 h-4 text-yellow-700" />
-                  </div>
-                </Link>
-              );
-            })}
+                    <div className="mt-4 pt-3 border-t border-neutral-200 flex items-center justify-between">
+                      <span className="text-[11px] text-neutral-500">
+                        {count} {count === 1 ? 'affidavit' : 'affidavits'}
+                      </span>
+                      <ChevronRight className="w-4 h-4 text-yellow-700" />
+                    </div>
+                  </Link>
+                );
+              })}
+            </DirectoryColumn>
           </div>
         )}
       </div>
     </div>
   );
 };
+
+const DirectoryColumn: React.FC<{ title: string; subtitle: string; children: React.ReactNode }> = ({
+  title,
+  subtitle,
+  children,
+}) => (
+  <section className="rounded-2xl border border-neutral-200 bg-white p-4 shadow-sm sm:p-5">
+    <div className="mb-4 flex items-start justify-between gap-3 border-b border-neutral-200 pb-3">
+      <div>
+        <h2 className="text-base font-black font-serif text-neutral-900">{title}</h2>
+        <p className="mt-1 text-[11px] font-semibold text-neutral-500">{subtitle}</p>
+      </div>
+    </div>
+    <div className="space-y-3">{children}</div>
+  </section>
+);
+
+const EmptyDirectoryResult: React.FC<{ label: string; query: string }> = ({ label, query }) => (
+  <p className="rounded-xl border border-neutral-200 bg-neutral-50 p-4 text-xs leading-relaxed text-neutral-600">
+    No sample {label} matches "{query}".
+  </p>
+);
+
+const AgreementCard: React.FC<{
+  agreement: LegalDraft;
+  onCustomizeDraft: (draft: LegalDraft) => void;
+}> = ({ agreement, onCustomizeDraft }) => (
+  <article className="bg-yellow-100 border border-neutral-200 hover:border-yellow-500/50 rounded-xl p-4 transition shadow-sm">
+    <div className="flex items-start justify-between gap-3">
+      <div>
+        <div className="flex items-center gap-2">
+          <FileText className="w-4 h-4 text-yellow-700" />
+          <span className="text-[10px] font-bold text-yellow-700 uppercase tracking-wider">
+            Agreement sample
+          </span>
+        </div>
+        <h3 className="mt-2 text-sm font-black font-serif text-neutral-900">{agreement.title}</h3>
+        <p className="mt-1.5 text-[11px] leading-relaxed text-neutral-600">
+          {agreement.description}
+        </p>
+      </div>
+      <ChevronRight className="w-4 h-4 text-yellow-700 shrink-0 mt-1" />
+    </div>
+
+    <div className="mt-4 flex flex-wrap items-center gap-2 border-t border-neutral-200 pt-3">
+      <span className="rounded bg-white px-2 py-0.5 text-[10px] text-neutral-600 border border-neutral-200">
+        {agreement.areaOfLaw}
+      </span>
+      <button
+        type="button"
+        onClick={() => onCustomizeDraft(agreement)}
+        className="ml-auto inline-flex items-center gap-1.5 rounded-lg bg-yellow-400 px-3 py-1.5 text-[11px] font-black text-neutral-950 transition hover:bg-yellow-300 active:translate-y-px"
+      >
+        <Sparkles className="w-3.5 h-3.5" />
+        Customise
+      </button>
+    </div>
+  </article>
+);
 
 const AffidavitCard: React.FC<{ affidavit: AffidavitTemplate }> = ({ affidavit }) => (
   <Link
