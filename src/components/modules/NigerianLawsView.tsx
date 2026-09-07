@@ -50,7 +50,7 @@ export const NigerianLawsView: React.FC<NigerianLawsViewProps> = ({ libraryId, s
 const LibraryDirectory: React.FC = () => (
   <div className="bg-white text-neutral-900 min-h-screen py-8">
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <div className="bg-yellow-100 border border-yellow-400/70 rounded-2xl p-6 sm:p-8 mb-8 shadow-xl">
+      <div className="lawpex-module-hero bg-yellow-100 border border-yellow-400/70 rounded-2xl p-6 sm:p-8 mb-8 shadow-xl">
         <span className="bg-yellow-400 text-neutral-950 text-[10px] font-black px-2.5 py-0.5 rounded uppercase">
           Module 3
         </span>

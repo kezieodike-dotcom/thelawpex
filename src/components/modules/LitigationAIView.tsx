@@ -57,7 +57,7 @@ const LessonDirectory: React.FC = () => {
   return (
     <div className="bg-white text-neutral-900 min-h-screen py-8">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="bg-yellow-100 border border-yellow-400/70 rounded-2xl p-6 sm:p-8 mb-8 shadow-xl">
+        <div className="lawpex-module-hero bg-yellow-100 border border-yellow-400/70 rounded-2xl p-6 sm:p-8 mb-8 shadow-xl">
           {/* Module cover. Pulled flush to the card edges and faded into the card colour,
               so it reads as part of the panel rather than a picture dropped on top of it. */}
           <div className="relative -mx-6 -mt-6 sm:-mx-8 sm:-mt-8 mb-6 h-36 sm:h-48 overflow-hidden rounded-t-2xl">

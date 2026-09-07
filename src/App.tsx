@@ -68,6 +68,32 @@ const usePageMeta = (pathname: string) => {
       document.head.appendChild(tag);
     }
     tag.content = description;
+
+    const absoluteUrl = (path: string) => new URL(path, window.location.origin).toString();
+    const setMeta = (selector: string, attribute: 'name' | 'property', key: string, content: string) => {
+      let meta = document.querySelector<HTMLMetaElement>(selector);
+      if (!meta) {
+        meta = document.createElement('meta');
+        meta.setAttribute(attribute, key);
+        document.head.appendChild(meta);
+      }
+      meta.content = content;
+    };
+
+    const pageTitle = isConstitution || isDocument
+      ? 'Legal Document Reader — LAWPEX'
+      : route?.title ?? 'LAWPEX — Nigeria’s AI-Powered Litigation & Legal Research Platform';
+    const pageUrl = absoluteUrl(pathname);
+    const heroImage = absoluteUrl('/hero-justice.jpg');
+    setMeta('meta[property="og:title"]', 'property', 'og:title', pageTitle);
+    setMeta('meta[property="og:description"]', 'property', 'og:description', description);
+    setMeta('meta[property="og:url"]', 'property', 'og:url', pageUrl);
+    setMeta('meta[property="og:image"]', 'property', 'og:image', heroImage);
+    setMeta('meta[property="og:image:alt"]', 'property', 'og:image:alt', 'LAWPEX Nigerian litigation workspace hero');
+    setMeta('meta[name="twitter:title"]', 'name', 'twitter:title', pageTitle);
+    setMeta('meta[name="twitter:description"]', 'name', 'twitter:description', description);
+    setMeta('meta[name="twitter:image"]', 'name', 'twitter:image', heroImage);
+    setMeta('meta[name="twitter:card"]', 'name', 'twitter:card', 'summary_large_image');
   }, [pathname]);
 };
 

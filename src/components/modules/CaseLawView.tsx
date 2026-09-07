@@ -105,7 +105,7 @@ const UnifiedCaseSearch: React.FC = () => {
   return (
     <div className={`${CASE_PAGE_BG} min-h-screen py-7 text-neutral-900 sm:py-12`}>
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <header className="lawpex-case-motion relative z-20 overflow-visible border-b border-amber-200 pb-8 sm:pb-10">
+        <header className="lawpex-module-hero lawpex-case-motion relative z-20 overflow-visible rounded-2xl border-b border-amber-200 p-6 pb-8 sm:p-8 sm:pb-10">
           <div className="max-w-4xl">
             <span className="inline-flex items-center bg-[#facc15] px-3 py-1.5 text-xs font-black uppercase text-neutral-950">
               Unified Nigerian law reports
