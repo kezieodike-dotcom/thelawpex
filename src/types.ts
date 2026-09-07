@@ -175,6 +175,7 @@ export interface LegalDraft {
   variables: string[];
   downloadCount: number;
   isCustomizableWithAI: boolean;
+  documentPath?: string;
 }
 
 /** The families every affidavit in the library falls into. */

@@ -10,6 +10,7 @@ import {
   ComplianceGuide,
   LearningCourse,
 } from '../types';
+import { IMPORTED_LANDMARK_CASES } from './importedLandmarkCases';
 
 export const AREAS_OF_LAW: AreaOfLaw[] = [
   {
@@ -500,7 +501,7 @@ export const LANDMARK_CASES: CaseLaw[] = [
       'The five methods of proving title to land.',
       'Any single method, if proved, suffices.'
     ],
-    isLandmark: true,
+    isLandmark: false,
   },
 
 {
@@ -580,7 +581,7 @@ Per BOLOUKUROMO MOSES UGO JCA (Pp. 9-10, paras. F-A)`
       'Proof of title to land may be established through traditional evidence, documents of title, acts of ownership, long possession, or connected/adjacent possession.',
       'Findings of fact by a trial court are rarely disturbed on appeal unless they are perverse, unsupported, or occasion a miscarriage of justice.'
     ],
-    isLandmark: true,
+    isLandmark: false,
   },
 
 {
@@ -674,7 +675,7 @@ Per BOLOUKUROMO MOSES UGO JCA (Pp. 9-10, paras. F-A)`
       'Minimum evidence can satisfy proof in a civil case where there is no credible evidence on the other side of the scale.',
       'Mere production of a title document is insufficient where the root of title is neither admitted nor established.'
     ],
-    isLandmark: true,
+    isLandmark: false,
   },
 
 {
@@ -728,7 +729,7 @@ Per BOLOUKUROMO MOSES UGO JCA (Pp. 9-10, paras. F-A)`
       'A voluntary and credible confessional statement can support conviction.',
       'Cause of death may be proved by the totality of credible evidence.'
     ],
-    isLandmark: true,
+    isLandmark: false,
   },
 
 {
@@ -782,7 +783,7 @@ Per BOLOUKUROMO MOSES UGO JCA (Pp. 9-10, paras. F-A)`
       'A bare or displaced alibi will not defeat credible prosecution evidence.',
       'Concurrent findings are rarely disturbed without perversity or miscarriage of justice.'
     ],
-    isLandmark: true,
+    isLandmark: false,
   },
 
 {
@@ -835,7 +836,7 @@ Per BOLOUKUROMO MOSES UGO JCA (Pp. 9-10, paras. F-A)`
       'A valid confessional statement can ground a conviction.',
       'Criminal appeals turn on whether the conviction is supported by admissible and credible evidence.'
     ],
-    isLandmark: true,
+    isLandmark: false,
   },
 
 {
@@ -888,8 +889,9 @@ Per BOLOUKUROMO MOSES UGO JCA (Pp. 9-10, paras. F-A)`
       'Credible eyewitness evidence can displace an alibi.',
       'Cause of death may be proved by direct and circumstantial evidence.'
     ],
-    isLandmark: true,
-  }
+    isLandmark: false,
+  },
+  ...IMPORTED_LANDMARK_CASES
 ];
 
 export const COURT_RULES_DATA: CourtRule[] = [

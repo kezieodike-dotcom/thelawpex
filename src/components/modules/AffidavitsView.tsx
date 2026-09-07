@@ -33,6 +33,19 @@ interface AffidavitsViewProps {
 
 const SAMPLE_AGREEMENTS: LegalDraft[] = [
   {
+    id: 'agreement-mou-turve-anambra-tech',
+    title: 'MOU Turve Anambra Tech',
+    category: 'Commercial',
+    areaOfLaw: 'Memorandum of Understanding',
+    description: 'Original uploaded MOU document.',
+    courtHeadingRequired: false,
+    sampleText: '',
+    variables: [],
+    downloadCount: 0,
+    isCustomizableWithAI: false,
+    documentPath: '/documents/agreements/mou-turve-anambra-tech.docx',
+  },
+  {
     id: 'agreement-tenancy',
     title: 'Residential Tenancy Agreement',
     category: 'Property',
@@ -350,14 +363,25 @@ const AgreementCard: React.FC<{
       <span className="rounded bg-white px-2 py-0.5 text-[10px] text-neutral-600 border border-neutral-200">
         {agreement.areaOfLaw}
       </span>
-      <button
-        type="button"
-        onClick={() => onCustomizeDraft(agreement)}
-        className="ml-auto inline-flex items-center gap-1.5 rounded-lg bg-yellow-400 px-3 py-1.5 text-[11px] font-black text-neutral-950 transition hover:bg-yellow-300 active:translate-y-px"
-      >
-        <Sparkles className="w-3.5 h-3.5" />
-        Customise
-      </button>
+      {agreement.documentPath ? (
+        <a
+          href={agreement.documentPath}
+          download
+          className="ml-auto inline-flex items-center gap-1.5 rounded-lg bg-yellow-400 px-3 py-1.5 text-[11px] font-black text-neutral-950 transition hover:bg-yellow-300 active:translate-y-px"
+        >
+          <FileText className="w-3.5 h-3.5" />
+          Download original DOCX
+        </a>
+      ) : (
+        <button
+          type="button"
+          onClick={() => onCustomizeDraft(agreement)}
+          className="ml-auto inline-flex items-center gap-1.5 rounded-lg bg-yellow-400 px-3 py-1.5 text-[11px] font-black text-neutral-950 transition hover:bg-yellow-300 active:translate-y-px"
+        >
+          <Sparkles className="w-3.5 h-3.5" />
+          Customise
+        </button>
+      )}
     </div>
   </article>
 );

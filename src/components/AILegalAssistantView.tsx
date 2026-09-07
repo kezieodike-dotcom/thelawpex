@@ -130,9 +130,7 @@ export const AILegalAssistantView: React.FC = () => {
   };
 
   const selectStage = (nextStage: WizardStage) => {
-    const canVisit = nextStage <= stage || (nextStage === 2 && form.facts.trim()) ||
-      (nextStage === 3 && form.facts.trim()) || (nextStage === 4 && generatedDraft);
-    if (canVisit) setStage(nextStage);
+    setStage(nextStage);
   };
 
   const generateDraft = async () => {
@@ -373,8 +371,8 @@ export const AILegalAssistantView: React.FC = () => {
                 </div>
               )}
 
-              {stage === 4 && generatedDraft && (
-                <div>
+              {stage === 4 && (
+                generatedDraft ? <div>
                   <div className="flex flex-col gap-5 border-b border-amber-200 pb-6 sm:flex-row sm:items-start sm:justify-between">
                     <div>
                       <p className="text-xs font-black uppercase text-amber-800">Generated working draft</p>
@@ -395,6 +393,15 @@ export const AILegalAssistantView: React.FC = () => {
                     <ShieldCheck className="mt-0.5 h-5 w-5 shrink-0 text-amber-800" />
                     <p>{generatedDraft.notice}</p>
                   </div>
+                </div> : <div className="max-w-2xl py-8">
+                  <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-amber-100 text-amber-800">
+                    <FileCheck2 className="h-6 w-6" />
+                  </div>
+                  <h3 className="mt-5 text-xl font-black">Your draft will appear here</h3>
+                  <p className="mt-2 text-sm leading-6 text-stone-600">Complete the scenario, optional supporting documents and drafting instruction before generating the court document.</p>
+                  <button type="button" onClick={() => setStage(3)} className="lawpex-focus-ring mt-6 inline-flex h-11 items-center gap-2 rounded-lg bg-stone-900 px-5 text-sm font-black text-white hover:bg-stone-800 active:translate-y-px">
+                    <WandSparkles className="h-4 w-4" /> Continue drafting
+                  </button>
                 </div>
               )}
             </div>

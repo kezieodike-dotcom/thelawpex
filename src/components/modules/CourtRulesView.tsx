@@ -13,7 +13,7 @@ import {
 } from '../../data/courtRules';
 import { DocumentActions } from '../DocumentActions';
 import { OfficialPdfReader } from '../OfficialPdfReader';
-import { OfficialTextReader } from '../OfficialTextReader';
+import { LegalDocumentReader } from '../ConstitutionReader';
 import { buildWordSection } from '../../lib/copyToWord';
 
 interface CourtRulesViewProps {
@@ -68,10 +68,11 @@ const CategoryDirectory: React.FC = () => (
             <Link
               key={category.id}
               to={`/court-rules/${category.id}`}
+              data-lawpex-reveal
               className="bg-yellow-100 border border-neutral-200 hover:border-yellow-500/50 rounded-2xl p-6 transition shadow-lg group flex flex-col justify-between"
             >
               <div className="flex gap-4">
-                <div className="w-10 h-10 rounded-xl bg-yellow-400/20 border border-yellow-400/70 flex items-center justify-center shrink-0">
+                <div className="lawpex-no-reveal w-10 h-10 rounded-xl bg-yellow-400/20 border border-yellow-400/70 flex items-center justify-center shrink-0">
                   <Icon className="w-5 h-5 text-yellow-700" />
                 </div>
                 <div>
@@ -211,15 +212,23 @@ const RuleBookPage: React.FC<{ book: CourtRuleBook; categoryLabel: string }> = (
             {book.courtName}
           </h1>
           <p className="text-[11px] text-yellow-700 font-mono mt-1">{editionLabel(book)}</p>
-          <p className="text-xs sm:text-sm text-neutral-700 max-w-3xl mt-2 leading-relaxed">
-            {book.summary}
-          </p>
+          {!book.documentText && (
+            <p className="text-xs sm:text-sm text-neutral-700 max-w-3xl mt-2 leading-relaxed">
+              {book.summary}
+            </p>
+          )}
         </div>
 
         {book.documentText ? (
           <div className="mb-8">
-            <OfficialTextReader
+            <Link to={`/documents/${book.id}`} className="mb-3 inline-flex items-center gap-1 text-xs font-black uppercase tracking-wide text-yellow-800 hover:text-yellow-950">
+              Open dedicated reader <ChevronRight className="h-3.5 w-3.5" />
+            </Link>
+            <LegalDocumentReader
               title={editionLabel(book)}
+              documentLabel={`${book.courtName}${book.year ? ` · ${book.year}` : ''} · Official source text`}
+              documentId={`rules-${book.id}`}
+              backPath={`/court-rules/${book.category}`}
               documentText={book.documentText}
               documentPath={book.documentPath}
               pageCount={book.documentPages}

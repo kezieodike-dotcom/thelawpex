@@ -22,6 +22,7 @@ import {
 import { DocumentActions } from '../DocumentActions';
 import { OfficialPdfReader } from '../OfficialPdfReader';
 import { OfficialTextReader } from '../OfficialTextReader';
+import { ConstitutionReader, LegalDocumentReader } from '../ConstitutionReader';
 import { buildWordSection } from '../../lib/copyToWord';
 
 interface NigerianLawsViewProps {
@@ -65,9 +66,10 @@ const LibraryDirectory: React.FC = () => (
       <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
         <Link
           to="/nigerian-laws/federation"
+          data-lawpex-reveal
           className="bg-yellow-100 border border-neutral-200 hover:border-yellow-500/50 rounded-2xl p-6 transition shadow-lg group"
         >
-          <div className="w-10 h-10 rounded-xl bg-yellow-400/20 border border-yellow-400/70 flex items-center justify-center">
+          <div className="lawpex-no-reveal w-10 h-10 rounded-xl bg-yellow-400/20 border border-yellow-400/70 flex items-center justify-center">
             <BookOpen className="w-5 h-5 text-yellow-700" />
           </div>
           <h2 className="text-base font-black font-serif text-neutral-900 group-hover:text-yellow-700 transition mt-3">
@@ -85,9 +87,10 @@ const LibraryDirectory: React.FC = () => (
 
         <Link
           to="/nigerian-laws/states"
+          data-lawpex-reveal
           className="bg-yellow-100 border border-neutral-200 hover:border-yellow-500/50 rounded-2xl p-6 transition shadow-lg group"
         >
-          <div className="w-10 h-10 rounded-xl bg-yellow-400/20 border border-yellow-400/70 flex items-center justify-center">
+          <div className="lawpex-no-reveal w-10 h-10 rounded-xl bg-yellow-400/20 border border-yellow-400/70 flex items-center justify-center">
             <Landmark className="w-5 h-5 text-yellow-700" />
           </div>
           <h2 className="text-base font-black font-serif text-neutral-900 group-hover:text-yellow-700 transition mt-3">
@@ -234,7 +237,7 @@ const FederalLawCard: React.FC<{
           </div>
           <h2 className="text-base font-black font-serif text-neutral-900 mt-1.5">{law.title}</h2>
           <p className="text-[11px] text-neutral-500 font-mono mt-0.5">{law.citation}</p>
-          <p className="text-[11px] text-neutral-600 mt-1.5 leading-relaxed">{law.description}</p>
+          {!law.documentText && <p className="text-[11px] text-neutral-600 mt-1.5 leading-relaxed">{law.description}</p>}
         </div>
 
         {isOpen ? (
@@ -247,13 +250,20 @@ const FederalLawCard: React.FC<{
       {isOpen && (
         <div className="border-t border-neutral-200 p-5 space-y-3">
           {law.documentText ? (
-            <OfficialTextReader
-              title={law.title}
-              documentText={law.documentText}
-              documentPath={law.documentPath}
-              pageCount={law.documentPages}
-              documentLabel={law.citation}
-            />
+            <>
+              <Link to={`/documents/${law.id}`} className="inline-flex items-center gap-1 text-xs font-black uppercase tracking-wide text-yellow-800 hover:text-yellow-950">
+                Open dedicated reader <ChevronRight className="h-3.5 w-3.5" />
+              </Link>
+              <LegalDocumentReader
+                documentText={law.documentText}
+                title={law.title}
+                documentLabel={`${law.citation} · ${law.year} · Official source text`}
+                documentId={law.id}
+                backPath="/nigerian-laws/federation"
+                documentPath={law.documentPath}
+                pageCount={law.documentPages}
+              />
+            </>
           ) : law.documentPath ? (
             <OfficialPdfReader
               title={law.title}

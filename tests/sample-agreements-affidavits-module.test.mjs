@@ -28,3 +28,12 @@ test('opened module separates sample agreements from sample affidavits', async (
   assert.match(view, /AgreementCard/);
   assert.match(view, /AffidavitCard/);
 });
+
+test('uploaded MOU is listed as an original agreement document', async () => {
+  const view = await readFile(projectFile('src/components/modules/AffidavitsView.tsx'), 'utf8');
+
+  assert.match(view, /agreement-mou-turve-anambra-tech/);
+  assert.match(view, /MOU Turve Anambra Tech/);
+  assert.match(view, /\/documents\/agreements\/mou-turve-anambra-tech\.docx/);
+  assert.match(view, /Download original DOCX/);
+});

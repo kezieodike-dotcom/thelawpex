@@ -107,6 +107,14 @@ test('draft wizard exposes the approved four-stage drafting workflow', async () 
   assert.doesNotMatch(source, /fallbackMsg/);
 });
 
+test('wizard step controls allow direct navigation through all four stages', async () => {
+  const source = await readFile(projectFile('src/components/AILegalAssistantView.tsx'), 'utf8');
+
+  assert.match(source, /const selectStage = \(nextStage: WizardStage\) => \{\s*setStage\(nextStage\);/);
+  assert.match(source, /Your draft will appear here/);
+  assert.match(source, /onClick=\{\(\) => setStage\(3\)\}/);
+});
+
 test('server handles multipart legal drafting without persisting uploads', async () => {
   const server = await readFile(projectFile('server.ts'), 'utf8');
 

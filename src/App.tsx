@@ -35,18 +35,30 @@ import { ComplianceHubView } from './components/modules/ComplianceHubView';
 import { LearningCentreView } from './components/modules/LearningCentreView';
 import { PricingView } from './components/modules/PricingView';
 import { AdminPanelView } from './components/modules/AdminPanelView';
+import { ConstitutionReader } from './components/ConstitutionReader';
 
 import { HOME_ROUTE, pathForTab, routeForPath, tabForPath } from './routes';
 import { UserRole, SubscriptionTier, LegalDraft } from './types';
 import { LANDMARK_CASES } from './data/legalData';
+import { constitution1999Text } from './data/constitution1999Text';
+import { FEDERAL_LAWS } from './data/lawsLibrary';
+import { ruleBookById } from './data/courtRules';
 
 /** Keeps the document title and meta description in sync with the current page. */
 const usePageMeta = (pathname: string) => {
   useEffect(() => {
     const route = routeForPath(pathname);
-    document.title = route ? route.title : 'Page Not Found — LAWPEX';
+    const isConstitution = pathname === '/constitution' || pathname.startsWith('/constitution/');
+    const isDocument = pathname.startsWith('/documents/');
+    document.title = isConstitution || isDocument
+      ? 'Legal Document Reader — LAWPEX'
+      : route ? route.title : 'Page Not Found — LAWPEX';
 
-    const description = route
+    const description = isConstitution
+      ? 'Read the Constitution of the Federal Republic of Nigeria 1999 as amended from the uploaded official source document.'
+      : isDocument
+      ? 'Read an uploaded Nigerian legal source document in a searchable, accessible digital reader.'
+      : route
       ? route.description
       : 'The requested LAWPEX page could not be found.';
     let tag = document.querySelector<HTMLMetaElement>('meta[name="description"]');
@@ -81,18 +93,28 @@ const useScrollReveal = (pathname: string) => {
       });
     };
 
-    const homeCardSelectors = [
-      '[data-lawpex-reveal]',
-      '.lawpex-card',
-      '.lawpex-panel',
-      'main a[class*="rounded"][class*="border"]',
-      'main div[class*="rounded"][class*="border"]',
-      'footer > div > div',
-      'footer a',
-      'footer input',
-      'footer button',
-      'footer [class*="rounded"][class*="border"]',
-    ];
+    // Motion is reserved for module entry pages. Detail and reading views
+    // should open directly into their content without reveals.
+    const animatedLandingPaths = new Set([
+      '/',
+      '/areas-of-law',
+      '/case-law',
+      '/court-rules',
+      '/nigerian-laws',
+      '/appeals',
+      '/drafts',
+      '/affidavits',
+      '/courtroom-practicals',
+      '/learn-litigation-ai',
+      '/articles',
+      '/compliance',
+      '/learning',
+    ]);
+    if (!animatedLandingPaths.has(pathname)) {
+      clearRevealState();
+      return;
+    }
+
     const pageCardSelectors = [
       '[data-lawpex-reveal]',
       '.lawpex-card',
@@ -100,10 +122,15 @@ const useScrollReveal = (pathname: string) => {
       'main a[class*="rounded"][class*="border"]',
       'main button[class*="rounded"][class*="border"]',
       'main article[class*="rounded"][class*="border"]',
+      'main div[class*="rounded"][class*="border"]',
       'main [class*="grid"] > div[class*="rounded"][class*="border"]',
+      'footer > div > div',
+      'footer a',
+      'footer input',
+      'footer button',
+      'footer [class*="rounded"][class*="border"]',
     ];
-    const selectors = pathname === HOME_ROUTE.path ? homeCardSelectors : pageCardSelectors;
-    const selectorList = selectors.join(',');
+    const selectorList = pageCardSelectors.join(',');
 
     const revealElement = (element: Element) => {
       window.requestAnimationFrame(() => {
@@ -340,6 +367,10 @@ export function AppShell() {
           <Route path="/nigerian-laws" element={<NigerianLawsPage />} />
           <Route path="/nigerian-laws/:libraryId" element={<NigerianLawsPage />} />
           <Route path="/nigerian-laws/:libraryId/:stateSlugParam" element={<NigerianLawsPage />} />
+          <Route path="/constitution" element={<ConstitutionPage />} />
+          <Route path="/constitution/:sectionId" element={<ConstitutionPage />} />
+          <Route path="/documents/:documentId" element={<LegalDocumentPage />} />
+          <Route path="/documents/:documentId/:sectionId" element={<LegalDocumentPage />} />
           <Route path="/appeals" element={<AppealsCentreView setActiveTab={setActiveTab} />} />
 
           <Route
@@ -463,6 +494,58 @@ function LitigationAIPage() {
 function NigerianLawsPage() {
   const { libraryId, stateSlugParam } = useParams<{ libraryId: string; stateSlugParam: string }>();
   return <NigerianLawsView libraryId={libraryId} stateSlugParam={stateSlugParam} />;
+}
+
+/** Full-text Constitution reader sourced from the uploaded official document. */
+function ConstitutionPage() {
+  const { sectionId } = useParams<{ sectionId: string }>();
+  return (
+    <ConstitutionReader
+      documentText={constitution1999Text}
+      documentPath="/documents/laws/constitution-1999-as-amended.pdf"
+      pageCount={280}
+      initialSectionId={sectionId ? `constitution-section-${sectionId.toLowerCase()}` : undefined}
+    />
+  );
+}
+
+/** Dedicated URL for every uploaded Act or court-rules source document. */
+function LegalDocumentPage() {
+  const { documentId, sectionId } = useParams<{ documentId: string; sectionId: string }>();
+  const law = FEDERAL_LAWS.find((entry) => entry.id === documentId);
+  const book = documentId ? ruleBookById(documentId) : undefined;
+
+  if (law?.documentText) {
+    return (
+      <ConstitutionReader
+        documentText={law.documentText}
+        title={law.title}
+        documentLabel={`${law.citation} · ${law.year} · Official source text`}
+        documentId={law.id}
+        backPath="/nigerian-laws/federation"
+        documentPath={law.documentPath}
+        pageCount={law.documentPages}
+        initialSectionId={sectionId ? `${law.id}-section-${sectionId.toLowerCase()}` : undefined}
+      />
+    );
+  }
+
+  if (book?.documentText) {
+    return (
+      <ConstitutionReader
+        documentText={book.documentText}
+        title={book.edition}
+        documentLabel={`${book.courtName}${book.year ? ` · ${book.year}` : ''} · Official source text`}
+        documentId={`rules-${book.id}`}
+        backPath={`/court-rules/${book.category}`}
+        documentPath={book.documentPath}
+        pageCount={book.documentPages}
+        initialSectionId={sectionId ? `rules-${book.id}-section-${sectionId.toLowerCase()}` : undefined}
+      />
+    );
+  }
+
+  return <Navigate to="/nigerian-laws/federation" replace />;
 }
 
 export default function App() {
