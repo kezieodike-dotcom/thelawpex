@@ -1,7 +1,4 @@
 import { NIGERIAN_STATES, highCourtName, magistrateCourtName, stateSlug } from './nigeria';
-import { courtOfAppealRules2021Text } from './courtOfAppealRules2021Text';
-import { supremeCourtRules2024Text } from './supremeCourtRules2024Text';
-
 /**
  * The Rules of Court library.
  *
@@ -54,6 +51,8 @@ export interface CourtRuleBook {
   documentPages?: number;
   /** OCR or extracted official text rendered as selectable in-page content. */
   documentText?: string;
+  /** Loads the selectable source text only when the reader is opened. */
+  documentTextLoader?: () => Promise<string>;
   summary: string;
   orders: CourtOrder[];
 }
@@ -1346,7 +1345,7 @@ export const COURT_RULE_BOOKS: CourtRuleBook[] = [
     year: 2021,
     documentPath: '/documents/court-rules/court-of-appeal-rules-2021.pdf',
     documentPages: 97,
-    documentText: courtOfAppealRules2021Text,
+    documentTextLoader: () => import('./courtOfAppealRules2021Text').then((module) => module.courtOfAppealRules2021Text),
     summary:
       'Appellate practice: notice and grounds of appeal, time to appeal, compilation and transmission of records, briefs of argument, motions and hearing.',
     orders: COURT_OF_APPEAL_ORDERS,
@@ -1359,7 +1358,7 @@ export const COURT_RULE_BOOKS: CourtRuleBook[] = [
     year: 2024,
     documentPath: '/documents/court-rules/supreme-court-rules-2024.pdf',
     documentPages: 104,
-    documentText: supremeCourtRules2024Text,
+    documentTextLoader: () => import('./supremeCourtRules2024Text').then((module) => module.supremeCourtRules2024Text),
     summary:
       'The gazetted 2024 Rules governing practice in the apex court, including appeals, records, briefs, applications and hearings.',
     orders: SUPREME_COURT_ORDERS,

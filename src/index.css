@@ -33,12 +33,14 @@
 html {
   scroll-behavior: smooth;
   font-size: 16px;
+  overflow-x: clip;
 }
 
 body {
   margin: 0;
   min-width: 320px;
   min-height: 100dvh;
+  overflow-x: clip;
   font-size: 1rem;
   line-height: 1.6;
   background:
@@ -635,6 +637,13 @@ select {
 .lawpex-report-page {
   break-after: page;
   page-break-after: always;
+}
+
+@media screen {
+  .lawpex-report-page {
+    content-visibility: auto;
+    contain-intrinsic-size: auto 48rem;
+  }
 }
 
 .lawpex-report-page:last-child {

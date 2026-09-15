@@ -479,7 +479,7 @@ export const LANDMARK_CASES: CaseLaw[] = [
 {
     id: 'case-001',
     title: 'Idundun & Ors v. Okumagba & Ors',
-    citation: '(1976) LDLR (SC) pt 1012',
+    citation: '(1976) LDLR-1012 (SC)',
     sourceUrl: 'https://nigerialii.org/akn/ng/judgment/ngsc/1976/2/eng%401976-10-07',
     hasFullJudgment: true,
     suitNumber: 'SC.309/1974',
@@ -507,7 +507,7 @@ export const LANDMARK_CASES: CaseLaw[] = [
 {
     id: 'case-002',
     title: 'Mrs Theresa Udo v. Dr Peter Idundun & Anor',
-    citation: '(2022) LDLR (CA) pt 1043',
+    citation: '(2022) LDLR-1043 (CA)',
     hasFullJudgment: true,
     suitNumber: 'CA/AS/434/2017',
     court: 'Court of Appeal',
@@ -587,7 +587,7 @@ Per BOLOUKUROMO MOSES UGO JCA (Pp. 9-10, paras. F-A)`
 {
     id: 'case-003',
     title: 'Adewuyi v. Odukwe',
-    citation: '(2005) LDLR (SC) pt 590',
+    citation: '(2005) LDLR-590 (SC)',
     hasFullJudgment: true,
     suitNumber: 'SC.17/2001',
     court: 'Supreme Court of Nigeria',
@@ -681,7 +681,7 @@ Per BOLOUKUROMO MOSES UGO JCA (Pp. 9-10, paras. F-A)`
 {
     id: 'case-004',
     title: 'Adekunle v. State',
-    citation: '(2006) LDLR (SC) pt 67',
+    citation: '(2006) LDLR-67 (SC)',
     hasFullJudgment: true,
     suitNumber: 'SC.52/2002',
     court: 'Supreme Court of Nigeria',
@@ -735,7 +735,7 @@ Per BOLOUKUROMO MOSES UGO JCA (Pp. 9-10, paras. F-A)`
 {
     id: 'case-005',
     title: 'Adava & Anor v. State',
-    citation: '(2006) LDLR (SC) pt 257',
+    citation: '(2006) LDLR-257 (SC)',
     hasFullJudgment: true,
     suitNumber: 'SC.263/2002',
     court: 'Supreme Court of Nigeria',
@@ -789,7 +789,7 @@ Per BOLOUKUROMO MOSES UGO JCA (Pp. 9-10, paras. F-A)`
 {
     id: 'case-006',
     title: 'Adeoye Adekunle v. The State',
-    citation: '(2018) LDLR (CA) pt 1200',
+    citation: '(2018) LDLR-1200 (CA)',
     hasFullJudgment: true,
     suitNumber: 'CA/AK/127CA/2016',
     court: 'Court of Appeal',
@@ -842,7 +842,7 @@ Per BOLOUKUROMO MOSES UGO JCA (Pp. 9-10, paras. F-A)`
 {
     id: 'case-007',
     title: 'Tunde Adava & Anor v. The State',
-    citation: '(2002) LDLR (CA) pt 357',
+    citation: '(2002) LDLR-357 (CA)',
     hasFullJudgment: true,
     suitNumber: 'CA/A/96C/99',
     court: 'Court of Appeal',

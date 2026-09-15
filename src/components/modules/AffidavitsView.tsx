@@ -10,6 +10,7 @@ import {
   BookOpen,
   UserCheck,
   FileText,
+  Download,
 } from 'lucide-react';
 import {
   AFFIDAVITS,
@@ -22,6 +23,7 @@ import {
 import { AffidavitTemplate, LegalDraft } from '../../types';
 import { DocumentActions } from '../DocumentActions';
 import { buildWordDraft, buildWordList } from '../../lib/copyToWord';
+import { DocxPreview } from '../DocxPreview';
 
 interface AffidavitsViewProps {
   onCustomizeDraft: (draft: LegalDraft) => void;
@@ -29,6 +31,8 @@ interface AffidavitsViewProps {
   categoryId?: string;
   /** Affidavit taken from the URL (`/affidavits/deposition/:affidavitId`). */
   affidavitId?: string;
+  /** Agreement taken from the URL (`/affidavits/agreement/:agreementId`). */
+  agreementId?: string;
 }
 
 const SAMPLE_AGREEMENTS: LegalDraft[] = [
@@ -159,9 +163,13 @@ export const AffidavitsView: React.FC<AffidavitsViewProps> = ({
   onCustomizeDraft,
   categoryId,
   affidavitId,
+  agreementId,
 }) => {
   const affidavit = affidavitId ? affidavitById(affidavitId) : undefined;
   if (affidavit) return <AffidavitDetail affidavit={affidavit} onCustomizeDraft={onCustomizeDraft} />;
+
+  const agreement = agreementId ? SAMPLE_AGREEMENTS.find((item) => item.id === agreementId) : undefined;
+  if (agreement) return <AgreementDetail agreement={agreement} onCustomizeDraft={onCustomizeDraft} />;
 
   const category = categoryId ? affidavitCategoryById(categoryId) : undefined;
   if (category) return <CategoryPage categoryId={category.id} />;
@@ -237,7 +245,6 @@ const AffidavitDirectory: React.FC<{ onCustomizeDraft: (draft: LegalDraft) => vo
                   <AgreementCard
                     key={agreement.id}
                     agreement={agreement}
-                    onCustomizeDraft={onCustomizeDraft}
                   />
                 ))
               )}
@@ -266,7 +273,6 @@ const AffidavitDirectory: React.FC<{ onCustomizeDraft: (draft: LegalDraft) => vo
                 <AgreementCard
                   key={agreement.id}
                   agreement={agreement}
-                  onCustomizeDraft={onCustomizeDraft}
                 />
               ))}
             </DirectoryColumn>
@@ -340,8 +346,7 @@ const EmptyDirectoryResult: React.FC<{ label: string; query: string }> = ({ labe
 
 const AgreementCard: React.FC<{
   agreement: LegalDraft;
-  onCustomizeDraft: (draft: LegalDraft) => void;
-}> = ({ agreement, onCustomizeDraft }) => (
+}> = ({ agreement }) => (
   <article className="bg-yellow-100 border border-neutral-200 hover:border-yellow-500/50 rounded-xl p-4 transition shadow-sm">
     <div className="flex items-start justify-between gap-3">
       <div>
@@ -363,28 +368,69 @@ const AgreementCard: React.FC<{
       <span className="rounded bg-white px-2 py-0.5 text-[10px] text-neutral-600 border border-neutral-200">
         {agreement.areaOfLaw}
       </span>
-      {agreement.documentPath ? (
-        <a
-          href={agreement.documentPath}
-          download
-          className="ml-auto inline-flex items-center gap-1.5 rounded-lg bg-yellow-400 px-3 py-1.5 text-[11px] font-black text-neutral-950 transition hover:bg-yellow-300 active:translate-y-px"
-        >
-          <FileText className="w-3.5 h-3.5" />
-          Download original DOCX
-        </a>
-      ) : (
-        <button
-          type="button"
-          onClick={() => onCustomizeDraft(agreement)}
-          className="ml-auto inline-flex items-center gap-1.5 rounded-lg bg-yellow-400 px-3 py-1.5 text-[11px] font-black text-neutral-950 transition hover:bg-yellow-300 active:translate-y-px"
-        >
-          <Sparkles className="w-3.5 h-3.5" />
-          Customise
-        </button>
-      )}
+      <Link
+        to={`/affidavits/agreement/${agreement.id}`}
+        className="ml-auto inline-flex items-center gap-1.5 rounded-lg bg-yellow-400 px-3 py-1.5 text-[11px] font-black text-neutral-950 transition hover:bg-yellow-300 active:translate-y-px"
+      >
+        <FileText className="w-3.5 h-3.5" />
+        View agreement
+      </Link>
     </div>
   </article>
 );
+
+const AgreementDetail: React.FC<{
+  agreement: LegalDraft;
+  onCustomizeDraft: (draft: LegalDraft) => void;
+}> = ({ agreement, onCustomizeDraft }) => {
+  const [previewHtml, setPreviewHtml] = useState('');
+  const previewHtmlForActions = previewHtml || buildWordDraft(agreement.title, `LAWPEX — ${agreement.areaOfLaw}`, agreement.sampleText);
+
+  return (
+    <div className="min-h-screen bg-white py-8 text-neutral-900">
+      <div className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
+        <div className="mb-6 border-b border-neutral-200 pb-5">
+          <Link to="/affidavits" className="inline-flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-wider text-yellow-700 hover:text-yellow-900">
+            <ArrowLeft className="h-3.5 w-3.5" /> Sample agreements and affidavits
+          </Link>
+          <span className="mt-4 inline-block rounded border border-yellow-400/60 bg-yellow-400/20 px-2 py-0.5 text-[10px] font-bold uppercase text-yellow-700">{agreement.category} agreement</span>
+          <h1 className="mt-2 font-serif text-2xl font-black sm:text-4xl">{agreement.title}</h1>
+          <p className="mt-2 max-w-3xl text-sm leading-7 text-neutral-700">{agreement.description}</p>
+        </div>
+
+        <section className="rounded-2xl border border-yellow-400/70 bg-yellow-100 p-5 shadow-xl sm:p-8">
+          <div className="mb-5 border-b border-neutral-200 pb-3">
+            <h2 className="font-serif text-xl font-black">Document preview</h2>
+            <p className="mt-1 text-xs leading-6 text-neutral-600">Review the document here first. Export and copy controls are provided after the document.</p>
+          </div>
+
+          {agreement.documentPath ? (
+            <DocxPreview src={agreement.documentPath} onHtmlReady={setPreviewHtml} />
+          ) : (
+            <pre className="whitespace-pre-wrap rounded-xl border border-neutral-200 bg-white p-5 font-mono text-xs leading-7 text-neutral-800">{agreement.sampleText}</pre>
+          )}
+
+          <div className="mt-6 border-t border-neutral-200 pt-5">
+            <h3 className="font-serif text-lg font-black">Document actions</h3>
+            <div className="mt-3 flex flex-wrap items-center gap-3">
+              <DocumentActions html={previewHtmlForActions} filename={agreement.title} hint="Copy the reviewed agreement to MS Word." />
+              {agreement.documentPath && (
+                <a href={agreement.documentPath} download className="inline-flex items-center gap-1.5 rounded-lg border border-neutral-200 bg-white px-3 py-1.5 text-[11px] font-bold text-neutral-800 hover:border-yellow-500/80 hover:bg-yellow-50">
+                  <Download className="h-3.5 w-3.5 text-yellow-700" /> Download original DOCX
+                </a>
+              )}
+              {!agreement.documentPath && agreement.isCustomizableWithAI && (
+                <button type="button" onClick={() => onCustomizeDraft(agreement)} className="inline-flex items-center gap-1.5 rounded-lg bg-yellow-400 px-3 py-1.5 text-[11px] font-black text-neutral-950 hover:bg-yellow-300">
+                  <Sparkles className="h-3.5 w-3.5" /> Customise with AI
+                </button>
+              )}
+            </div>
+          </div>
+        </section>
+      </div>
+    </div>
+  );
+};
 
 const AffidavitCard: React.FC<{ affidavit: AffidavitTemplate }> = ({ affidavit }) => (
   <Link

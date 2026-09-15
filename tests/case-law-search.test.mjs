@@ -7,7 +7,7 @@ import { searchCaseLaws } from '../src/lib/caseSearch.ts';
 const makeCase = (overrides) => ({
   id: 'case-test',
   title: 'Sample v. State',
-  citation: '(2026) LDLR (SC) pt 9999',
+  citation: '(2026) LDLR-9999 (SC)',
   court: 'Supreme Court of Nigeria',
   year: 2026,
   areaOfLaw: 'Evidence',
@@ -26,14 +26,14 @@ const cases = [
   makeCase({
     id: 'case-dele',
     title: 'Dele Akinwale v. The State',
-    citation: '(2024) LDLR (CA) pt 1401',
+    citation: '(2024) LDLR-1401 (CA)',
     court: 'Court of Appeal',
     ratioDecidendi: ['Proof beyond reasonable doubt rests on credible evidence.'],
   }),
   makeCase({
     id: 'case-adekunle',
     title: 'Adeoye Adekunle v. The State',
-    citation: '(2018) LDLR (CA) pt 1200',
+    citation: '(2018) LDLR-1200 (CA)',
     court: 'Court of Appeal',
     catchwords: ['Criminal law', 'Confessional statement'],
     keyPrinciples: ['Jurisdiction must be resolved before the merits of an appeal.'],
@@ -41,7 +41,7 @@ const cases = [
   makeCase({
     id: 'case-evidence',
     title: 'Ola v. Commissioner of Police',
-    citation: '(2020) LDLR (SC) pt 811',
+    citation: '(2020) LDLR-811 (SC)',
     ratioDecidendi: ['Electronic evidence requires the statutory certificate where applicable.'],
   }),
 ];

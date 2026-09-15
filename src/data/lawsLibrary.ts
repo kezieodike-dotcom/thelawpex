@@ -1,10 +1,5 @@
 import { NIGERIAN_STATES, highCourtName, stateSlug } from './nigeria';
 import { NIGERIAN_LAWS_DATA } from './legalData';
-import { constitution1999Text } from './constitution1999Text';
-import { electoralAct2026Text } from './electoralAct2026Text';
-import { civilAviationAct2022Text } from './civilAviationAct2022Text';
-import { nationalIndustrialCourtActText } from './nationalIndustrialCourtActText';
-import { camaNoteBookFullVersionText } from './camaNoteBookFullVersionText';
 
 /**
  * Two law libraries:
@@ -28,6 +23,8 @@ export interface FederalLawEntry {
   documentPath?: string;
   documentPages?: number;
   documentText?: string;
+  /** Loads the selectable source text only when the reader is opened. */
+  documentTextLoader?: () => Promise<string>;
   /** Id into NIGERIAN_LAWS_DATA where the full sectioned text is available. */
   fullTextId?: string;
 }
@@ -72,7 +69,7 @@ export const FEDERAL_LAWS: FederalLawEntry[] = [
       'The supreme law of the Federation. Chapter IV guarantees fundamental rights; Sections 230–296 establish the courts and their jurisdiction; Section 6(6) vests judicial powers; Section 36 guarantees fair hearing.',
     documentPath: '/documents/laws/constitution-1999-as-amended.pdf',
     documentPages: 280,
-    documentText: constitution1999Text,
+    documentTextLoader: () => import('./constitution1999Text').then((module) => module.constitution1999Text),
     fullTextId: 'const-1999',
   },
   {
@@ -116,7 +113,7 @@ export const FEDERAL_LAWS: FederalLawEntry[] = [
       'Establishment and jurisdiction of the National Industrial Court over labour, employment, trade union and industrial relations matters, read with Section 254C of the Constitution.',
     documentPath: '/documents/laws/national-industrial-court-act.pdf',
     documentPages: 19,
-    documentText: nationalIndustrialCourtActText,
+    documentTextLoader: () => import('./nationalIndustrialCourtActText').then((module) => module.nationalIndustrialCourtActText),
   },
   {
     id: 'sheriffs-civil-process-act',
@@ -340,7 +337,7 @@ export const FEDERAL_LAWS: FederalLawEntry[] = [
       'Incorporation and management of companies, limited liability partnerships, business names and incorporated trustees; directors’ duties, minority protection, insolvency and business rescue.',
     documentPath: '/documents/laws/cama-note-book-full-version.pdf',
     documentPages: 528,
-    documentText: camaNoteBookFullVersionText,
+    documentTextLoader: () => import('./camaNoteBookFullVersionText').then((module) => module.camaNoteBookFullVersionText),
     fullTextId: 'cama-2020',
   },
   {
@@ -729,7 +726,7 @@ export const FEDERAL_LAWS: FederalLawEntry[] = [
       'Regulation of civil aviation by the NCAA, licensing of operators, the domestication of the Montreal Convention and the liability of carriers to passengers.',
     documentPath: '/documents/laws/civil-aviation-act-2022.pdf',
     documentPages: 95,
-    documentText: civilAviationAct2022Text,
+    documentTextLoader: () => import('./civilAviationAct2022Text').then((module) => module.civilAviationAct2022Text),
   },
   {
     id: 'minerals-mining-2007',
@@ -754,7 +751,7 @@ export const FEDERAL_LAWS: FederalLawEntry[] = [
       'The current federal framework for elections administered by INEC, including voter registration, nomination, polling, collation, election offences and election petitions.',
     documentPath: '/documents/laws/electoral-act-2026.pdf',
     documentPages: 121,
-    documentText: electoralAct2026Text,
+    documentTextLoader: () => import('./electoralAct2026Text').then((module) => module.electoralAct2026Text),
   },
   {
     id: 'electoral-act-2022',

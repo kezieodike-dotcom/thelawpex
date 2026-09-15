@@ -3,17 +3,22 @@ import { useSearchParams } from 'react-router-dom';
 import {
   ArrowLeft,
   ArrowRight,
+  BarChart3,
+  BookOpenCheck,
+  BriefcaseBusiness,
   Check,
   ClipboardCheck,
-  ClipboardList,
   Copy,
   Download,
   FileCheck2,
+  FileSearch,
   FileText,
   Gavel,
   LoaderCircle,
   LockKeyhole,
   Paperclip,
+  Search,
+  Send,
   Plus,
   RotateCcw,
   ShieldCheck,
@@ -32,6 +37,7 @@ import {
 import { downloadDraftDocx } from '../lib/downloadDraftDocx';
 
 type WizardStage = 1 | 2 | 3 | 4;
+type AssistantMode = 'draft' | 'board' | 'revisor' | 'researcher';
 
 interface MatterForm {
   matterTitle: string;
@@ -49,6 +55,46 @@ interface GeneratedDraft {
   notice: string;
 }
 
+interface BoardForm {
+  meetingTitle: string;
+  meetingDate: string;
+  attendees: string;
+  agenda: string;
+  meetingNotes: string;
+  outputType: string;
+}
+
+interface ResearchForm {
+  question: string;
+  jurisdiction: string;
+  focus: string;
+}
+
+interface AssistantModePanelProps {
+  mode: Exclude<AssistantMode, 'draft'>;
+  boardForm: BoardForm;
+  setBoardForm: React.Dispatch<React.SetStateAction<BoardForm>>;
+  boardOutput: string;
+  boardBusy: boolean;
+  boardError: string;
+  onGenerateBoard: () => void;
+  reviewInputRef: React.RefObject<HTMLInputElement | null>;
+  reviewFile: File | null;
+  setReviewFile: React.Dispatch<React.SetStateAction<File | null>>;
+  reviewInstructions: string;
+  setReviewInstructions: React.Dispatch<React.SetStateAction<string>>;
+  reviewOutput: string;
+  reviewBusy: boolean;
+  reviewError: string;
+  onReview: () => void;
+  researchForm: ResearchForm;
+  setResearchForm: React.Dispatch<React.SetStateAction<ResearchForm>>;
+  researchOutput: string;
+  researchBusy: boolean;
+  researchError: string;
+  onResearch: () => void;
+}
+
 const EMPTY_FORM: MatterForm = {
   matterTitle: '',
   court: '',
@@ -58,17 +104,23 @@ const EMPTY_FORM: MatterForm = {
   instructions: '',
 };
 
-const STEPS = [
-  { id: 1 as const, short: 'Scenario', title: 'Provide Case Scenario/Issues', icon: ClipboardList },
-  { id: 2 as const, short: 'Documents', title: 'Upload Letters/Documents', icon: Paperclip },
-  { id: 3 as const, short: 'Instructions', title: 'Provide Draft Instructions', icon: WandSparkles },
-  { id: 4 as const, short: 'Draft', title: 'Review & Download', icon: FileCheck2 },
+const ASSISTANT_MODES: Array<{
+  id: AssistantMode;
+  label: string;
+  description: string;
+  icon: React.ElementType;
+}> = [
+  { id: 'draft', label: 'Draft Wizard', description: 'Build court-ready working drafts', icon: WandSparkles },
+  { id: 'board', label: 'Board Assistant', description: 'Minutes, reports and board packs', icon: BriefcaseBusiness },
+  { id: 'revisor', label: 'Revisor', description: 'Review uploaded documents against instructions', icon: FileSearch },
+  { id: 'researcher', label: 'Researcher', description: 'Turn a legal question into a research brief', icon: BookOpenCheck },
 ];
 
 const FIELD_CLASS =
   'lawpex-focus-ring mt-2 w-full rounded-lg border border-amber-200 bg-white px-3.5 py-3 text-sm text-neutral-950 outline-none placeholder:text-neutral-400 focus:border-amber-500 focus:ring-2 focus:ring-amber-200';
 
 export const AILegalAssistantView: React.FC = () => {
+  const [mode, setMode] = useState<AssistantMode>('draft');
   const [stage, setStage] = useState<WizardStage>(1);
   const [form, setForm] = useState<MatterForm>(EMPTY_FORM);
   const [files, setFiles] = useState<File[]>([]);
@@ -79,8 +131,29 @@ export const AILegalAssistantView: React.FC = () => {
   const [isGenerating, setIsGenerating] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
   const [copied, setCopied] = useState(false);
+  const [boardForm, setBoardForm] = useState<BoardForm>({
+    meetingTitle: '',
+    meetingDate: '',
+    attendees: '',
+    agenda: '',
+    meetingNotes: '',
+    outputType: 'Board minutes',
+  });
+  const [boardOutput, setBoardOutput] = useState('');
+  const [boardBusy, setBoardBusy] = useState(false);
+  const [boardError, setBoardError] = useState('');
+  const [reviewFile, setReviewFile] = useState<File | null>(null);
+  const [reviewInstructions, setReviewInstructions] = useState('');
+  const [reviewOutput, setReviewOutput] = useState('');
+  const [reviewBusy, setReviewBusy] = useState(false);
+  const [reviewError, setReviewError] = useState('');
+  const [researchForm, setResearchForm] = useState<ResearchForm>({ question: '', jurisdiction: 'Nigeria', focus: 'Authorities and procedure' });
+  const [researchOutput, setResearchOutput] = useState('');
+  const [researchBusy, setResearchBusy] = useState(false);
+  const [researchError, setResearchError] = useState('');
   const [searchParams, setSearchParams] = useSearchParams();
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const reviewInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     const prompt = searchParams.get('prompt');
@@ -94,6 +167,93 @@ export const AILegalAssistantView: React.FC = () => {
     setForm((current) => ({ ...current, [field]: value }));
     if (field === 'facts' || field === 'instructions') {
       setErrors((current) => ({ ...current, [field]: undefined }));
+    }
+  };
+
+  const selectMode = (nextMode: AssistantMode) => {
+    setMode(nextMode);
+    window.setTimeout(() => document.getElementById(`assistant-${nextMode}`)?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 0);
+  };
+
+  const selectStage = (nextStage: WizardStage) => {
+    setStage(nextStage);
+    window.setTimeout(() => document.getElementById(`draft-step-${nextStage}`)?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 0);
+  };
+
+  const askAssistant = async (prompt: string, modeName: string, context: unknown) => {
+    const response = await fetch('/api/ai/ask', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ prompt, mode: modeName, context }),
+    });
+    const data = await response.json();
+    if (!response.ok) throw new Error(data.error || 'The assistant could not complete this request.');
+    return data.answer as string;
+  };
+
+  const generateBoardWork = async () => {
+    if (!boardForm.meetingNotes.trim() && !boardForm.agenda.trim()) {
+      setBoardError('Add meeting notes or an agenda before generating the board document.');
+      return;
+    }
+    setBoardBusy(true);
+    setBoardError('');
+    try {
+      setBoardOutput(await askAssistant(
+        `Prepare a ${boardForm.outputType} from the board meeting information below. Preserve supplied names, dates, decisions and action owners exactly. Clearly separate confirmed decisions, resolutions, action items, risks and matters for follow-up. Do not invent missing information; mark it [TO BE CONFIRMED].\n\nMeeting: ${boardForm.meetingTitle || '[Untitled meeting]'}\nDate: ${boardForm.meetingDate || '[Date not supplied]'}\nAttendees: ${boardForm.attendees || '[Not supplied]'}\nAgenda:\n${boardForm.agenda || '[Not supplied]'}\nMeeting notes:\n${boardForm.meetingNotes || '[Not supplied]'}`,
+        'board-assistant',
+        boardForm,
+      ));
+    } catch (error) {
+      setBoardError(error instanceof Error ? error.message : 'The board document could not be generated.');
+    } finally {
+      setBoardBusy(false);
+    }
+  };
+
+  const reviewDocument = async () => {
+    if (!reviewFile) {
+      setReviewError('Choose a document to review first.');
+      return;
+    }
+    if (!reviewInstructions.trim()) {
+      setReviewError('Provide specific review instructions first.');
+      return;
+    }
+    setReviewBusy(true);
+    setReviewError('');
+    try {
+      const body = new FormData();
+      body.append('instructions', reviewInstructions);
+      body.append('documents', reviewFile);
+      const response = await fetch('/api/ai/revisor', { method: 'POST', body });
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.error || 'The document could not be reviewed.');
+      setReviewOutput(data.reviewText || 'No review was returned.');
+    } catch (error) {
+      setReviewError(error instanceof Error ? error.message : 'The document could not be reviewed.');
+    } finally {
+      setReviewBusy(false);
+    }
+  };
+
+  const runResearch = async () => {
+    if (!researchForm.question.trim()) {
+      setResearchError('Enter a research question first.');
+      return;
+    }
+    setResearchBusy(true);
+    setResearchError('');
+    try {
+      setResearchOutput(await askAssistant(
+        `Research this Nigerian legal question as a research assistant. Return a concise research brief with: issue, short answer, governing constitutional/statutory provisions, relevant Nigerian cases or authorities, procedural implications, open questions and verification checklist. Do not fabricate authorities or quotations; say plainly when a source must be verified.\n\nQuestion: ${researchForm.question}\nJurisdiction: ${researchForm.jurisdiction}\nResearch focus: ${researchForm.focus}`,
+        'researcher',
+        researchForm,
+      ));
+    } catch (error) {
+      setResearchError(error instanceof Error ? error.message : 'The research brief could not be generated.');
+    } finally {
+      setResearchBusy(false);
     }
   };
 
@@ -114,23 +274,6 @@ export const AILegalAssistantView: React.FC = () => {
       next.push(file);
     }
     setFiles(next);
-  };
-
-  const goForward = () => {
-    if (stage === 1) {
-      const nextErrors = validateDraftWizardInput({ facts: form.facts, instructions: 'pending' });
-      if (nextErrors.facts) {
-        setErrors(nextErrors);
-        return;
-      }
-      setStage(2);
-      return;
-    }
-    if (stage === 2) setStage(3);
-  };
-
-  const selectStage = (nextStage: WizardStage) => {
-    setStage(nextStage);
   };
 
   const generateDraft = async () => {
@@ -180,8 +323,6 @@ export const AILegalAssistantView: React.FC = () => {
     window.setTimeout(() => setCopied(false), 1800);
   };
 
-  const completedSteps = [Boolean(form.facts.trim()), stage > 2 || files.length > 0, Boolean(form.instructions.trim()), Boolean(generatedDraft)];
-
   return (
     <main className="min-h-screen bg-[#f7f5ef] text-neutral-950">
       <section className="border-b border-amber-200 bg-[#1c1917] text-white">
@@ -191,9 +332,9 @@ export const AILegalAssistantView: React.FC = () => {
               <Sparkles className="h-4 w-4" />
               Nigerian legal drafting workspace
             </div>
-            <h1 className="max-w-3xl text-3xl font-black leading-tight sm:text-4xl lg:text-5xl">Ai Draft Wizard</h1>
+            <h1 className="max-w-3xl text-3xl font-black leading-tight sm:text-4xl lg:text-5xl">AI Workbench</h1>
             <p className="mt-4 max-w-2xl text-base leading-7 text-stone-300 sm:text-lg">
-              Turn a complete client brief and its supporting documents into a structured court-ready working draft.
+              Draft, prepare, review and research from one focused workspace for Nigerian legal work.
             </p>
           </div>
           <div className="flex items-center gap-3 border-l-2 border-amber-400 pl-4 text-sm text-stone-300">
@@ -204,71 +345,41 @@ export const AILegalAssistantView: React.FC = () => {
       </section>
 
       <div className="mx-auto max-w-[1400px] px-4 py-6 sm:px-8 lg:px-10 lg:py-10">
-        <div className="mb-6 overflow-x-auto border-b border-amber-200 pb-4 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden lg:hidden">
-          <div className="flex min-w-max gap-2">
-            {STEPS.map((step) => {
-              const Icon = step.icon;
-              return (
-                <button
-                  key={step.id}
-                  type="button"
-                  onClick={() => selectStage(step.id)}
-                  aria-current={stage === step.id ? 'step' : undefined}
-                  className={`lawpex-focus-ring flex h-11 items-center gap-2 rounded-lg px-3 text-xs font-bold ${
-                    stage === step.id ? 'bg-amber-300 text-stone-950' : 'border border-amber-200 bg-white text-stone-600'
-                  }`}
-                >
-                  <Icon className="h-4 w-4" />
-                  {step.id}. {step.short}
-                </button>
-              );
-            })}
-          </div>
-        </div>
-
-        <div className="grid gap-8 lg:grid-cols-[270px_minmax(0,1fr)] xl:grid-cols-[300px_minmax(0,1fr)]">
-          <aside className="hidden lg:block">
-            <div className="sticky top-24">
-              <p className="mb-4 text-xs font-black uppercase text-amber-800">Drafting sequence</p>
-              <nav aria-label="Ai Draft Wizard steps" className="border-y border-amber-200">
-                {STEPS.map((step) => {
-                  const Icon = step.icon;
-                  const active = stage === step.id;
-                  return (
-                    <button
-                      key={step.id}
-                      type="button"
-                      onClick={() => selectStage(step.id)}
-                      aria-current={active ? 'step' : undefined}
-                      className={`lawpex-focus-ring flex w-full items-center gap-3 border-b border-amber-100 px-2 py-4 text-left last:border-b-0 ${active ? 'bg-amber-100' : 'hover:bg-white'}`}
-                    >
-                      <span className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-lg ${active ? 'bg-amber-300' : completedSteps[step.id - 1] ? 'bg-stone-900 text-amber-300' : 'border border-amber-200 bg-white text-stone-500'}`}>
-                        {completedSteps[step.id - 1] && !active ? <Check className="h-4 w-4" /> : <Icon className="h-4 w-4" />}
-                      </span>
-                      <span>
-                        <span className="block text-[11px] font-bold uppercase text-amber-800">Step {step.id}</span>
-                        <span className="mt-0.5 block text-sm font-bold text-stone-900">{step.title}</span>
-                      </span>
-                    </button>
-                  );
-                })}
-              </nav>
-
-              <div className="mt-7 border-l-2 border-amber-300 pl-4">
-                <p className="text-xs font-black uppercase text-stone-500">Matter in progress</p>
-                <p className="mt-2 break-words text-sm font-bold text-stone-900">{form.matterTitle || 'Untitled matter'}</p>
-                <p className="mt-1 text-xs leading-5 text-stone-500">{form.court || 'Court and jurisdiction not yet supplied'}</p>
-                <p className="mt-3 text-xs font-semibold text-amber-800">{files.length} supporting document{files.length === 1 ? '' : 's'}</p>
-              </div>
-            </div>
+        <div className="grid gap-8 lg:grid-cols-[280px_minmax(0,1fr)]">
+          <aside className="lg:sticky lg:top-24 lg:self-start">
+            <p className="mb-4 text-xs font-black uppercase tracking-[0.16em] text-amber-800">AI Workbench</p>
+            <nav aria-label="AI Workbench tools" className="border-y border-amber-200">
+              {ASSISTANT_MODES.map((assistant) => {
+                const Icon = assistant.icon;
+                const active = mode === assistant.id;
+                return (
+                  <button
+                    key={assistant.id}
+                    type="button"
+                    onClick={() => selectMode(assistant.id)}
+                    aria-current={active ? 'page' : undefined}
+                    className={`lawpex-focus-ring flex w-full min-h-20 items-start gap-3 border-b border-amber-100 px-3 py-4 text-left transition last:border-b-0 ${active ? 'bg-stone-900 text-white shadow-lg' : 'bg-white text-stone-800 hover:bg-amber-50'}`}
+                  >
+                    <span className={`mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-lg ${active ? 'bg-amber-300 text-stone-950' : 'bg-amber-100 text-amber-800'}`}><Icon className="h-4 w-4" /></span>
+                    <span>
+                      <span className="block text-sm font-black">{assistant.label}</span>
+                      <span className={`mt-1 block text-xs leading-5 ${active ? 'text-stone-300' : 'text-stone-500'}`}>{assistant.description}</span>
+                    </span>
+                  </button>
+                );
+              })}
+            </nav>
           </aside>
 
+          <div className="min-w-0">
+        {mode === 'draft' ? (
+          <>
           <section className="min-w-0 border border-amber-200 bg-white shadow-[0_24px_70px_-56px_rgba(68,49,12,0.55)]">
             <div className="border-b border-amber-200 bg-amber-50 px-5 py-4 sm:px-8">
               <div className="flex items-center justify-between gap-4">
                 <div>
-                  <p className="text-xs font-black uppercase text-amber-800">Step {stage} of 4</p>
-                  <h2 className="mt-1 text-xl font-black sm:text-2xl">{STEPS[stage - 1].title}</h2>
+                  <p className="text-xs font-black uppercase text-amber-800">Draft Wizard · 4 steps on this page</p>
+                  <h2 className="mt-1 text-xl font-black sm:text-2xl">Build, review and export your draft</h2>
                 </div>
                 {(form.facts || form.instructions || files.length > 0) && (
                   <button type="button" onClick={resetWizard} aria-label="Start again" className="lawpex-focus-ring inline-flex items-center gap-2 rounded-lg px-3 py-2 text-xs font-bold text-stone-600 hover:bg-white hover:text-stone-950">
@@ -280,9 +391,9 @@ export const AILegalAssistantView: React.FC = () => {
             </div>
 
             <div className="p-5 sm:p-8 lg:p-10">
-              {stage === 1 && (
-                <div className="max-w-4xl">
+              <div id="draft-step-1" className="max-w-4xl scroll-mt-24">
                   <div className="mb-8">
+                    <p className="mb-2 text-xs font-black uppercase tracking-[0.16em] text-amber-800">Step 1</p>
                     <h3 className="text-lg font-black">Set out the matter clearly</h3>
                     <p className="mt-2 max-w-2xl text-sm leading-6 text-stone-600">Include the material events, dates, relationship between the parties, steps already taken and the legal problem to be addressed.</p>
                   </div>
@@ -309,12 +420,11 @@ export const AILegalAssistantView: React.FC = () => {
                       {errors.facts ? <span id="facts-error" className="mt-2 block text-sm font-semibold text-red-700">{errors.facts}</span> : <span id="facts-help" className="mt-2 block text-xs leading-5 text-stone-500">Do not include information that is unrelated to preparing the document.</span>}
                     </label>
                   </div>
-                </div>
-              )}
+              </div>
 
-              {stage === 2 && (
-                <div className="max-w-4xl">
+              <div id="draft-step-2" className="max-w-4xl scroll-mt-24">
                   <div className="mb-8">
+                    <p className="mb-2 text-xs font-black uppercase tracking-[0.16em] text-amber-800">Step 2</p>
                     <h3 className="text-lg font-black">Add the documents behind the brief</h3>
                     <p className="mt-2 max-w-2xl text-sm leading-6 text-stone-600">Upload tenancy agreements, letters, notices, contracts, correspondence or other material the draft should reflect. This step is optional.</p>
                   </div>
@@ -348,12 +458,11 @@ export const AILegalAssistantView: React.FC = () => {
                       ))}
                     </div>
                   )}
-                </div>
-              )}
+              </div>
 
-              {stage === 3 && (
-                <div className="max-w-4xl">
+              <div id="draft-step-3" className="max-w-4xl scroll-mt-24">
                   <div className="mb-8">
+                    <p className="mb-2 text-xs font-black uppercase tracking-[0.16em] text-amber-800">Step 3</p>
                     <h3 className="text-lg font-black">Direct the draft precisely</h3>
                     <p className="mt-2 max-w-2xl text-sm leading-6 text-stone-600">State the document to prepare, remedies or reliefs to claim, issues to emphasise and any formatting or strategic instruction.</p>
                   </div>
@@ -368,14 +477,12 @@ export const AILegalAssistantView: React.FC = () => {
                     <BriefCheck label="Instruction supplied" complete={Boolean(form.instructions.trim())} />
                   </div>
                   {requestError && <div role="alert" className="mt-6 border border-red-200 bg-red-50 p-4 text-sm font-semibold leading-6 text-red-800">{requestError}</div>}
-                </div>
-              )}
+              </div>
 
-              {stage === 4 && (
-                generatedDraft ? <div>
+              {generatedDraft ? <div id="draft-step-4" className="scroll-mt-24">
                   <div className="flex flex-col gap-5 border-b border-amber-200 pb-6 sm:flex-row sm:items-start sm:justify-between">
                     <div>
-                      <p className="text-xs font-black uppercase text-amber-800">Generated working draft</p>
+                      <p className="text-xs font-black uppercase tracking-[0.16em] text-amber-800">Step 4 · Generated working draft</p>
                       <h3 className="mt-2 text-xl font-black">{generatedDraft.documentTitle}</h3>
                       <p className="mt-2 max-w-2xl text-sm leading-6 text-stone-600">Review and edit the document below before downloading the Word version.</p>
                     </div>
@@ -393,42 +500,59 @@ export const AILegalAssistantView: React.FC = () => {
                     <ShieldCheck className="mt-0.5 h-5 w-5 shrink-0 text-amber-800" />
                     <p>{generatedDraft.notice}</p>
                   </div>
-                </div> : <div className="max-w-2xl py-8">
+                </div> : <div id="draft-step-4" className="max-w-2xl scroll-mt-24 py-8">
+                  <p className="text-xs font-black uppercase tracking-[0.16em] text-amber-800">Step 4</p>
                   <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-amber-100 text-amber-800">
                     <FileCheck2 className="h-6 w-6" />
                   </div>
                   <h3 className="mt-5 text-xl font-black">Your draft will appear here</h3>
                   <p className="mt-2 text-sm leading-6 text-stone-600">Complete the scenario, optional supporting documents and drafting instruction before generating the court document.</p>
-                  <button type="button" onClick={() => setStage(3)} className="lawpex-focus-ring mt-6 inline-flex h-11 items-center gap-2 rounded-lg bg-stone-900 px-5 text-sm font-black text-white hover:bg-stone-800 active:translate-y-px">
+                  <button type="button" onClick={() => selectStage(3)} className="lawpex-focus-ring mt-6 inline-flex h-11 items-center gap-2 rounded-lg bg-stone-900 px-5 text-sm font-black text-white hover:bg-stone-800 active:translate-y-px">
                     <WandSparkles className="h-4 w-4" /> Continue drafting
                   </button>
-                </div>
-              )}
+                </div>}
             </div>
 
-            <div className="flex flex-col-reverse gap-3 border-t border-amber-200 bg-stone-50 px-5 py-4 sm:flex-row sm:items-center sm:justify-between sm:px-8">
-              <button type="button" onClick={() => setStage((current) => Math.max(1, current - 1) as WizardStage)} disabled={stage === 1} className="lawpex-focus-ring inline-flex h-12 items-center justify-center gap-2 rounded-lg border border-amber-200 bg-white px-5 text-sm font-bold disabled:invisible">
-                <ArrowLeft className="h-4 w-4" /> Back
+            <div className="flex flex-col gap-3 border-t border-amber-200 bg-stone-50 px-5 py-4 sm:flex-row sm:items-center sm:justify-between sm:px-8">
+              <div className="flex flex-wrap gap-2">
+                <button type="button" onClick={() => selectStage(1)} className="lawpex-focus-ring inline-flex h-10 items-center gap-2 rounded-lg border border-amber-200 bg-white px-3 text-xs font-bold hover:bg-amber-50"><ArrowLeft className="h-3.5 w-3.5" /> Start of brief</button>
+                <button type="button" onClick={() => selectStage(3)} className="lawpex-focus-ring inline-flex h-10 items-center gap-2 rounded-lg border border-amber-200 bg-white px-3 text-xs font-bold hover:bg-amber-50">Instructions <ArrowRight className="h-3.5 w-3.5" /></button>
+              </div>
+              <button type="button" onClick={generateDraft} disabled={isGenerating} className="lawpex-focus-ring inline-flex h-12 items-center justify-center gap-2 rounded-lg bg-amber-300 px-6 text-sm font-black text-stone-950 hover:bg-amber-200 disabled:cursor-wait disabled:opacity-70 active:translate-y-px">
+                {isGenerating ? <LoaderCircle className="h-4 w-4 animate-spin" /> : <Gavel className="h-4 w-4" />}
+                {isGenerating ? 'Preparing legal draft...' : 'Generate court document'}
               </button>
-              {stage < 3 && (
-                <button type="button" onClick={goForward} className="lawpex-focus-ring inline-flex h-12 items-center justify-center gap-2 rounded-lg bg-stone-900 px-6 text-sm font-black text-white hover:bg-stone-800 active:translate-y-px">
-                  {stage === 1 ? 'Add supporting documents' : 'Continue to instructions'} <ArrowRight className="h-4 w-4" />
-                </button>
-              )}
-              {stage === 3 && (
-                <button type="button" onClick={generateDraft} disabled={isGenerating} className="lawpex-focus-ring inline-flex h-12 items-center justify-center gap-2 rounded-lg bg-amber-300 px-6 text-sm font-black text-stone-950 hover:bg-amber-200 disabled:cursor-wait disabled:opacity-70 active:translate-y-px">
-                  {isGenerating ? <LoaderCircle className="h-4 w-4 animate-spin" /> : <Gavel className="h-4 w-4" />}
-                  {isGenerating ? 'Preparing legal draft...' : 'Generate court document'}
-                </button>
-              )}
-              {stage === 4 && (
-                <button type="button" onClick={() => setStage(3)} className="lawpex-focus-ring inline-flex h-12 items-center justify-center gap-2 rounded-lg bg-stone-900 px-6 text-sm font-black text-white hover:bg-stone-800">
-                  <WandSparkles className="h-4 w-4" /> Revise instructions
-                </button>
-              )}
             </div>
           </section>
+          </>
+        ) : (
+          <AssistantModePanel
+            mode={mode}
+            boardForm={boardForm}
+            setBoardForm={setBoardForm}
+            boardOutput={boardOutput}
+            boardBusy={boardBusy}
+            boardError={boardError}
+            onGenerateBoard={generateBoardWork}
+            reviewInputRef={reviewInputRef}
+            reviewFile={reviewFile}
+            setReviewFile={setReviewFile}
+            reviewInstructions={reviewInstructions}
+            setReviewInstructions={setReviewInstructions}
+            reviewOutput={reviewOutput}
+            reviewBusy={reviewBusy}
+            reviewError={reviewError}
+            onReview={reviewDocument}
+            researchForm={researchForm}
+            setResearchForm={setResearchForm}
+            researchOutput={researchOutput}
+            researchBusy={researchBusy}
+            researchError={researchError}
+            onResearch={runResearch}
+          />
+        )}
         </div>
+      </div>
       </div>
     </main>
   );
@@ -442,3 +566,110 @@ const BriefCheck: React.FC<{ label: string; complete: boolean; optional?: boolea
     {label}{optional && !complete ? ' (optional)' : ''}
   </div>
 );
+
+const AssistantModePanel: React.FC<AssistantModePanelProps> = ({
+  mode,
+  boardForm,
+  setBoardForm,
+  boardOutput,
+  boardBusy,
+  boardError,
+  onGenerateBoard,
+  reviewInputRef,
+  reviewFile,
+  setReviewFile,
+  reviewInstructions,
+  setReviewInstructions,
+  reviewOutput,
+  reviewBusy,
+  reviewError,
+  onReview,
+  researchForm,
+  setResearchForm,
+  researchOutput,
+  researchBusy,
+  researchError,
+  onResearch,
+}) => {
+  const [copied, setCopied] = useState(false);
+  const output = mode === 'board' ? boardOutput : mode === 'revisor' ? reviewOutput : researchOutput;
+
+  const copyOutput = async () => {
+    if (!output) return;
+    await navigator.clipboard.writeText(output);
+    setCopied(true);
+    window.setTimeout(() => setCopied(false), 1600);
+  };
+
+  return (
+    <section id={`assistant-${mode}`} className="grid gap-8 xl:grid-cols-[minmax(0,0.86fr)_minmax(0,1.14fr)]">
+      <div className="border border-amber-200 bg-white p-5 shadow-[0_24px_70px_-56px_rgba(68,49,12,0.55)] sm:p-8">
+        {mode === 'board' && (
+          <>
+            <ModeHeading icon={BriefcaseBusiness} eyebrow="Board Assistant" title="Turn board records into usable governance documents" description="Prepare minutes, decision reports and board packs from the meeting record. Supplied facts are preserved and missing items are marked for confirmation." />
+            <div className="mt-8 grid gap-5 sm:grid-cols-2">
+              <AssistantInput label="Meeting title" value={boardForm.meetingTitle} onChange={(value) => setBoardForm((current) => ({ ...current, meetingTitle: value }))} placeholder="Quarterly board meeting" />
+              <label className="text-sm font-bold text-stone-800">Meeting date<input type="date" value={boardForm.meetingDate} onChange={(event) => setBoardForm((current) => ({ ...current, meetingDate: event.target.value }))} className={FIELD_CLASS} /></label>
+              <label className="text-sm font-bold text-stone-800 sm:col-span-2">Output type<select value={boardForm.outputType} onChange={(event) => setBoardForm((current) => ({ ...current, outputType: event.target.value }))} className={FIELD_CLASS}><option>Board minutes</option><option>Board decision report</option><option>Board pack</option><option>Action tracker</option></select></label>
+              <label className="text-sm font-bold text-stone-800 sm:col-span-2">Attendees and apologies<textarea value={boardForm.attendees} onChange={(event) => setBoardForm((current) => ({ ...current, attendees: event.target.value }))} rows={4} className={`${FIELD_CLASS} resize-y leading-6`} placeholder="Names, roles, chair, secretary and apologies" /></label>
+              <label className="text-sm font-bold text-stone-800 sm:col-span-2">Agenda<textarea value={boardForm.agenda} onChange={(event) => setBoardForm((current) => ({ ...current, agenda: event.target.value }))} rows={5} className={`${FIELD_CLASS} resize-y leading-6`} placeholder="Agenda items and papers considered" /></label>
+              <label className="text-sm font-bold text-stone-800 sm:col-span-2">Meeting notes and decisions <span className="text-red-700">*</span><textarea value={boardForm.meetingNotes} onChange={(event) => setBoardForm((current) => ({ ...current, meetingNotes: event.target.value }))} rows={10} className={`${FIELD_CLASS} resize-y leading-6`} placeholder="Record the discussion, decisions, resolutions, action owners, deadlines, conflicts and matters arising." /></label>
+            </div>
+            {boardError && <AssistantError message={boardError} />}
+            <AssistantAction onClick={onGenerateBoard} busy={boardBusy} label="Generate board document" icon={BarChart3} />
+          </>
+        )}
+
+        {mode === 'revisor' && (
+          <>
+            <ModeHeading icon={FileSearch} eyebrow="Revisor" title="Review a document against a precise instruction" description="Upload one document, describe exactly what should be checked, and receive a structured review with findings, risk points and suggested next actions." />
+            <input ref={reviewInputRef} type="file" accept=".pdf,.docx,.txt,.md" className="sr-only" onChange={(event) => setReviewFile(event.target.files?.[0] ?? null)} />
+            <button type="button" onClick={() => reviewInputRef.current?.click()} className="mt-8 flex w-full items-center gap-4 border-2 border-dashed border-amber-300 bg-amber-50/70 p-5 text-left hover:border-amber-500">
+              <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg bg-stone-900 text-amber-300"><Upload className="h-5 w-5" /></span>
+              <span><span className="block text-sm font-black">{reviewFile ? reviewFile.name : 'Choose a document to review'}</span><span className="mt-1 block text-xs leading-5 text-stone-500">PDF, DOCX, TXT or MD. The file is processed for this request.</span></span>
+            </button>
+            <label className="mt-6 block text-sm font-bold text-stone-800">Review instruction <span className="text-red-700">*</span><textarea value={reviewInstructions} onChange={(event) => setReviewInstructions(event.target.value)} rows={12} className={`${FIELD_CLASS} resize-y leading-6`} placeholder="Check this agreement for missing commercial terms, inconsistent party names, termination risks and provisions that require counsel confirmation." /></label>
+            {reviewError && <AssistantError message={reviewError} />}
+            <AssistantAction onClick={onReview} busy={reviewBusy} label="Generate review" icon={FileSearch} />
+          </>
+        )}
+
+        {mode === 'researcher' && (
+          <>
+            <ModeHeading icon={BookOpenCheck} eyebrow="Researcher" title="Start a disciplined Nigerian legal research brief" description="Frame the question, jurisdiction and research objective. The assistant returns issues, authorities, procedure and a verification checklist." />
+            <label className="mt-8 block text-sm font-bold text-stone-800">Research question <span className="text-red-700">*</span><textarea value={researchForm.question} onChange={(event) => setResearchForm((current) => ({ ...current, question: event.target.value }))} rows={9} className={`${FIELD_CLASS} resize-y leading-6`} placeholder="Can a claimant amend an originating process after pleadings have closed, and what prejudice must be addressed?" /></label>
+            <div className="mt-5 grid gap-5 sm:grid-cols-2">
+              <label className="text-sm font-bold text-stone-800">Jurisdiction<input value={researchForm.jurisdiction} onChange={(event) => setResearchForm((current) => ({ ...current, jurisdiction: event.target.value }))} className={FIELD_CLASS} placeholder="Nigeria, Lagos State, Federal High Court" /></label>
+              <label className="text-sm font-bold text-stone-800">Research focus<select value={researchForm.focus} onChange={(event) => setResearchForm((current) => ({ ...current, focus: event.target.value }))} className={FIELD_CLASS}><option>Authorities and procedure</option><option>Statutory framework</option><option>Case law and ratio</option><option>Litigation strategy and risks</option></select></label>
+            </div>
+            {researchError && <AssistantError message={researchError} />}
+            <AssistantAction onClick={onResearch} busy={researchBusy} label="Research question" icon={Search} />
+          </>
+        )}
+      </div>
+
+      <div className="border border-amber-200 bg-stone-900 p-5 text-white shadow-[0_24px_70px_-56px_rgba(68,49,12,0.65)] sm:p-8">
+        <div className="flex items-start justify-between gap-4 border-b border-stone-700 pb-5">
+          <div><p className="text-xs font-black uppercase tracking-[0.16em] text-amber-300">Workspace output</p><h2 className="mt-2 text-xl font-black sm:text-2xl">{mode === 'board' ? 'Board document' : mode === 'revisor' ? 'Review findings' : 'Research brief'}</h2></div>
+          {output && <button type="button" onClick={copyOutput} className="inline-flex h-10 items-center gap-2 rounded-lg border border-stone-600 px-3 text-xs font-bold hover:border-amber-300 hover:text-amber-200"><Copy className="h-3.5 w-3.5" /> {copied ? 'Copied' : 'Copy'}</button>}
+        </div>
+        {output ? <textarea value={output} readOnly aria-label="Assistant output" className="mt-6 min-h-[680px] w-full resize-y border-0 bg-transparent font-serif text-base leading-8 text-stone-100 outline-none sm:text-lg" /> : <div className="flex min-h-[680px] flex-col items-center justify-center text-center"><span className="flex h-14 w-14 items-center justify-center rounded-lg bg-amber-300 text-stone-950"><Send className="h-6 w-6" /></span><h3 className="mt-5 text-lg font-black">Your output will appear here</h3><p className="mt-2 max-w-sm text-sm leading-6 text-stone-400">Complete the workspace on the left and generate a reviewable working document.</p></div>}
+        <div className="mt-6 flex gap-3 border-l-2 border-amber-300 bg-stone-800 px-4 py-4 text-sm leading-6 text-stone-300"><ShieldCheck className="mt-0.5 h-5 w-5 shrink-0 text-amber-300" /><p>AI output is working assistance. Verify facts, authorities, governance records and professional conclusions before relying on it.</p></div>
+      </div>
+    </section>
+  );
+};
+
+const ModeHeading: React.FC<{ icon: React.ElementType; eyebrow: string; title: string; description: string }> = ({ icon: Icon, eyebrow, title, description }) => (
+  <div className="border-b border-amber-200 pb-6"><div className="flex items-center gap-2 text-xs font-black uppercase tracking-[0.16em] text-amber-800"><Icon className="h-4 w-4" /> {eyebrow}</div><h2 className="mt-3 text-2xl font-black leading-tight sm:text-3xl">{title}</h2><p className="mt-3 max-w-2xl text-sm leading-7 text-stone-600">{description}</p></div>
+);
+
+const AssistantInput: React.FC<{ label: string; value: string; onChange: (value: string) => void; placeholder: string }> = ({ label, value, onChange, placeholder }) => (
+  <label className="text-sm font-bold text-stone-800">{label}<input value={value} onChange={(event) => onChange(event.target.value)} className={FIELD_CLASS} placeholder={placeholder} /></label>
+);
+
+const AssistantAction: React.FC<{ onClick: () => void; busy: boolean; label: string; icon: React.ElementType }> = ({ onClick, busy, label, icon: Icon }) => (
+  <button type="button" onClick={onClick} disabled={busy} className="lawpex-focus-ring mt-7 inline-flex h-12 items-center gap-2 rounded-lg bg-amber-300 px-5 text-sm font-black text-stone-950 hover:bg-amber-200 disabled:cursor-wait disabled:opacity-70"><Icon className={`h-4 w-4 ${busy ? 'animate-pulse' : ''}`} /> {busy ? 'Working...' : label}</button>
+);
+
+const AssistantError: React.FC<{ message: string }> = ({ message }) => <div role="alert" className="mt-5 border border-red-200 bg-red-50 p-4 text-sm font-semibold leading-6 text-red-800">{message}</div>;

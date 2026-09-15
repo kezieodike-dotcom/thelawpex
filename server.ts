@@ -236,6 +236,64 @@ Return only the complete draft. Use clear [TO BE SUPPLIED] placeholders for miss
     },
   );
 
+  // Reviews are processed in memory and are never persisted by the server.
+  app.post(
+    "/api/ai/revisor",
+    express.raw({ type: 'multipart/form-data', limit: '64mb' }),
+    async (req, res) => {
+      try {
+        if (!Buffer.isBuffer(req.body)) {
+          return res.status(400).json({ error: "A multipart document review request is required." });
+        }
+
+        const { fields, files } = parseMultipartForm(req.body, req.headers["content-type"] || "");
+        const document = files[0];
+        const instructions = fields.instructions?.trim();
+        if (!document || !instructions) {
+          return res.status(400).json({ error: "A document and review instructions are required." });
+        }
+
+        const allowedExtensions = new Set(["pdf", "docx", "txt", "md"]);
+        const extension = document.filename.split(".").pop()?.toLowerCase() || "";
+        if (document.fieldName !== "documents" || !allowedExtensions.has(extension) || document.data.length > 10 * 1024 * 1024) {
+          return res.status(400).json({ error: `Unsupported or oversized document: ${document.filename}` });
+        }
+
+        const ai = getGenAI();
+        if (!ai) {
+          return res.json({
+            reviewText: `REVISOR REVIEW\n\nDocument: ${document.filename}\n\nInstruction received:\n${instructions}\n\nThe review service is in offline mode because GEMINI_API_KEY is not configured. Configure the key to generate substantive findings.`,
+          });
+        }
+
+        const text = extension === "pdf" ? "The attached PDF is supplied as a document part." : extractSupportingDocumentText(document).slice(0, 180_000);
+        const parts: any[] = [{ text: `Review the supplied document against the following specific instruction:\n\n${instructions}\n\nDOCUMENT TEXT:\n${text}` }];
+        if (extension === "pdf") {
+          parts.push({ inlineData: { mimeType: "application/pdf", data: document.data.toString("base64") } });
+        }
+
+        const response = await ai.models.generateContent({
+          model: AI_MODEL,
+          contents: [{ role: "user", parts }],
+          config: {
+            systemInstruction: `You are LAWPEX Revisor, a meticulous Nigerian legal document review assistant.
+- Review only the supplied document and the review instruction.
+- Preserve the document's wording when quoting it and never silently rewrite the source.
+- Organize the response as: scope, executive findings, clause-by-clause findings, missing or inconsistent information, legal/procedural risks, recommended revisions, and counsel verification checklist.
+- Never invent authorities, facts, dates, parties, clauses or obligations. Mark uncertainty as [COUNSEL TO VERIFY].
+- This is a review aid, not legal advice.`,
+            temperature: 0.15,
+          },
+        });
+
+        return res.json({ reviewText: response.text?.trim() || "The review service returned no findings." });
+      } catch (error: any) {
+        console.error("Error in /api/ai/revisor:", error);
+        return res.status(500).json({ error: error.message || "Failed to review the document." });
+      }
+    },
+  );
+
   // AI Judgment Summarizer Endpoint
   app.post("/api/ai/summarize", async (req, res) => {
     try {
@@ -268,28 +326,14 @@ Return only the complete draft. Use clear [TO BE SUPPLIED] placeholders for miss
 
   // Vite middleware in dev or static files in prod
   if (process.env.NODE_ENV !== "production") {
-    let viteReady: ReturnType<typeof createViteServer> | null = null;
-    const getViteReady = () =>
-      (viteReady ??= createViteServer({
-        server: { middlewareMode: true },
-        appType: "spa",
-      }));
-
-    app.use(async (req, res, next) => {
-      try {
-        const vite = await Promise.race([
-          getViteReady(),
-          new Promise<null>((resolve) => setTimeout(() => resolve(null), 5000)),
-        ]);
-        if (!vite) {
-          return res.status(503).send("Vite middleware is still starting. Refresh this page shortly.");
-        }
-        return vite.middlewares(req, res, next);
-      } catch (error) {
-        console.error("Vite middleware failed to start:", error);
-        return res.status(503).send("Vite middleware is unavailable. Check the dev server console.");
-      }
+    // Do not accept browser requests until Vite is ready. The former lazy start
+    // returned 503 responses during dependency optimisation, which made large
+    // reports such as Amaechi appear to fail intermittently.
+    const vite = await createViteServer({
+      server: { middlewareMode: true },
+      appType: "spa",
     });
+    app.use(vite.middlewares);
   } else {
     const distPath = path.join(process.cwd(), "dist");
     app.use(express.static(distPath));

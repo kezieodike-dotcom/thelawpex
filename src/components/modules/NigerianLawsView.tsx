@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import {
   Search,
@@ -30,15 +30,20 @@ interface NigerianLawsViewProps {
   libraryId?: string;
   /** State slug taken from `/nigerian-laws/states/:stateSlug`. */
   stateSlugParam?: string;
+  /** Federal law id taken from `/nigerian-laws/federation/:federalLawId`. */
+  federalLawId?: string;
 }
 
-export const NigerianLawsView: React.FC<NigerianLawsViewProps> = ({ libraryId, stateSlugParam }) => {
+export const NigerianLawsView: React.FC<NigerianLawsViewProps> = ({ libraryId, stateSlugParam, federalLawId }) => {
   if (libraryId === 'states') {
     const book = stateSlugParam ? stateLawBookBySlug(stateSlugParam) : undefined;
     return book ? <StateLawPage book={book} /> : <StateDirectory />;
   }
 
-  if (libraryId === 'federation') return <FederationLibrary />;
+  if (libraryId === 'federation') {
+    const law = federalLawId ? FEDERAL_LAWS.find((entry) => entry.id === federalLawId) : undefined;
+    return law ? <FederalLawPage law={law} /> : <FederationLibrary />;
+  }
 
   return <LibraryDirectory />;
 };
@@ -119,7 +124,6 @@ const LibraryDirectory: React.FC = () => (
 const FederationLibrary: React.FC = () => {
   const [query, setQuery] = useState('');
   const [category, setCategory] = useState<string>('all');
-  const [openLawId, setOpenLawId] = useState<string | null>(null);
 
   const needle = query.trim().toLowerCase();
   const laws = useMemo(
@@ -193,8 +197,6 @@ const FederationLibrary: React.FC = () => {
               <FederalLawCard
                 key={law.id}
                 law={law}
-                isOpen={openLawId === law.id}
-                onToggle={() => setOpenLawId(openLawId === law.id ? null : law.id)}
               />
             ))}
           </div>
@@ -204,111 +206,153 @@ const FederationLibrary: React.FC = () => {
   );
 };
 
-const FederalLawCard: React.FC<{
-  law: FederalLawEntry;
-  isOpen: boolean;
-  onToggle: () => void;
-}> = ({ law, isOpen, onToggle }) => {
+const FederalLawCard: React.FC<{ law: FederalLawEntry }> = ({ law }) => {
   const fullText = federalLawFullText(law);
-  const [openSection, setOpenSection] = useState<string | null>(null);
 
   return (
-    <div className="bg-yellow-100 border border-neutral-200 rounded-2xl overflow-hidden">
-      <button
-        onClick={onToggle}
-        className="w-full text-left p-5 flex items-start justify-between gap-3 hover:bg-yellow-100 transition"
-      >
+    <Link
+      to={`/nigerian-laws/federation/${law.id}`}
+      className="group block rounded-2xl border border-neutral-200 bg-yellow-100 p-5 transition hover:border-yellow-500/70 hover:bg-yellow-50 hover:shadow-lg"
+      aria-label={`Open ${law.title}`}
+    >
+      <div className="flex items-start justify-between gap-4">
         <div>
           <div className="flex flex-wrap items-center gap-2">
-            <span className="bg-yellow-400/20 text-yellow-700 border border-yellow-400/60 text-[10px] font-bold px-2 py-0.5 rounded">
+            <span className="rounded border border-yellow-400/60 bg-yellow-400/20 px-2 py-0.5 text-[10px] font-bold text-yellow-700">
               {law.category}
             </span>
             {fullText && (
-              <span className="bg-yellow-400 text-neutral-950 text-[10px] font-black px-2 py-0.5 rounded uppercase">
+              <span className="rounded bg-yellow-400 px-2 py-0.5 text-[10px] font-black uppercase text-neutral-950">
                 Full text — {fullText.sections.length} sections
               </span>
             )}
             {law.documentPath && (
-              <span className="inline-flex items-center gap-1 bg-white text-neutral-800 border border-yellow-400/70 text-[10px] font-black px-2 py-0.5 rounded uppercase">
+              <span className="inline-flex items-center gap-1 rounded border border-yellow-400/70 bg-white px-2 py-0.5 text-[10px] font-black uppercase text-neutral-800">
                 <FileText className="h-3 w-3 text-yellow-700" />
                 Official PDF
               </span>
             )}
           </div>
-          <h2 className="text-base font-black font-serif text-neutral-900 mt-1.5">{law.title}</h2>
-          <p className="text-[11px] text-neutral-500 font-mono mt-0.5">{law.citation}</p>
-          {!law.documentText && <p className="text-[11px] text-neutral-600 mt-1.5 leading-relaxed">{law.description}</p>}
+          <h2 className="mt-1.5 font-serif text-base font-black text-neutral-900 transition group-hover:text-yellow-700">
+            {law.title}
+          </h2>
+          <p className="mt-0.5 font-mono text-[11px] text-neutral-500">{law.citation}</p>
+          <p className="mt-1.5 text-[11px] leading-relaxed text-neutral-600">{law.description}</p>
+        </div>
+        <ChevronRight className="mt-1 h-5 w-5 shrink-0 text-yellow-700 transition group-hover:translate-x-1" />
+      </div>
+    </Link>
+  );
+};
+
+const FederalLawPage: React.FC<{ law: FederalLawEntry }> = ({ law }) => {
+  const fullText = federalLawFullText(law);
+  const [openSection, setOpenSection] = useState<string | null>(null);
+  const [loadedDocumentText, setLoadedDocumentText] = useState(law.documentText ?? '');
+  const [documentLoading, setDocumentLoading] = useState(Boolean(law.documentTextLoader && !law.documentText));
+
+  useEffect(() => {
+    let cancelled = false;
+    if (law.documentText) {
+      setLoadedDocumentText(law.documentText);
+      setDocumentLoading(false);
+      return () => { cancelled = true; };
+    }
+    if (!law.documentTextLoader) {
+      setLoadedDocumentText('');
+      setDocumentLoading(false);
+      return () => { cancelled = true; };
+    }
+
+    setDocumentLoading(true);
+    law.documentTextLoader()
+      .then((text) => {
+        if (!cancelled) setLoadedDocumentText(text);
+      })
+      .catch(() => {
+        if (!cancelled) setLoadedDocumentText('');
+      })
+      .finally(() => {
+        if (!cancelled) setDocumentLoading(false);
+      });
+
+    return () => { cancelled = true; };
+  }, [law]);
+
+  return (
+    <div className="min-h-screen bg-white py-8 text-neutral-900">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <div className="mb-6 border-b border-neutral-200 pb-5">
+          <Link
+            to="/nigerian-laws/federation"
+            className="inline-flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-wider text-yellow-700 hover:text-yellow-900"
+          >
+            <ArrowLeft className="h-3.5 w-3.5" />
+            Laws of the Federation
+          </Link>
+          <div className="mt-4 flex items-start justify-between gap-4">
+            <div>
+              <div className="flex flex-wrap items-center gap-2">
+                <span className="rounded border border-yellow-400/60 bg-yellow-400/20 px-2 py-0.5 text-[10px] font-bold text-yellow-700">
+                  {law.category}
+                </span>
+                {law.documentPath && (
+                  <span className="inline-flex items-center gap-1 rounded border border-yellow-400/70 bg-yellow-50 px-2 py-0.5 text-[10px] font-black uppercase text-neutral-800">
+                    <FileText className="h-3 w-3 text-yellow-700" /> Official source
+                  </span>
+                )}
+              </div>
+              <h1 className="mt-2 max-w-4xl font-serif text-2xl font-black sm:text-4xl">{law.title}</h1>
+              <p className="mt-1 font-mono text-xs text-neutral-600">{law.citation} · {law.year}</p>
+              <p className="mt-3 max-w-3xl text-sm leading-7 text-neutral-700">{law.description}</p>
+            </div>
+          </div>
         </div>
 
-        {isOpen ? (
-          <ChevronUp className="w-4 h-4 text-yellow-700 shrink-0" />
-        ) : (
-          <ChevronDown className="w-4 h-4 text-neutral-500 shrink-0" />
-        )}
-      </button>
-
-      {isOpen && (
-        <div className="border-t border-neutral-200 p-5 space-y-3">
-          {law.documentText ? (
-            <>
-              <Link to={`/documents/${law.id}`} className="inline-flex items-center gap-1 text-xs font-black uppercase tracking-wide text-yellow-800 hover:text-yellow-950">
-                Open dedicated reader <ChevronRight className="h-3.5 w-3.5" />
-              </Link>
-              <LegalDocumentReader
-                documentText={law.documentText}
-                title={law.title}
-                documentLabel={`${law.citation} · ${law.year} · Official source text`}
-                documentId={law.id}
-                backPath="/nigerian-laws/federation"
-                documentPath={law.documentPath}
-                pageCount={law.documentPages}
-              />
-            </>
-          ) : law.documentPath ? (
-            <OfficialPdfReader
+        <div className="space-y-5">
+          {documentLoading ? (
+            <div className="flex min-h-32 items-center justify-center border border-emerald-900/10 bg-[#f3f7ef] px-5 text-sm font-semibold text-emerald-950">
+              Loading the searchable source text…
+            </div>
+          ) : loadedDocumentText ? (
+            <LegalDocumentReader
+              documentText={loadedDocumentText}
               title={law.title}
+              documentLabel={`${law.citation} · ${law.year} · Official source text`}
+              documentId={law.id}
+              backPath="/nigerian-laws/federation"
               documentPath={law.documentPath}
               pageCount={law.documentPages}
             />
+          ) : law.documentPath ? (
+            <OfficialPdfReader title={law.title} documentPath={law.documentPath} pageCount={law.documentPages} />
           ) : null}
 
           {fullText ? (
-            <>
+            <div className="space-y-3">
+              <div className="border-b border-neutral-200 pb-2">
+                <h2 className="font-serif text-xl font-black">Key sections</h2>
+                <p className="mt-1 text-sm text-neutral-600">Open a section to read and copy its indexed text.</p>
+              </div>
               {fullText.sections.map((section) => {
                 const sectionOpen = openSection === section.sectionNumber;
                 return (
-                  <div
-                    key={section.sectionNumber}
-                    className="bg-white border border-neutral-200 rounded-xl overflow-hidden"
-                  >
+                  <div key={section.sectionNumber} className="overflow-hidden rounded-xl border border-neutral-200 bg-yellow-50/50">
                     <button
                       onClick={() => setOpenSection(sectionOpen ? null : section.sectionNumber)}
-                      className="w-full p-4 flex justify-between items-center text-left hover:bg-yellow-100 transition"
+                      className="flex w-full items-center justify-between gap-3 p-4 text-left transition hover:bg-yellow-100"
                     >
-                      <span className="text-xs">
-                        <span className="font-bold text-yellow-700">
-                          Section {section.sectionNumber}:
-                        </span>
-                        <span className="font-bold text-neutral-900 ml-2">{section.heading}</span>
+                      <span className="text-sm">
+                        <span className="font-bold text-yellow-700">Section {section.sectionNumber}:</span>
+                        <span className="ml-2 font-bold text-neutral-900">{section.heading}</span>
                       </span>
-                      {sectionOpen ? (
-                        <ChevronUp className="w-4 h-4 text-yellow-700 shrink-0" />
-                      ) : (
-                        <ChevronDown className="w-4 h-4 text-neutral-500 shrink-0" />
-                      )}
+                      {sectionOpen ? <ChevronUp className="h-4 w-4 shrink-0 text-yellow-700" /> : <ChevronDown className="h-4 w-4 shrink-0 text-neutral-500" />}
                     </button>
-
                     {sectionOpen && (
-                      <div className="p-4 border-t border-neutral-200 space-y-3">
-                        <p className="text-xs text-neutral-700 leading-relaxed font-serif">
-                          {section.content}
-                        </p>
+                      <div className="space-y-3 border-t border-neutral-200 bg-white p-4">
+                        <p className="font-serif text-sm leading-7 text-neutral-700">{section.content}</p>
                         <DocumentActions
-                          html={buildWordSection(
-                            `Section ${section.sectionNumber} — ${section.heading}`,
-                            `${law.title} (${law.citation})`,
-                            [section.content],
-                          )}
+                          html={buildWordSection(`Section ${section.sectionNumber} — ${section.heading}`, `${law.title} (${law.citation})`, [section.content])}
                           filename={`${law.shortTitle} s${section.sectionNumber}`}
                           hint="Copy this section to MS Word."
                         />
@@ -317,12 +361,10 @@ const FederalLawCard: React.FC<{
                   </div>
                 );
               })}
-            </>
+            </div>
           ) : !law.documentPath ? (
-            <p className="text-xs text-neutral-600 leading-relaxed bg-white border border-neutral-200 rounded-xl p-4">
-              The sectioned text of this Act is being loaded into the statute database. The summary
-              above states its scope and the matters it governs; cite the Act by its short title and
-              citation, {law.citation}.
+            <p className="rounded-xl border border-neutral-200 bg-yellow-50/50 p-4 text-sm leading-7 text-neutral-600">
+              The sectioned text of this Act is being loaded into the statute database. Cite the Act by its short title and citation, {law.citation}.
             </p>
           ) : null}
 
@@ -332,7 +374,7 @@ const FederalLawCard: React.FC<{
             hint="Copy the citation and scope of this Act to MS Word."
           />
         </div>
-      )}
+      </div>
     </div>
   );
 };

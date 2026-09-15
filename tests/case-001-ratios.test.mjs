@@ -16,7 +16,7 @@ test('Idundun contains only the two supplied ratios with their authoritative cit
   const ratioSection = source.slice(source.indexOf('RATIO DECIDENDI'), leadingIndex);
 
   assert.match(source, /^D\.O\. IDUNDUN & ORS v\. DANIEL OKUMAGBA/);
-  assert.match(source, /\(1976\) LDLR \(SC\) pt 1012/);
+  assert.match(source, /\(1976\) LDLR-1012 \(SC\)/);
   assert.equal((ratioSection.match(/^EVIDENCE - /gm) ?? []).length, 2);
   assert.ok(ratioSection.indexOf(wrongfulAdmissionHeading) < ratioSection.indexOf(titleHeading));
   assert.match(ratioSection, /Per ATANDA FATAI-WILLIAMS ,JSC \(P\. 10, para\. F\)/);

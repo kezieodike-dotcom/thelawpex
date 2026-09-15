@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { Suspense, lazy, useCallback, useEffect, useState } from 'react';
 import {
   BrowserRouter,
   Navigate,
@@ -15,16 +15,10 @@ import { AssistantLauncher } from './components/AssistantLauncher';
 import { HomeView } from './components/HomeView';
 import { NotFoundView } from './components/NotFoundView';
 import { AuthMode, AuthPage } from './components/AuthModal';
-import { UniversalSearchModal } from './components/UniversalSearchModal';
-import { UniversalViewerModal } from './components/UniversalViewerModal';
-import { DraftCustomizerModal } from './components/DraftCustomizerModal';
 
 import { DashboardView } from './components/DashboardView';
 import { AILegalAssistantView } from './components/AILegalAssistantView';
 import { AreasOfLawView } from './components/modules/AreasOfLawView';
-import { CourtRulesView } from './components/modules/CourtRulesView';
-import { NigerianLawsView } from './components/modules/NigerianLawsView';
-import { CaseLawView } from './components/modules/CaseLawView';
 import { AppealsCentreView } from './components/modules/AppealsCentreView';
 import { DraftLibraryView } from './components/modules/DraftLibraryView';
 import { AffidavitsView } from './components/modules/AffidavitsView';
@@ -35,14 +29,24 @@ import { ComplianceHubView } from './components/modules/ComplianceHubView';
 import { LearningCentreView } from './components/modules/LearningCentreView';
 import { PricingView } from './components/modules/PricingView';
 import { AdminPanelView } from './components/modules/AdminPanelView';
-import { ConstitutionReader } from './components/ConstitutionReader';
-
 import { HOME_ROUTE, pathForTab, routeForPath, tabForPath } from './routes';
 import { UserRole, SubscriptionTier, LegalDraft } from './types';
-import { LANDMARK_CASES } from './data/legalData';
-import { constitution1999Text } from './data/constitution1999Text';
-import { FEDERAL_LAWS } from './data/lawsLibrary';
-import { ruleBookById } from './data/courtRules';
+
+const LegalDocumentRoute = lazy(() => import('./components/LegalDocumentRoute'));
+const CaseLawView = lazy(() => import('./components/modules/CaseLawView').then((module) => ({ default: module.CaseLawView })));
+const CourtRulesView = lazy(() => import('./components/modules/CourtRulesView').then((module) => ({ default: module.CourtRulesView })));
+const NigerianLawsView = lazy(() => import('./components/modules/NigerianLawsView').then((module) => ({ default: module.NigerianLawsView })));
+const UniversalSearchModal = lazy(() => import('./components/UniversalSearchModal').then((module) => ({ default: module.UniversalSearchModal })));
+const UniversalViewerModal = lazy(() => import('./components/UniversalViewerModal').then((module) => ({ default: module.UniversalViewerModal })));
+const DraftCustomizerModal = lazy(() => import('./components/DraftCustomizerModal').then((module) => ({ default: module.DraftCustomizerModal })));
+
+const LegalDocumentFallback = () => (
+  <div className="flex min-h-[55vh] items-center justify-center px-5" role="status">
+    <div className="rounded-lg border border-amber-200 bg-white px-5 py-4 text-sm font-bold text-neutral-700 shadow-sm">
+      Loading LAWPEX…
+    </div>
+  </div>
+);
 
 /** Keeps the document title and meta description in sync with the current page. */
 const usePageMeta = (pathname: string) => {
@@ -265,7 +269,7 @@ export function AppShell() {
   );
   const openViewer = useCallback(
     (item: any) => {
-      if (item?.id && LANDMARK_CASES.some((caseItem) => caseItem.id === item.id)) {
+      if (/^case-\d+$/i.test(item?.id ?? '') && item?.court && item?.citation) {
         openCase(item.id);
         return;
       }
@@ -314,7 +318,8 @@ export function AppShell() {
 
       {/* One URL per page */}
       <main className="flex-1">
-        <Routes>
+        <Suspense fallback={<LegalDocumentFallback />}>
+          <Routes>
           <Route
             path="/"
             element={
@@ -392,7 +397,8 @@ export function AppShell() {
           {/* Nigerian laws: the Federation, and the 36 states and the FCT */}
           <Route path="/nigerian-laws" element={<NigerianLawsPage />} />
           <Route path="/nigerian-laws/:libraryId" element={<NigerianLawsPage />} />
-          <Route path="/nigerian-laws/:libraryId/:stateSlugParam" element={<NigerianLawsPage />} />
+          <Route path="/nigerian-laws/federation/:federalLawId" element={<NigerianLawsPage />} />
+          <Route path="/nigerian-laws/states/:stateSlugParam" element={<NigerianLawsPage />} />
           <Route path="/constitution" element={<ConstitutionPage />} />
           <Route path="/constitution/:sectionId" element={<ConstitutionPage />} />
           <Route path="/documents/:documentId" element={<LegalDocumentPage />} />
@@ -411,6 +417,10 @@ export function AppShell() {
           />
           <Route
             path="/affidavits/deposition/:affidavitId"
+            element={<AffidavitsPage onCustomizeDraft={(draft) => setCustomizingDraft(draft)} />}
+          />
+          <Route
+            path="/affidavits/agreement/:agreementId"
             element={<AffidavitsPage onCustomizeDraft={(draft) => setCustomizingDraft(draft)} />}
           />
           <Route
@@ -442,7 +452,8 @@ export function AppShell() {
           <Route path="/practicals" element={<Navigate to="/courtroom-practicals" replace />} />
 
           <Route path="*" element={<NotFoundView onOpenSearch={openSearch} />} />
-        </Routes>
+          </Routes>
+        </Suspense>
       </main>
 
       {/* Footer */}
@@ -452,16 +463,28 @@ export function AppShell() {
       {activeTab !== 'ai-assistant' && <AssistantLauncher />}
 
       {/* Modals & Overlays */}
-      <UniversalSearchModal
-        isOpen={isSearchOpen}
-        initialQuery={searchInitialQuery}
-        onClose={() => setIsSearchOpen(false)}
-        onSelectItem={openViewer}
-      />
+      {isSearchOpen && (
+        <Suspense fallback={null}>
+          <UniversalSearchModal
+            isOpen
+            initialQuery={searchInitialQuery}
+            onClose={() => setIsSearchOpen(false)}
+            onSelectItem={openViewer}
+          />
+        </Suspense>
+      )}
 
-      <UniversalViewerModal item={viewingItem} onClose={() => setViewingItem(null)} />
+      {viewingItem && (
+        <Suspense fallback={null}>
+          <UniversalViewerModal item={viewingItem} onClose={() => setViewingItem(null)} />
+        </Suspense>
+      )}
 
-      <DraftCustomizerModal draft={customizingDraft} onClose={() => setCustomizingDraft(null)} />
+      {customizingDraft && (
+        <Suspense fallback={null}>
+          <DraftCustomizerModal draft={customizingDraft} onClose={() => setCustomizingDraft(null)} />
+        </Suspense>
+      )}
     </div>
   );
 }
@@ -494,11 +517,12 @@ function CourtRulesPage() {
 
 /** Affidavits drill down category → the sworn text itself. */
 function AffidavitsPage({ onCustomizeDraft }: { onCustomizeDraft: (draft: LegalDraft) => void }) {
-  const { categoryId, affidavitId } = useParams<{ categoryId: string; affidavitId: string }>();
+  const { categoryId, affidavitId, agreementId } = useParams<{ categoryId: string; affidavitId: string; agreementId: string }>();
   return (
     <AffidavitsView
       categoryId={categoryId}
       affidavitId={affidavitId}
+      agreementId={agreementId}
       onCustomizeDraft={onCustomizeDraft}
     />
   );
@@ -518,60 +542,33 @@ function LitigationAIPage() {
 
 /** Nigerian laws split into the Federation and the states. */
 function NigerianLawsPage() {
-  const { libraryId, stateSlugParam } = useParams<{ libraryId: string; stateSlugParam: string }>();
-  return <NigerianLawsView libraryId={libraryId} stateSlugParam={stateSlugParam} />;
+  const { libraryId, stateSlugParam, federalLawId } = useParams<{
+    libraryId: string;
+    stateSlugParam: string;
+    federalLawId: string;
+  }>();
+  const resolvedLibraryId = libraryId ?? (federalLawId ? 'federation' : stateSlugParam ? 'states' : undefined);
+  return <NigerianLawsView libraryId={resolvedLibraryId} stateSlugParam={stateSlugParam} federalLawId={federalLawId} />;
 }
 
 /** Full-text Constitution reader sourced from the uploaded official document. */
 function ConstitutionPage() {
   const { sectionId } = useParams<{ sectionId: string }>();
   return (
-    <ConstitutionReader
-      documentText={constitution1999Text}
-      documentPath="/documents/laws/constitution-1999-as-amended.pdf"
-      pageCount={280}
-      initialSectionId={sectionId ? `constitution-section-${sectionId.toLowerCase()}` : undefined}
-    />
+    <Suspense fallback={<LegalDocumentFallback />}>
+      <LegalDocumentRoute kind="constitution" sectionId={sectionId} />
+    </Suspense>
   );
 }
 
 /** Dedicated URL for every uploaded Act or court-rules source document. */
 function LegalDocumentPage() {
   const { documentId, sectionId } = useParams<{ documentId: string; sectionId: string }>();
-  const law = FEDERAL_LAWS.find((entry) => entry.id === documentId);
-  const book = documentId ? ruleBookById(documentId) : undefined;
-
-  if (law?.documentText) {
-    return (
-      <ConstitutionReader
-        documentText={law.documentText}
-        title={law.title}
-        documentLabel={`${law.citation} · ${law.year} · Official source text`}
-        documentId={law.id}
-        backPath="/nigerian-laws/federation"
-        documentPath={law.documentPath}
-        pageCount={law.documentPages}
-        initialSectionId={sectionId ? `${law.id}-section-${sectionId.toLowerCase()}` : undefined}
-      />
-    );
-  }
-
-  if (book?.documentText) {
-    return (
-      <ConstitutionReader
-        documentText={book.documentText}
-        title={book.edition}
-        documentLabel={`${book.courtName}${book.year ? ` · ${book.year}` : ''} · Official source text`}
-        documentId={`rules-${book.id}`}
-        backPath={`/court-rules/${book.category}`}
-        documentPath={book.documentPath}
-        pageCount={book.documentPages}
-        initialSectionId={sectionId ? `rules-${book.id}-section-${sectionId.toLowerCase()}` : undefined}
-      />
-    );
-  }
-
-  return <Navigate to="/nigerian-laws/federation" replace />;
+  return (
+    <Suspense fallback={<LegalDocumentFallback />}>
+      <LegalDocumentRoute kind="document" documentId={documentId} sectionId={sectionId} />
+    </Suspense>
+  );
 }
 
 export default function App() {

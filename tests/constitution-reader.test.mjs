@@ -17,14 +17,15 @@ test('the Constitution reader is sourced from all 280 extracted PDF pages', asyn
 
 test('the Constitution has a dedicated reader route and document-derived controls', async () => {
   const app = await readFile(projectFile('src/App.tsx'), 'utf8');
+  const route = await readFile(projectFile('src/components/LegalDocumentRoute.tsx'), 'utf8');
   const reader = await readFile(projectFile('src/components/ConstitutionReader.tsx'), 'utf8');
 
   assert.match(app, /path="\/constitution"/);
   assert.match(app, /path="\/constitution\/:sectionId"/);
-  assert.match(app, /constitution1999Text/);
+  assert.match(route, /constitution1999Text/);
   assert.match(reader, /placeholder={`Search \$\{title\}`}/);
   assert.match(reader, /Reading theme/);
   assert.match(reader, /constitution-bookmarks/);
   assert.match(reader, /Schedules/);
-  assert.match(reader, /Source order preserved/);
+  assert.match(reader, /Source document text/);
 });

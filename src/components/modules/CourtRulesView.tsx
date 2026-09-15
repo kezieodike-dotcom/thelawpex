@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Search, ChevronRight, ArrowLeft, Gavel, Scale, Landmark, Building2 } from 'lucide-react';
 import {
@@ -36,7 +36,9 @@ export const CourtRulesView: React.FC<CourtRulesViewProps> = ({ categoryId, book
   const category = categoryId ? categoryById(categoryId) : undefined;
   const book = bookId ? ruleBookById(bookId) : undefined;
 
-  if (book && category) return <RuleBookPage book={book} categoryLabel={category.label} />;
+  if (book && category) {
+    return <RuleBookPage book={book} categoryLabel={category.label} />;
+  }
   if (category) return <CategoryPage categoryId={category.id} />;
   return <CategoryDirectory />;
 };
@@ -112,7 +114,7 @@ const CategoryPage: React.FC<{ categoryId: CourtRuleCategoryId }> = ({ categoryI
 
   // A single-court category has nothing to pick from — go straight to its rules.
   if (!category.isStateBased && books.length === 1) {
-    return <RuleBookPage book={books[0]} categoryLabel={category.label} />;
+    return <RuleBookPage book={books[0]} categoryLabel={category.label} backPath="/court-rules" />;
   }
 
   const needle = query.trim().toLowerCase();
@@ -181,12 +183,47 @@ const CategoryPage: React.FC<{ categoryId: CourtRuleCategoryId }> = ({ categoryI
 // Level 3 — one rule book, with the rule/order/process search banner
 // ---------------------------------------------------------------------------
 
-const RuleBookPage: React.FC<{ book: CourtRuleBook; categoryLabel: string }> = ({
+const RuleBookPage: React.FC<{
+  book: CourtRuleBook;
+  categoryLabel: string;
+  backPath?: string;
+}> = ({
   book,
   categoryLabel,
+  backPath = `/court-rules/${book.category}`,
 }) => {
   const [query, setQuery] = useState('');
+  const [loadedDocumentText, setLoadedDocumentText] = useState(book.documentText ?? '');
+  const [documentLoading, setDocumentLoading] = useState(Boolean(book.documentTextLoader && !book.documentText));
   const hits = useMemo(() => searchRuleBook(book, query), [book, query]);
+
+  useEffect(() => {
+    let cancelled = false;
+    if (book.documentText) {
+      setLoadedDocumentText(book.documentText);
+      setDocumentLoading(false);
+      return () => { cancelled = true; };
+    }
+    if (!book.documentTextLoader) {
+      setLoadedDocumentText('');
+      setDocumentLoading(false);
+      return () => { cancelled = true; };
+    }
+
+    setDocumentLoading(true);
+    book.documentTextLoader()
+      .then((text) => {
+        if (!cancelled) setLoadedDocumentText(text);
+      })
+      .catch(() => {
+        if (!cancelled) setLoadedDocumentText('');
+      })
+      .finally(() => {
+        if (!cancelled) setDocumentLoading(false);
+      });
+
+    return () => { cancelled = true; };
+  }, [book]);
 
   const processAreas = useMemo(
     () => Array.from(new Set(book.orders.map((order) => order.processArea))),
@@ -197,11 +234,11 @@ const RuleBookPage: React.FC<{ book: CourtRuleBook; categoryLabel: string }> = (
 
   return (
     <div className="bg-white text-neutral-900 min-h-screen py-8">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header with the search banner on top, as every rule book carries */}
         <div className="bg-yellow-100 border border-yellow-400/70 rounded-2xl p-6 sm:p-8 mb-8 shadow-xl">
           <Link
-            to={`/court-rules/${book.category}`}
+            to={backPath}
             className="inline-flex items-center gap-1.5 text-[11px] font-bold text-yellow-700 hover:text-yellow-800 uppercase tracking-wider"
           >
             <ArrowLeft className="w-3.5 h-3.5" />
@@ -212,14 +249,18 @@ const RuleBookPage: React.FC<{ book: CourtRuleBook; categoryLabel: string }> = (
             {book.courtName}
           </h1>
           <p className="text-[11px] text-yellow-700 font-mono mt-1">{editionLabel(book)}</p>
-          {!book.documentText && (
+          {!documentLoading && !loadedDocumentText && (
             <p className="text-xs sm:text-sm text-neutral-700 max-w-3xl mt-2 leading-relaxed">
               {book.summary}
             </p>
           )}
         </div>
 
-        {book.documentText ? (
+        {documentLoading ? (
+          <div className="mb-8 flex min-h-32 items-center justify-center border border-emerald-900/10 bg-[#f3f7ef] px-5 text-sm font-semibold text-emerald-950">
+            Loading the searchable source text…
+          </div>
+        ) : loadedDocumentText ? (
           <div className="mb-8">
             <Link to={`/documents/${book.id}`} className="mb-3 inline-flex items-center gap-1 text-xs font-black uppercase tracking-wide text-yellow-800 hover:text-yellow-950">
               Open dedicated reader <ChevronRight className="h-3.5 w-3.5" />
@@ -228,8 +269,8 @@ const RuleBookPage: React.FC<{ book: CourtRuleBook; categoryLabel: string }> = (
               title={editionLabel(book)}
               documentLabel={`${book.courtName}${book.year ? ` · ${book.year}` : ''} · Official source text`}
               documentId={`rules-${book.id}`}
-              backPath={`/court-rules/${book.category}`}
-              documentText={book.documentText}
+              backPath={backPath}
+              documentText={loadedDocumentText}
               documentPath={book.documentPath}
               pageCount={book.documentPages}
             />
@@ -244,7 +285,7 @@ const RuleBookPage: React.FC<{ book: CourtRuleBook; categoryLabel: string }> = (
           </div>
         ) : null}
 
-        {!book.documentText && (
+        {!documentLoading && !loadedDocumentText && (
           <>
             <div className="bg-yellow-100 border border-yellow-400/70 rounded-2xl p-6 sm:p-8 mb-8 shadow-xl">
               <p className="text-[11px] font-bold uppercase tracking-wider text-yellow-700">

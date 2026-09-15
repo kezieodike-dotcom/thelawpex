@@ -47,14 +47,14 @@ test('the requested Laws of the Federation documents are registered with full te
   const laws = await readFile(projectFile('src/data/lawsLibrary.ts'), 'utf8');
 
   for (const law of requestedLaws) {
-    assert.match(laws, new RegExp(`import \\{ ${law.textImport} \\}`));
+    assert.match(laws, new RegExp(`documentTextLoader: \\(\\) => import\\('./${law.textImport}'\\)`));
     assert.match(laws, new RegExp(`id: '${law.id}'[\\s\\S]*title: '${law.title}'`));
     assert.match(
       laws,
       new RegExp(`id: '${law.id}'[\\s\\S]*documentPath: '${law.documentPath.replaceAll('/', '\\/')}'`),
     );
     assert.match(laws, new RegExp(`id: '${law.id}'[\\s\\S]*documentPages: \\d+`));
-    assert.match(laws, new RegExp(`id: '${law.id}'[\\s\\S]*documentText: ${law.textImport}`));
+    assert.match(laws, new RegExp(`id: '${law.id}'[\\s\\S]*module\\.${law.textImport}`));
 
     const pdf = await stat(projectFile(law.pdfPath));
     assert.ok(pdf.size > 100_000, `${law.pdfPath} should contain the uploaded source PDF`);
@@ -70,6 +70,6 @@ test('the federal laws page renders full law text before falling back to PDF-onl
   const view = await readFile(projectFile('src/components/modules/NigerianLawsView.tsx'), 'utf8');
 
   assert.match(view, /law\.documentText \?/);
-  assert.match(view, /OfficialTextReader/);
-  assert.match(view, /documentText=\{law\.documentText\}/);
+  assert.match(view, /LegalDocumentReader/);
+  assert.match(view, /documentText=\{loadedDocumentText\}/);
 });

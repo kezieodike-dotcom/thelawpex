@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Link, Navigate, useNavigate } from 'react-router-dom';
 import {
   Search,
@@ -36,7 +36,7 @@ const CASE_PAGE_BG =
 export const CaseLawView: React.FC<CaseLawViewProps> = ({ courtSlug, caseId }) => {
   if (caseId) {
     const judgment = LANDMARK_CASES.find((item) => item.id === caseId);
-    if (judgment) return <CaseDetail judgment={judgment} />;
+    if (judgment) return <CaseDetail key={judgment.id} judgment={judgment} />;
   }
 
   if (courtSlug) return <Navigate replace to="/case-law" />;
@@ -297,27 +297,21 @@ const CaseDetail: React.FC<{ judgment: CaseLaw }> = ({ judgment }) => {
   const fullJudgment = useMemo(() => mergeCaseJudgmentDocument(judgment, document), [document, judgment]);
   const [tab, setTab] = useState<CaseDetailTab>('ratio');
 
-  useEffect(() => {
-    let isMounted = true;
-
-    if (!judgment.hasFullJudgment || document) return undefined;
-    if (!['ratio', 'principles', 'whole'].includes(tab)) return undefined;
+  const loadFullJudgment = useCallback(() => {
+    if (!judgment.hasFullJudgment || document || documentStatus === 'loading') return;
 
     setDocumentStatus('loading');
     loadCaseJudgmentDocument(judgment.id)
       .then((loaded) => {
-        if (!isMounted) return;
         setDocument(loaded);
         setDocumentStatus(loaded ? 'ready' : 'error');
       })
-      .catch(() => {
-        if (isMounted) setDocumentStatus('error');
-      });
+      .catch(() => setDocumentStatus('error'));
+  }, [document, documentStatus, judgment.hasFullJudgment, judgment.id]);
 
-    return () => {
-      isMounted = false;
-    };
-  }, [document, judgment.hasFullJudgment, judgment.id, tab]);
+  useEffect(() => {
+    if (tab === 'principles' || tab === 'whole') loadFullJudgment();
+  }, [loadFullJudgment, tab]);
 
   const caseSectionTabs: { id: CaseDetailTab; icon: React.ElementType; label: string; mobileLabel: string; kicker: string }[] = [
     { id: 'ratio', icon: Award, label: 'Ratio decidendi', mobileLabel: 'Ratio', kicker: 'Binding reasons' },
@@ -414,7 +408,14 @@ const CaseDetail: React.FC<{ judgment: CaseLaw }> = ({ judgment }) => {
             </div>
 
             <section className="min-w-0" aria-live="polite">
-              {tab === 'ratio' && <RatioPanel judgment={fullJudgment} onReadFullJudgment={() => selectCaseSection('whole')} />}
+              {tab === 'ratio' && (
+                <RatioPanel
+                  judgment={fullJudgment}
+                  isSourceReady={!judgment.hasFullJudgment || documentStatus === 'ready'}
+                  onOpenRatio={loadFullJudgment}
+                  onReadFullJudgment={() => selectCaseSection('whole')}
+                />
+              )}
               {tab === 'digest' && <DigestPanel judgment={judgment} />}
               {tab === 'principles' && <PrinciplesPanel judgment={judgment} />}
               {tab === 'authorities' && <AuthoritiesPanel judgment={judgment} />}
@@ -538,20 +539,44 @@ const PrinciplesPanel: React.FC<{ judgment: CaseLaw }> = ({ judgment }) => {
   );
 };
 
-const RatioPanel: React.FC<{ judgment: CaseLaw; onReadFullJudgment: () => void }> = ({
+const RATIO_LIST_PAGE_SIZE = 12;
+
+const ratioPreview = (body?: string) => {
+  if (!body) return '';
+  const normalized = body.replace(/\s+/g, ' ').trim();
+  return normalized.length > 280 ? `${normalized.slice(0, 277).trimEnd()}...` : normalized;
+};
+
+const RatioPanel: React.FC<{
+  judgment: CaseLaw;
+  isSourceReady: boolean;
+  onOpenRatio: () => void;
+  onReadFullJudgment: () => void;
+}> = ({
   judgment,
+  isSourceReady,
+  onOpenRatio: ensureSourceLoaded,
   onReadFullJudgment,
 }) => {
   const [activeRatioIndex, setActiveRatioIndex] = useState<number | null>(null);
+  const [visibleRatioCount, setVisibleRatioCount] = useState(RATIO_LIST_PAGE_SIZE);
   const citation = `${judgment.title} ${judgment.citation}`;
-  const ratioPoints = useMemo(
-    () => getExactRatioPoints(judgment).map((point) => withCurrentRatioCitation(judgment, point)),
-    [judgment],
-  );
-  const ratioDecidendi = ratioPoints.map((point) => point.fullText);
-  const activeRatio = activeRatioIndex === null ? undefined : ratioPoints[activeRatioIndex];
+  const ratioPoints = useMemo(() => getExactRatioPoints(judgment), [judgment]);
+  const visibleRatioPoints = ratioPoints.slice(0, visibleRatioCount);
+  const activeRatio = useMemo(() => {
+    if (activeRatioIndex === null) return undefined;
+    const point = ratioPoints[activeRatioIndex];
+    return point && isSourceReady ? withCurrentRatioCitation(judgment, point) : point;
+  }, [activeRatioIndex, isSourceReady, judgment, ratioPoints]);
+
+  useEffect(() => {
+    setActiveRatioIndex(null);
+    setVisibleRatioCount(RATIO_LIST_PAGE_SIZE);
+  }, [judgment.id]);
+
   const openRatio = (index: number) => {
     setActiveRatioIndex(index);
+    ensureSourceLoaded();
     window.requestAnimationFrame(() => {
       document.getElementById('ratio-decidendi-reader')?.scrollIntoView({ block: 'start' });
     });
@@ -564,7 +589,7 @@ const RatioPanel: React.FC<{ judgment: CaseLaw; onReadFullJudgment: () => void }
     >
       {ratioPoints.length > 0 && !activeRatio ? (
         <div className="min-h-[68vh] divide-y divide-amber-100 rounded-2xl border border-amber-200 bg-white">
-            {ratioPoints.map((point, index) => (
+            {visibleRatioPoints.map((point, index) => (
               <button
                 key={`${point.heading}-${index}`}
                 type="button"
@@ -580,8 +605,8 @@ const RatioPanel: React.FC<{ judgment: CaseLaw; onReadFullJudgment: () => void }
                   </span>
                   <RatioHeadingText heading={point.heading} />
                   {point.body && (
-                    <span className="line-clamp-1 max-w-5xl font-[Georgia,ui-serif,serif] text-sm leading-7 text-neutral-500 sm:text-base">
-                      {point.body}
+                    <span className="max-w-5xl font-[Georgia,ui-serif,serif] text-sm leading-7 text-neutral-500 sm:text-base">
+                      {ratioPreview(point.body)}
                     </span>
                   )}
                   <span className="mt-auto inline-flex items-center justify-end text-amber-700">
@@ -590,6 +615,20 @@ const RatioPanel: React.FC<{ judgment: CaseLaw; onReadFullJudgment: () => void }
                 </span>
               </button>
             ))}
+            {visibleRatioCount < ratioPoints.length && (
+              <div className="flex items-center justify-between gap-4 bg-amber-50/60 p-4 sm:p-5">
+                <p className="text-sm font-bold text-neutral-600">
+                  Showing {visibleRatioPoints.length} of {ratioPoints.length} ratios
+                </p>
+                <button
+                  type="button"
+                  onClick={() => setVisibleRatioCount((count) => Math.min(count + RATIO_LIST_PAGE_SIZE, ratioPoints.length))}
+                  className="lawpex-focus-ring min-h-11 rounded-lg bg-neutral-950 px-4 py-2 text-sm font-black text-yellow-200 transition hover:bg-neutral-800"
+                >
+                  Show more ratios
+                </button>
+              </div>
+            )}
         </div>
       ) : activeRatio ? (
         <div id="ratio-decidendi-reader" className="scroll-mt-24 min-h-[70vh]">
@@ -626,25 +665,25 @@ const RatioPanel: React.FC<{ judgment: CaseLaw; onReadFullJudgment: () => void }
                 {activeRatio.body}
               </blockquote>
             )}
-            {activeRatio.attribution && (
+            {isSourceReady && activeRatio.attribution ? (
               <p className="mt-8 text-base font-black leading-7 text-amber-800 sm:text-lg">
                 {activeRatio.attribution}
               </p>
+            ) : (
+              <p className="mt-8 text-sm font-bold text-amber-800">Preparing the verified page and paragraph reference...</p>
             )}
           </article>
 
-          <DocumentActions
-            className="mt-4"
-            html={buildWordList('Ratio decidendi', citation, [activeRatio.fullText])}
-            filename={`${judgment.title} - ratio ${activeRatioIndex + 1}`}
-            hint="Copy this ratio to MS Word."
-          />
+          {isSourceReady && (
+            <DocumentActions
+              className="mt-4"
+              html={buildWordList('Ratio decidendi', citation, [activeRatio.fullText])}
+              filename={`${judgment.title} - ratio ${activeRatioIndex + 1}`}
+              hint="Copy this ratio to MS Word."
+            />
+          )}
         </div>
-      ) : (
-        <div className="w-full rounded-2xl border border-amber-300 bg-[#fff9d7] p-4 sm:p-6 lg:p-7">
-          <NumberedList items={ratioDecidendi} italic />
-        </div>
-      )}
+      ) : null}
     </Section>
   );
 };
@@ -776,7 +815,7 @@ const getDisplayJudgmentPages = (judgment: CaseLaw): NonNullable<CaseLaw['judgme
   judgment.judgmentPages?.filter((page) => page.page.toLowerCase() !== 'headnote') ?? [];
 
 const JUDGE_JUDGMENT_HEADING =
-  String.raw`(?:[A-Z][A-Z\s.'-]+,\s+J\.?\s*(?:S\.?\s*C|C\.?\s*A)\.?(?:\s*\([^)]*(?:Leading\s+)?Judgment[^)]*\))?\s*:)`;
+  String.raw`(?:[A-Z][A-Z\s.'-]+,\s+(?:J\.?\s*(?:S\.?\s*C|C\.?\s*A)|F\.?\s*J|C\.?\s*J\.?\s*F)\.?(?:\s*\([^)]*(?:(?:Leading|Lead)\s+(?:Judgment|Ruling))[^)]*\))?\s*:)`;
 const LEADING_JUDGMENT_HEADING = new RegExp(String.raw`^(?:[A-G]\s+)?${JUDGE_JUDGMENT_HEADING}`, 'i');
 const INLINE_LEADING_JUDGMENT_HEADING = new RegExp(String.raw`(\s+)((?:[A-G]\s+)?${JUDGE_JUDGMENT_HEADING})`, 'gi');
 
@@ -889,6 +928,9 @@ const cleanPartyLine = (line: string) =>
   line
     .replace(/\b(APPELLANTS?|RESPONDENTS?)\b(?:\(\s*S\s*\))?/gi, '')
     .replace(/\b(APPELLANT|RESPONDENT)\(\s*S\s*\)/gi, '')
+    // Some imported reports run the party role into the final name (for example,
+    // "MOJEKWUAPPELLANT"). The opening-page grid supplies the role separately.
+    .replace(/(?:APPELLANTS?|RESPONDENTS?)(?:\(\s*S\s*\))?$/gi, '')
     .replace(/\s+/g, ' ')
     .trim();
 
@@ -975,26 +1017,72 @@ const getSourceJudgmentBlocks = (text: string): SourceJudgmentBlock[] =>
     .split(/\n{2,}/)
     .map((block) => block.trim())
     .filter(Boolean)
-    .map((block) => block.replace(/\n+/g, ' ').replace(/\s+/g, ' ').trim())
-    .map((block) => {
+    .map((rawBlock) => {
+      const explicitSourceLabel = rawBlock.match(/^([A-G])(?:\t|[ \u00a0]{2,}|\r?\n)\s*([\s\S]+)/);
+      const block = rawBlock.replace(/\n+/g, ' ').replace(/\s+/g, ' ').trim();
       const isHeading =
         block.length < 96 &&
         (/^[A-Z][A-Z0-9\s.,'():;/&-]+$/.test(block) ||
           /^(SUMMARY OF JUDGMENT|INTRODUCTION:|FACTS:?|ISSUES:?|DECISION\/HELD:|RATIO DECIDENDI)$/i.test(block));
-      const sourceLabel = block.match(/^([A-G])\s+(.+)/);
+      const sourceLabel = explicitSourceLabel?.[1];
+      const sourceText = explicitSourceLabel?.[2]?.replace(/\s+/g, ' ').trim();
 
       return {
         text: block,
         isHeading,
         isRatioHeading: /^RATIO DECIDENDI$/i.test(block),
-        startsLeadingJudgment: isLeadingJudgmentStart(sourceLabel?.[2] ?? block),
-        sourceLabel: sourceLabel?.[1],
-        sourceText: sourceLabel?.[2],
+        startsLeadingJudgment: isLeadingJudgmentStart(sourceText ?? block),
+        sourceLabel,
+        sourceText,
       };
     });
 
+const splitSourceBlockForPagination = (
+  block: SourceJudgmentBlock,
+  targetCharacters = 4_400,
+): SourceJudgmentBlock[] => {
+  if (block.text.length <= targetCharacters || block.isHeading) return [block];
+
+  const chunks: string[] = [];
+  let current = '';
+  const appendChunk = (text: string) => {
+    const clean = text.trim();
+    if (!clean) return;
+    const next = current ? `${current} ${clean}` : clean;
+    if (current && next.length > targetCharacters) {
+      chunks.push(current);
+      current = clean;
+    } else {
+      current = next;
+    }
+  };
+
+  splitIntoSentences(block.text).forEach((sentence) => {
+    if (sentence.length > targetCharacters) {
+      if (current) {
+        chunks.push(current);
+        current = '';
+      }
+      splitLongReportText(sentence, targetCharacters).forEach((chunk) => chunks.push(chunk));
+      return;
+    }
+    appendChunk(sentence);
+  });
+  if (current) chunks.push(current);
+
+  return chunks.map((text, index) => ({
+    ...block,
+    text,
+    isHeading: index === 0 ? block.isHeading : false,
+    isRatioHeading: index === 0 ? block.isRatioHeading : false,
+    startsLeadingJudgment: index === 0 ? block.startsLeadingJudgment : false,
+    sourceLabel: index === 0 ? block.sourceLabel : undefined,
+    sourceText: block.sourceText ? text.replace(/^[A-G]\s+/, '') : undefined,
+  }));
+};
+
 const paginateSourceJudgmentText = (text: string, sourceLinePadding = 90) => {
-  const blocks = getSourceJudgmentBlocks(text);
+  const blocks = getSourceJudgmentBlocks(text).flatMap((block) => splitSourceBlockForPagination(block));
   const pages: { blocks: SourceJudgmentBlock[] }[] = [];
   let current: SourceJudgmentBlock[] = [];
   let pageSize = 0;
@@ -1111,7 +1199,17 @@ const isRatioPointHeading = (block: string) => {
     clean.startsWith('\u00e2\u20ac\u0153')
   ) return false;
   const parts = clean.split(RATIO_HEADING_SEPARATOR).map((part) => part.trim()).filter(Boolean);
-  return parts.length >= 3 && /^[A-Z0-9]/.test(parts[0]);
+  const category = parts[0] ?? '';
+  const subcategory = parts[1] ?? '';
+  return (
+    parts.length >= 3 &&
+    clean.length <= 520 &&
+    category.length <= 100 &&
+    subcategory.length <= 160 &&
+    category === category.toUpperCase() &&
+    subcategory === subcategory.toUpperCase() &&
+    /^[A-Z0-9]/.test(category)
+  );
 };
 
 const stripSourceParagraphLead = (line: string) => line.replace(/^([A-G])\s+/, '').trim();
@@ -1141,14 +1239,28 @@ const getSourceRatioBlocks = (judgment: CaseLaw) => {
 
 const ratioPointFromText = (text: string): RatioPoint => {
   const clean = text.trim();
-  const headingMatch = clean.match(/^([\s\S]{16,260}?(?:-|\u2014|\u2013|\u00e2\u20ac\u201d|\u00e2\u20ac\u201c)\s+(?:Whether|Ingredients)[\s\S]*?)(?=\n+["\u201c\u00e2\u20ac\u0153])/i);
-  const heading = headingMatch?.[1]?.replace(/\s+/g, ' ').trim() || clean.replace(/\s+/g, ' ').slice(0, 180);
-  const body = headingMatch ? clean.slice(headingMatch[0].length).trim() : clean;
+  const firstLineBreak = clean.search(/\r?\n/);
+  const sourceHeading = firstLineBreak > -1 ? clean.slice(0, firstLineBreak).trim() : '';
+  const headingMatch = clean.match(/^([\s\S]{16,520}?(?:-|\u2014|\u2013|\u00e2\u20ac\u201d|\u00e2\u20ac\u201c)\s+(?:Whether|Ingredients)[\s\S]*?)(?=\n+["\u201c\u00e2\u20ac\u0153])/i);
+  const heading = (isRatioPointHeading(sourceHeading) ? sourceHeading : headingMatch?.[1] ?? clean.slice(0, 180))
+    .replace(/\s+/g, ' ')
+    .trim();
+  const remainder = isRatioPointHeading(sourceHeading)
+    ? clean.slice(firstLineBreak).trim()
+    : headingMatch
+      ? clean.slice(headingMatch[0].length).trim()
+      : clean;
+  const attributionMatch = remainder.match(/\n+((?:[A-G]\s+)?Per\b[\s\S]*?)\s*$/i);
+  const attribution = attributionMatch?.[1]?.replace(/^[A-G]\s+/, '').replace(/\s+/g, ' ').trim();
+  const body = attributionMatch
+    ? remainder.slice(0, attributionMatch.index).trim()
+    : remainder;
 
   return {
     heading,
     body,
-    fullText: clean,
+    attribution,
+    fullText: [heading, body, attribution].filter(Boolean).join('\n\n'),
   };
 };
 
@@ -1184,6 +1296,11 @@ const getSourceRatioPoints = (judgment: CaseLaw): RatioPoint[] => {
 };
 
 const getExactRatioPoints = (judgment: CaseLaw): RatioPoint[] => {
+  const importedReportIds = new Set(['case-008', 'case-009', 'case-010', 'case-011', 'case-012']);
+  if (importedReportIds.has(judgment.id) && judgment.ratioDecidendi?.length) {
+    return judgment.ratioDecidendi.map(ratioPointFromText);
+  }
+
   const sourcePoints = getSourceRatioPoints(judgment);
   if (sourcePoints.length) return sourcePoints;
 
@@ -1191,6 +1308,14 @@ const getExactRatioPoints = (judgment: CaseLaw): RatioPoint[] => {
 };
 
 const getExactPrincipleItems = (judgment: CaseLaw) => {
+  // The imported reports carry their source headnote propositions in
+  // keyPrinciples. Keep those concise propositions in the Principles tab;
+  // the verbatim ratio text remains available in the separate Ratio tab.
+  const importedReportIds = new Set(['case-008', 'case-009', 'case-010', 'case-011', 'case-012']);
+  if (importedReportIds.has(judgment.id) && judgment.keyPrinciples?.length) {
+    return judgment.keyPrinciples;
+  }
+
   const sourcePrinciples = getSourcePrincipleItems(judgment);
   if (sourcePrinciples.length) return sourcePrinciples;
 
@@ -1226,7 +1351,7 @@ type ReportParagraph = {
   text: string;
 };
 
-const PAGE_CITATION_PATTERN = /\((?:Pp?\.|Pages?)\s*[^)]*?paras?\.?\s*[^)]*?\)/gi;
+const PAGE_CITATION_PATTERN = /\((?:Pp?|Pages?)\.?\s*[^)]*?,?\s*paras?\.?\s*[^)]*?\)/gi;
 
 const normalizeCitationText = (text: string) =>
   text
@@ -1258,22 +1383,29 @@ const relevantLookupNeedles = (text: string) => {
   if (!normalized) return [];
   if (normalized.length <= 140) return [normalized];
 
-  return [
+  const excerpts = [
     excerptNeedle(normalized, 0),
     excerptNeedle(normalized, Math.max(0, normalized.length - 170)),
     excerptNeedle(normalized, Math.max(0, Math.floor(normalized.length / 2) - 70)),
-  ].filter((needle, index, needles) => needle.length > 32 && needles.indexOf(needle) === index);
+  ];
+  const words = normalized.split(' ').filter(Boolean);
+  const wordWindowStarts = [0, Math.floor(words.length / 3), Math.floor((words.length * 2) / 3), Math.max(0, words.length - 16)];
+  const wordWindows = wordWindowStarts.map((start) => words.slice(start, start + 16).join(' '));
+
+  return [...excerpts, ...wordWindows].filter(
+    (needle, index, needles) => needle.length > 32 && needles.indexOf(needle) === index,
+  );
 };
 
-const paragraphCitationText = (start?: string, end?: string) => {
+const paragraphCitationText = (start?: string, end?: string, samePage = true) => {
   if (!start) return '';
-  if (!end || start === end) return `para. ${start}`;
+  if (!end || (samePage && start === end)) return `para. ${start}`;
   return `paras. ${start}-${end}`;
 };
 
 const reportCitationText = ({ start, end }: ReportCitationSpan) => {
   const samePage = start.pageNumber === end.pageNumber;
-  const paragraphText = paragraphCitationText(start.label, end.label);
+  const paragraphText = paragraphCitationText(start.label, end.label, samePage);
 
   if (samePage) {
     return paragraphText ? `(P. ${start.pageNumber}, ${paragraphText})` : `(P. ${start.pageNumber})`;
@@ -1836,7 +1968,10 @@ const structuredLeadingJudgmentPageIndex = (
   return index > -1 ? index : Number.POSITIVE_INFINITY;
 };
 
-const currentReportCitationTargets = (judgment: CaseLaw): ReportCitationTarget[] => {
+const buildCurrentReportCitationTargets = (
+  judgment: CaseLaw,
+  includePreLeadingJudgment = false,
+): ReportCitationTarget[] => {
   if (judgment.verbatimWholeCase || judgment.preserveSourceFormatting) {
     const bodyText = getSourceCaseBodyText(judgment.fullJudgmentText ?? '');
     const sourcePages = paginateJudgmentSourceText(judgment, bodyText);
@@ -1846,7 +1981,7 @@ const currentReportCitationTargets = (judgment: CaseLaw): ReportCitationTarget[]
       const pageNumber = pageIndex + 2;
       const isLeadPage = pageIndex >= leadPageIndex;
 
-      if (!isLeadPage) return [];
+      if (!includePreLeadingJudgment && !isLeadPage) return [];
 
       const labelledTargets = citationTargetsFromLabelledSegments(
         pageNumber,
@@ -1871,7 +2006,7 @@ const currentReportCitationTargets = (judgment: CaseLaw): ReportCitationTarget[]
     const pageNumber = pageIndex + 2;
     const isLeadPage = pageIndex >= leadPageIndex;
 
-    if (!isLeadPage) return [];
+    if (!includePreLeadingJudgment && !isLeadPage) return [];
 
     if (hasSourceLabels) {
       const labelledTargets = citationTargetsFromLabelledSegments(
@@ -1894,6 +2029,25 @@ const currentReportCitationTargets = (judgment: CaseLaw): ReportCitationTarget[]
       reportParagraphsFromStructuredPage(page.paragraphs, hasSourceLabels),
     );
   });
+};
+
+const reportCitationTargetsCache = new WeakMap<
+  CaseLaw,
+  { leadingOnly?: ReportCitationTarget[]; complete?: ReportCitationTarget[] }
+>();
+
+const currentReportCitationTargets = (
+  judgment: CaseLaw,
+  includePreLeadingJudgment = false,
+): ReportCitationTarget[] => {
+  const cacheKey = includePreLeadingJudgment ? 'complete' : 'leadingOnly';
+  const cached = reportCitationTargetsCache.get(judgment);
+  const cachedTargets = cached?.[cacheKey];
+  if (cachedTargets) return cachedTargets;
+
+  const targets = buildCurrentReportCitationTargets(judgment, includePreLeadingJudgment);
+  reportCitationTargetsCache.set(judgment, { ...cached, [cacheKey]: targets });
+  return targets;
 };
 
 const pageBandCitationTargets = (pageNumber: number, text: string): ReportCitationTarget[] => {
@@ -1924,13 +2078,15 @@ const targetForNormalizedOffset = (
   return ranges.find((range) => offset < range.end)?.target ?? ranges[ranges.length - 1]?.target;
 };
 
-const findCurrentReportCitation = (judgment: CaseLaw, sourceText: string): ReportCitationSpan | undefined => {
+const findReportCitationInTargets = (
+  targets: ReportCitationTarget[],
+  sourceText: string,
+): ReportCitationSpan | undefined => {
   const needles = relevantLookupNeedles(sourceText);
   const startNeedle = needles[0];
   const endNeedle = needles[1] ?? startNeedle;
   if (!startNeedle) return undefined;
 
-  const targets = currentReportCitationTargets(judgment);
   let flatText = '';
   const ranges: Array<{ start: number; end: number; target: ReportCitationTarget }> = [];
 
@@ -1944,24 +2100,70 @@ const findCurrentReportCitation = (judgment: CaseLaw, sourceText: string): Repor
     ranges.push({ start, end: flatText.length, target });
   });
 
-  const startOffset = flatText.indexOf(startNeedle);
-  if (startOffset > -1) {
-    const endOffset = flatText.indexOf(endNeedle, startOffset);
-    const start = targetForNormalizedOffset(ranges, startOffset);
-    const end = targetForNormalizedOffset(
-      ranges,
-      endOffset > -1 ? endOffset + endNeedle.length - 1 : startOffset + startNeedle.length - 1,
-    );
+  const locatedNeedles = needles
+    .map((needle) => ({ needle, offset: flatText.indexOf(needle) }))
+    .filter(({ offset }) => offset > -1);
+  if (!locatedNeedles.length) return undefined;
 
-    if (start && end) return { start, end };
+  const firstLocated = locatedNeedles[0];
+  const lastLocated = [...locatedNeedles]
+    .reverse()
+    .find(({ offset }) => offset >= firstLocated.offset) ?? firstLocated;
+  const start = targetForNormalizedOffset(ranges, firstLocated.offset);
+  const end = targetForNormalizedOffset(
+    ranges,
+    lastLocated.offset + lastLocated.needle.length - 1,
+  );
+
+  return start && end ? { start, end } : undefined;
+};
+
+const findCurrentReportCitation = (judgment: CaseLaw, sourceText: string): ReportCitationSpan | undefined =>
+  findReportCitationInTargets(currentReportCitationTargets(judgment), sourceText) ??
+  findReportCitationInTargets(currentReportCitationTargets(judgment, true), sourceText);
+
+const findAnyCurrentReportCitation = (judgment: CaseLaw, sourceText: string): ReportCitationSpan | undefined =>
+  findReportCitationInTargets(currentReportCitationTargets(judgment, true), sourceText);
+
+const findReportPositionCitation = (judgment: CaseLaw, heading: string): ReportCitationSpan | undefined => {
+  if (!heading.trim() || !(judgment.verbatimWholeCase || judgment.preserveSourceFormatting)) return undefined;
+
+  const bodyText = getSourceCaseBodyText(judgment.fullJudgmentText ?? '');
+  const pages = paginateJudgmentSourceText(judgment, bodyText);
+  const headingNeedle = normalizeCitationLookupText(heading);
+
+  for (const [pageIndex, page] of pages.entries()) {
+    const headingBlock = page.blocks.find((block) =>
+      normalizeCitationLookupText(block.text).includes(headingNeedle),
+    );
+    if (!headingBlock) continue;
+
+    const pageNumber = pageIndex + 2;
+    const targets = citationTargetsFromReportParagraphs(
+      pageNumber,
+      reportParagraphsFromSourceBlocks(page.blocks),
+    );
+    const target = targets[0];
+    if (target) return { start: target, end: target };
   }
 
-  const fallbackNeedle = needles.find((needle) => flatText.includes(needle));
-  if (!fallbackNeedle) return undefined;
+  return undefined;
+};
 
-  const fallbackOffset = flatText.indexOf(fallbackNeedle);
-  const fallbackTarget = targetForNormalizedOffset(ranges, fallbackOffset);
-  return fallbackTarget ? { start: fallbackTarget, end: fallbackTarget } : undefined;
+const resolveRatioReportCitation = (judgment: CaseLaw, point: RatioPoint) => {
+  const manualCitation = manualRatioCitation(judgment, point);
+  const target =
+    findCurrentReportCitation(judgment, point.body || point.fullText) ??
+    findCurrentReportCitation(judgment, point.fullText) ??
+    findAnyCurrentReportCitation(judgment, point.body || point.fullText) ??
+    findAnyCurrentReportCitation(judgment, point.fullText) ??
+    findAnyCurrentReportCitation(judgment, point.heading) ??
+    findReportPositionCitation(judgment, point.heading);
+
+  return {
+    citation: manualCitation ?? (target ? reportCitationText(target) : undefined),
+    resolved: Boolean(manualCitation || target),
+  };
 };
 
 const withCurrentReportCitations = (judgment: CaseLaw, items: string[]) => {
@@ -2026,11 +2228,8 @@ const withCurrentSourcePageCitations = (
 };
 
 const withCurrentRatioCitation = (judgment: CaseLaw, point: RatioPoint): RatioPoint => {
-  const manualCitation = manualRatioCitation(judgment, point);
-  const target =
-    findCurrentReportCitation(judgment, point.body || point.fullText) ??
-    findCurrentReportCitation(judgment, point.fullText);
-  if (!manualCitation && !target) {
+  const { citation: currentCitation, resolved } = resolveRatioReportCitation(judgment, point);
+  if (!resolved || !currentCitation) {
     const attribution = normalizeRawReportCitationGrammar(point.attribution ?? '');
 
     return {
@@ -2040,7 +2239,6 @@ const withCurrentRatioCitation = (judgment: CaseLaw, point: RatioPoint): RatioPo
     };
   }
 
-  const currentCitation = manualCitation ?? (target ? reportCitationText(target) : undefined);
   const replaceCitation = (text?: string) => {
     if (!text) return text;
     PAGE_CITATION_PATTERN.lastIndex = 0;
@@ -2059,23 +2257,42 @@ const withCurrentRatioCitation = (judgment: CaseLaw, point: RatioPoint): RatioPo
   };
 };
 
+export const auditCaseRatioCitations = (judgment: CaseLaw) =>
+  getExactRatioPoints(judgment).map((point) => {
+    const corrected = withCurrentRatioCitation(judgment, point);
+    const { resolved } = resolveRatioReportCitation(judgment, point);
+
+    return {
+      heading: corrected.heading,
+      attribution: corrected.attribution ?? '',
+      resolved,
+    };
+  });
+
+export const paginateCaseSourceForAudit = (judgment: CaseLaw) =>
+  paginateJudgmentSourceText(judgment, getSourceCaseBodyText(judgment.fullJudgmentText ?? '')).map((page) => ({
+    characterCount: page.blocks.reduce((total, block) => total + block.text.length, 0),
+  }));
+
 const WholeCasePanel: React.FC<{
   judgment: CaseLaw;
   status?: 'idle' | 'loading' | 'ready' | 'error';
 }> = ({ judgment, status = 'ready' }) => {
   const citation = `${judgment.title} ${judgment.citation}`;
-  const judgmentText = getJudgmentTextForCopy(judgment);
+  const judgmentText = useMemo(() => getJudgmentTextForCopy(judgment), [judgment]);
   const isLoading = status === 'idle' || status === 'loading';
-  const bodyPages = getJudgmentBodyPages(judgment);
-  const hasSourceLabels = usesSourceParagraphLabels(bodyPages);
-  const sourceCaseBodyText = getSourceCaseBodyText(judgment.fullJudgmentText ?? '');
-  const sourcePages =
-    (judgment.verbatimWholeCase || judgment.preserveSourceFormatting) && judgment.fullJudgmentText
-      ? paginateJudgmentSourceText(judgment, sourceCaseBodyText)
-      : [];
-  const sourcePagesWithCurrentCitations = withCurrentSourcePageCitations(judgment, sourcePages);
-  const sourceLeadPageIndex = sourceLeadingJudgmentPageIndex(sourcePages);
-  const bodyLeadPageIndex = structuredLeadingJudgmentPageIndex(bodyPages);
+  const bodyPages = useMemo(() => getJudgmentBodyPages(judgment), [judgment]);
+  const hasSourceLabels = useMemo(() => usesSourceParagraphLabels(bodyPages), [bodyPages]);
+  const sourcePages = useMemo(() => {
+    if (!(judgment.verbatimWholeCase || judgment.preserveSourceFormatting) || !judgment.fullJudgmentText) return [];
+    return paginateJudgmentSourceText(judgment, getSourceCaseBodyText(judgment.fullJudgmentText));
+  }, [judgment]);
+  const sourcePagesWithCurrentCitations = useMemo(
+    () => withCurrentSourcePageCitations(judgment, sourcePages),
+    [judgment, sourcePages],
+  );
+  const sourceLeadPageIndex = useMemo(() => sourceLeadingJudgmentPageIndex(sourcePages), [sourcePages]);
+  const bodyLeadPageIndex = useMemo(() => structuredLeadingJudgmentPageIndex(bodyPages), [bodyPages]);
   const totalPages = sourcePages.length
     ? sourcePages.length + 1
     : bodyPages.length
@@ -2083,55 +2300,6 @@ const WholeCasePanel: React.FC<{
       : judgment.fullJudgmentText
         ? 2
         : 1;
-  const [activeReportPage, setActiveReportPage] = useState(1);
-
-  useEffect(() => {
-    setActiveReportPage(1);
-  }, [judgment.id, totalPages]);
-
-  useEffect(() => {
-    if (isLoading || status === 'error') return undefined;
-
-    const container = document.querySelector<HTMLElement>(`[data-case-report-id="${judgment.id}"]`);
-    if (!container) return undefined;
-
-    const pages = Array.from(container.querySelectorAll<HTMLElement>('[data-report-page-number]'));
-    if (!pages.length) return undefined;
-
-    const updateActivePage = () => {
-      const tracker = container.querySelector<HTMLElement>('[data-report-page-tracker]');
-      const trackerBottom = tracker?.getBoundingClientRect().bottom ?? 0;
-      const viewportBottom = window.innerHeight;
-      const visiblePage = pages.reduce(
-        (best, page) => {
-          const box = page.getBoundingClientRect();
-          const visibleHeight = Math.max(0, Math.min(box.bottom, viewportBottom) - Math.max(box.top, trackerBottom));
-          const distanceFromTracker = Math.abs(box.top - trackerBottom);
-
-          if (visibleHeight > best.visibleHeight) return { visibleHeight, distanceFromTracker, page };
-          if (visibleHeight === best.visibleHeight && distanceFromTracker < best.distanceFromTracker) {
-            return { visibleHeight, distanceFromTracker, page };
-          }
-
-          return best;
-        },
-        { visibleHeight: -1, distanceFromTracker: Number.POSITIVE_INFINITY, page: pages[0] },
-      ).page;
-
-      const pageNumber = Number(visiblePage.dataset.reportPageNumber);
-      if (Number.isFinite(pageNumber)) setActiveReportPage(pageNumber);
-    };
-
-    updateActivePage();
-    window.addEventListener('scroll', updateActivePage, { passive: true });
-    window.addEventListener('resize', updateActivePage);
-
-    return () => {
-      window.removeEventListener('scroll', updateActivePage);
-      window.removeEventListener('resize', updateActivePage);
-    };
-  }, [isLoading, judgment.id, status, totalPages]);
-
   return (
     <div className="space-y-5">
       <div className="border-b border-amber-100 pb-4">
@@ -2151,7 +2319,7 @@ const WholeCasePanel: React.FC<{
           </div>
         ) : (judgment.verbatimWholeCase || judgment.preserveSourceFormatting) && judgment.fullJudgmentText ? (
           <div className="overflow-visible bg-white" data-case-report-id={judgment.id}>
-            <ReportPageTracker judgment={judgment} pageNumber={activeReportPage} totalPages={totalPages} />
+            <ReportPageTracker judgment={judgment} totalPages={totalPages} />
             <CaseOpeningPage judgment={judgment} />
             {sourcePagesWithCurrentCitations.map((page, pageIndex) => {
               const shouldReparagraph = pageIndex >= sourceLeadPageIndex;
@@ -2174,7 +2342,7 @@ const WholeCasePanel: React.FC<{
           </div>
         ) : bodyPages.length ? (
           <div className="overflow-visible bg-white" data-case-report-id={judgment.id}>
-            <ReportPageTracker judgment={judgment} pageNumber={activeReportPage} totalPages={totalPages} />
+            <ReportPageTracker judgment={judgment} totalPages={totalPages} />
             <CaseOpeningPage judgment={judgment} />
             {bodyPages.map((page, pageIndex) => {
               const shouldReparagraph = pageIndex >= bodyLeadPageIndex;
@@ -2239,7 +2407,7 @@ const WholeCasePanel: React.FC<{
           </div>
         ) : (
           <div className="overflow-visible bg-white" data-case-report-id={judgment.id}>
-            <ReportPageTracker judgment={judgment} pageNumber={activeReportPage} totalPages={totalPages} />
+            <ReportPageTracker judgment={judgment} totalPages={totalPages} />
             <CaseOpeningPage judgment={judgment} />
             {judgment.fullJudgmentText ? (
               <CaseReportPage judgment={judgment} pageNumber={2}>
@@ -2270,28 +2438,73 @@ const WholeCasePanel: React.FC<{
 
 const ReportPageTracker: React.FC<{
   judgment: CaseLaw;
-  pageNumber: number;
   totalPages: number;
-}> = ({ judgment, pageNumber, totalPages }) => (
-  <div
-    className="sticky top-16 z-30 border-b-2 border-neutral-300 bg-white/95 px-3 py-2 backdrop-blur sm:px-8"
-    data-report-page-tracker
-  >
-    <div className="grid gap-1 sm:grid-cols-[1fr_auto_1fr] sm:items-center">
-      <span className="hidden sm:block" />
-      <p className="min-w-0 text-center font-[Georgia,ui-serif,serif] text-[11px] font-semibold uppercase tracking-[0.06em] text-neutral-600 sm:truncate sm:text-xs">
-        {reportTitle(judgment)}
-      </p>
-      <p className="shrink-0 text-center font-[Georgia,ui-serif,serif] text-[12px] font-semibold text-neutral-700 sm:text-right sm:text-sm">
-        Page{' '}
-        <span className="mx-1 inline-flex min-w-7 justify-center rounded-sm border border-neutral-300 bg-white px-1.5 py-0.5 font-sans text-[11px] font-bold leading-none text-neutral-800 sm:text-xs">
-          {pageNumber}
-        </span>{' '}
-        of {totalPages}
-      </p>
+}> = ({ judgment, totalPages }) => {
+  const trackerRef = useRef<HTMLDivElement>(null);
+  const [pageNumber, setPageNumber] = useState(1);
+
+  useEffect(() => {
+    setPageNumber(1);
+    const tracker = trackerRef.current;
+    const container = tracker?.closest<HTMLElement>('[data-case-report-id]');
+    if (!tracker || !container) return undefined;
+
+    const pages = Array.from(container.querySelectorAll<HTMLElement>('[data-report-page-number]'));
+    if (!pages.length) return undefined;
+
+    const updateActivePage = () => {
+      const trackerBottom = tracker.getBoundingClientRect().bottom;
+      const viewportBottom = window.innerHeight;
+      const visiblePage = pages.reduce(
+        (best, page) => {
+          const box = page.getBoundingClientRect();
+          const visibleHeight = Math.max(0, Math.min(box.bottom, viewportBottom) - Math.max(box.top, trackerBottom));
+          const distanceFromTracker = Math.abs(box.top - trackerBottom);
+
+          if (visibleHeight > best.visibleHeight) return { visibleHeight, distanceFromTracker, page };
+          if (visibleHeight === best.visibleHeight && distanceFromTracker < best.distanceFromTracker) {
+            return { visibleHeight, distanceFromTracker, page };
+          }
+          return best;
+        },
+        { visibleHeight: -1, distanceFromTracker: Number.POSITIVE_INFINITY, page: pages[0] },
+      ).page;
+
+      const nextPage = Number(visiblePage.dataset.reportPageNumber);
+      if (Number.isFinite(nextPage)) setPageNumber((current) => current === nextPage ? current : nextPage);
+    };
+
+    updateActivePage();
+    window.addEventListener('scroll', updateActivePage, { passive: true });
+    window.addEventListener('resize', updateActivePage);
+    return () => {
+      window.removeEventListener('scroll', updateActivePage);
+      window.removeEventListener('resize', updateActivePage);
+    };
+  }, [judgment.id, totalPages]);
+
+  return (
+    <div
+      ref={trackerRef}
+      className="sticky top-16 z-30 border-b-2 border-neutral-300 bg-white/95 px-3 py-2 backdrop-blur sm:px-8"
+      data-report-page-tracker
+    >
+      <div className="grid gap-1 sm:grid-cols-[1fr_auto_1fr] sm:items-center">
+        <span className="hidden sm:block" />
+        <p className="min-w-0 text-center font-[Georgia,ui-serif,serif] text-[11px] font-semibold uppercase tracking-[0.06em] text-neutral-600 sm:truncate sm:text-xs">
+          {reportTitle(judgment)}
+        </p>
+        <p className="shrink-0 text-center font-[Georgia,ui-serif,serif] text-[12px] font-semibold text-neutral-700 sm:text-right sm:text-sm">
+          Page{' '}
+          <span className="mx-1 inline-flex min-w-7 justify-center rounded-sm border border-neutral-300 bg-white px-1.5 py-0.5 font-sans text-[11px] font-bold leading-none text-neutral-800 sm:text-xs">
+            {pageNumber}
+          </span>{' '}
+          of {totalPages}
+        </p>
+      </div>
     </div>
-  </div>
-);
+  );
+};
 
 const CaseReportPage: React.FC<{
   judgment: CaseLaw;
