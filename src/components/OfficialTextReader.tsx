@@ -65,7 +65,7 @@ export const OfficialTextReader: React.FC<OfficialTextReaderProps> = ({
       </div>
 
       <div className="max-h-[72vh] overflow-y-auto bg-neutral-100 px-2 py-4 sm:max-h-[52rem] sm:px-6 sm:py-7 lg:px-8">
-        <div className="mx-auto max-w-5xl space-y-6">
+        <div className="mx-auto max-w-4xl space-y-6">
           {pages.map((page, index) => (
             <article
               key={`${page.pageNumber || 'page'}-${index}`}
@@ -76,12 +76,13 @@ export const OfficialTextReader: React.FC<OfficialTextReaderProps> = ({
                   Page {page.pageNumber}
                 </p>
               )}
-              <pre
-                className="whitespace-pre-wrap break-words text-[16px] leading-[1.9] text-neutral-900 sm:text-[17px]"
-                style={{ fontFamily: legalDocumentFont }}
-              >
-                {page.rawText}
-              </pre>
+              <div className="space-y-5 text-[16px] leading-[1.95] text-neutral-900 sm:text-[17px]" style={{ fontFamily: legalDocumentFont }}>
+                {page.rawText.split(/\n\s*\n/).map((block, blockIndex) => (
+                  <p key={`${page.pageNumber || 'page'}-block-${blockIndex}`} className="whitespace-pre-wrap break-words">
+                    {block.trim()}
+                  </p>
+                ))}
+              </div>
             </article>
           ))}
         </div>

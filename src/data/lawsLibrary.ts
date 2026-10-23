@@ -154,6 +154,9 @@ export const FEDERAL_LAWS: FederalLawEntry[] = [
     category: 'Constitution & Courts',
     description:
       'The form and administration of oaths and affirmations, and the requirements every affidavit filed in a Nigerian court must satisfy.',
+    documentPath: '/documents/laws/oaths-act.pdf',
+    documentPages: 22,
+    documentTextLoader: () => import('./oathsActText').then((module) => module.oathsActText),
   },
   {
     id: 'frep-rules-2009',
@@ -164,6 +167,9 @@ export const FEDERAL_LAWS: FederalLawEntry[] = [
     category: 'Constitution & Courts',
     description:
       'Procedure for enforcing Chapter IV rights and the African Charter — application by any originating process, no limitation period, and a mandate to expand rather than restrict access to the courts.',
+    documentPath: '/documents/laws/fundamental-rights-enforcement-procedure-rules-2009.pdf',
+    documentPages: 22,
+    documentTextLoader: () => import('./fundamentalRightsEnforcementProcedureRules2009Text').then((module) => module.fundamentalRightsEnforcementProcedureRules2009Text),
   },
 
   // Criminal Law & Justice
@@ -250,6 +256,9 @@ export const FEDERAL_LAWS: FederalLawEntry[] = [
     category: 'Criminal Law & Justice',
     description:
       'Establishment, powers and jurisdiction of the EFCC over economic and financial crimes, including investigation, asset forfeiture and prosecution.',
+    documentPath: '/documents/laws/efcc-act-2004.pdf',
+    documentPages: 27,
+    documentTextLoader: () => import('./efccAct2004Text').then((module) => module.efccAct2004Text),
   },
   {
     id: 'icpc-act-2000',
@@ -270,6 +279,8 @@ export const FEDERAL_LAWS: FederalLawEntry[] = [
     category: 'Criminal Law & Justice',
     description:
       'Powers and duties of the Nigeria Police Force, the conditions of lawful arrest, the rights of an arrested person, and police bail free of charge.',
+    documentPath: '/documents/laws/police-act-2020.pdf',
+    documentPages: 57,
   },
   {
     id: 'cybercrimes-2015',
@@ -313,6 +324,9 @@ export const FEDERAL_LAWS: FederalLawEntry[] = [
     category: 'Civil & Commercial',
     description:
       'Prohibits restrictive agreements and abuse of dominance, regulates mergers, and creates enforceable consumer rights with the FCCPC as regulator.',
+    documentPath: '/documents/laws/fccpa-2018.pdf',
+    documentPages: 99,
+    documentTextLoader: () => import('./fccpa2018Text').then((module) => module.fccpa2018Text),
   },
   {
     id: 'stamp-duties-act',
@@ -323,6 +337,9 @@ export const FEDERAL_LAWS: FederalLawEntry[] = [
     category: 'Civil & Commercial',
     description:
       'Instruments chargeable with duty, the time for stamping, and the consequence of failure to stamp — an unstamped instrument is inadmissible in evidence for most purposes.',
+    documentPath: '/documents/laws/stamp-duties-act.pdf',
+    documentPages: 61,
+    documentTextLoader: () => import('./stampDutiesActText').then((module) => module.stampDutiesActText),
   },
 
   // Corporate & Financial

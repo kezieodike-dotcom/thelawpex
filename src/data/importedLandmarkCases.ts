@@ -1,5 +1,160 @@
 import { CaseLaw } from '../types';
 
+/**
+ * Principles are editorial propositions, not copies of the report's ratio
+ * headings or verbatim passages. The source ratio remains available in the
+ * separate Ratio Decidendi section.
+ */
+const IMPORTED_CASE_PRINCIPLES: Record<string, string[]> = {
+  'case-008': [
+    'Disputes concerning land or other immovable property are generally governed by the lex situs.',
+    'A kola tenancy gives the tenant substantial possessory and inheritable rights, subject to the grantor’s reversionary interest and limits on alienation.',
+    'An unregistered registrable instrument may support an equitable interest or prove payment, but it does not by itself confer legal title.',
+    'A court should not determine an issue raised suo motu without first giving the parties a fair opportunity to address it.',
+    'A relief must be supported by the pleadings, and alternative reliefs should be stated clearly and precisely.',
+    'A customary rule that discriminates against female succession may be rejected as repugnant to natural justice, equity and good conscience.',
+    'Attestation ordinarily authenticates the signature witnessed; it does not, without more, amount to agreement with every term of the instrument.',
+    'Appellate briefs and grounds of appeal should be concise, focused and directed to material complaints rather than prolix or repetitive points.',
+  ],
+  'case-009': [
+    'A political party may substitute a nominated candidate only in accordance with the electoral statute and for a cogent and verifiable reason.',
+    'A political party’s constitution operates subject to the Constitution of Nigeria and valid statutory provisions.',
+    'A political party must comply with its statutory duties concerning the conduct and notification of primaries and the submission of candidates to INEC.',
+    'A person should not be disqualified on the basis of an allegation of crime without the fair hearing required by law.',
+    'The constitutional immunity of a serving Governor operates within its defined scope and does not automatically bar every election-related proceeding.',
+    'Courts must enforce valid legislation and interpret constitutional provisions in a manner that gives effect to their purpose.',
+    'The Supreme Court may make consequential orders under its statutory powers where necessary to give practical effect to its decision and do complete justice.',
+    'A political party has authority to manage its internal affairs, but that authority must be exercised consistently with the Constitution, statute and its own governing rules.',
+    'A court may grant consequential relief flowing from the case, but it should not award an independent relief that was neither claimed nor properly raised.',
+    'A judgment must be founded on evidence, while facts of which the court is bound to take judicial notice need not be separately proved.',
+    'A party who pleads a material fact must ordinarily adduce evidence in support of it; unsupported pleadings go to no issue.',
+    'The doctrine of lis pendens prevents parties from altering or defeating the subject matter of litigation while the dispute is pending.',
+  ],
+  'case-010': [
+    'Res judicata prevents a competent and final decision from being re-litigated between the same parties or their privies on the same subject and cause.',
+    'A court is competent to exercise jurisdiction where it is properly constituted, the subject matter is within its jurisdiction, the action is commenced by due process, and any condition precedent is satisfied.',
+    'An irregularity in proceedings before a competent court does not automatically make the resulting judgment a nullity; the nature and effect of the irregularity must be examined.',
+    'Before applying res judicata, the court should ascertain that the earlier judgment is valid, final and genuinely covers the matter in issue.',
+    'An order that is merely erroneous but was made within the court’s jurisdiction remains effective unless set aside through the proper appellate or review process.',
+  ],
+  'case-011': [
+    'A corporation aggregate is a corporate body formed by several persons, while a corporation sole is a corporate office vested in one continuing legal person.',
+    'The jurisdiction of a court to discipline legal practitioners depends on the constitutional or statutory authority governing the court and the profession.',
+    'Communications made without prejudice during genuine settlement negotiations are generally protected from use as admissions when the negotiations fail.',
+    'Waiver of a right is not presumed and must be established by clear, informed conduct that is legally capable of relinquishing the right.',
+    'A counsel’s participation in settlement discussions does not, without more, disqualify the counsel from later representing a party in the proceedings.',
+    'Juridical personality concerns the existence of a legal person, while juristic personality concerns the capacity to sue and be sued.',
+    'The Nigerian Bar Association’s constitution is the constitution of an association and is not, merely by its existence, a statute of the Federation.',
+    'An unincorporated association does not ordinarily have separate capacity to sue or be sued in its own name unless legislation or an established representative procedure provides otherwise.',
+  ],
+  'case-012': [
+    'A person whose legal interest is affected by a judgment and who could properly have been joined may, in an appropriate case, obtain leave to appeal as an interested party.',
+    'The absence of the maker of a document is not by itself decisive; the court must consider the document’s foundation, admissibility and evidential weight in the circumstances.',
+    'Where a criminal allegation is made in civil proceedings, the allegation must be proved to the criminal standard required by law.',
+    'A party must recover possession through due process and a court order; self-help is not permitted while the dispute is pending before the court.',
+    'Once a dispute has been submitted for adjudication, executive action that pre-empts the decision or removes the subject matter from the court usurps judicial power.',
+  ],
+};
+
+const IMPORTED_CASE_DIGEST_OVERRIDES: Record<string, Partial<CaseLaw>> = {
+  'case-008': {
+    proceduralHistory:
+      'The High Court of Anambra State dismissed the appellant\'s claim to the disputed property. He appealed to the Court of Appeal, which dismissed the appeal.',
+    factsSummary:
+      'The dispute concerned ownership and succession to property at No. 61 Venn Road South, Onitsha. The appellant relied on Nnewi “Oli-ekpe” custom, while the respondent defended her occupation and interest in the property.',
+    issuesForDetermination: [
+      'Whether the applicable law was the lex situs of the property or the parties\' personal law.',
+      'Whether the Nnewi “Oli-ekpe” custom could govern succession to the property.',
+      'Whether the unregistered registrable instrument could prove an equitable interest or payment.',
+      'Whether the trial court raised an issue suo motu without hearing the parties.',
+      'Whether the reliefs claimed were supported by the pleadings.',
+      'Whether the appellant established entitlement to the reliefs claimed under the applicable law.',
+    ],
+    decisionSummary:
+      'The Court of Appeal dismissed the appeal and awarded costs of N2,000 to the respondent. It held that the applicable law was the lex situs and that the discriminatory “Oli-ekpe” custom could not be enforced.',
+    reliefsClaimed: [
+      'Declarations concerning entitlement to the property and the respondent\'s right of occupation under the applicable customary law.',
+      'Alternative reliefs concerning accommodation, injunction and accounting of rents.',
+    ],
+    ordersMade: ['Appeal dismissed.', 'N2,000 costs awarded to the respondent.'],
+    presidingJudges: ['Akintola Olufemi Ejiwunmi, JCA', 'Niki Tobi, JCA', 'Eugene Chukwuemeka Ubaezonu, JCA'],
+  },
+  'case-009': {
+    proceduralHistory:
+      'The Federal High Court dismissed the appellant\'s challenge to the substitution of his name as the PDP governorship candidate. The Court of Appeal dismissed the appeal after upholding a preliminary objection. The appellant appealed to the Supreme Court, while the respondents filed cross-appeals.',
+    factsSummary:
+      'The appellant won the PDP governorship primaries in Rivers State and was submitted to INEC as the party\'s candidate. PDP later substituted Celestine Omehia during the pending litigation, leading to the appeal.',
+    issuesForDetermination: [
+      'Whether the Court of Appeal was right to admit fresh evidence without an exceptional circumstance.',
+      'Whether the Court of Appeal should have followed the Supreme Court decision in Ugwu v. Ararume.',
+      'Whether cogent and verifiable reasons existed for substituting the appellant under section 34 of the Electoral Act 2006.',
+      'Whether INEC could rely on facts not presented by the political party to verify the reason for substitution.',
+      'Whether an indictment of the appellant existed and could support the stated reason for substitution.',
+      'Whether the appellant should be declared the lawful winner of the 14 April 2007 Rivers State governorship election in light of lis pendens.',
+    ],
+    decisionSummary:
+      'The Supreme Court allowed the appeal, dismissed the cross-appeal and declared Rotimi Amaechi the winner of the Rivers State governorship election.',
+    reliefsClaimed: ['Reliefs challenging substitution and seeking recognition as the lawful PDP governorship candidate.'],
+    ordersMade: ['Appeal allowed.', 'Cross-appeal dismissed.', 'Amaechi declared winner of the Rivers State governorship election.'],
+    presidingJudges: [
+      'George Adesola Oguntade, JSC',
+      'Aloysius Iyorgyer Katsina-Alu, JSC',
+      'Dahiru Musdapher, JSC',
+      'Mahmud Mohammed, JSC',
+      'Walter Samuel Nkanu Onnoghen, JSC',
+      'Ibrahim Tanko Muhammad, JSC',
+      'Pius Olayiwola Aderemi, JSC',
+    ],
+  },
+  'case-010': {
+    proceduralHistory:
+      'The Native Court gave judgment for the plaintiffs. The County Court and Magistrate’s Court upheld the result. The High Court allowed the defendant’s appeal and set aside the decisions below. The plaintiffs appealed to the Federal Supreme Court.',
+    factsSummary:
+      'The dispute concerned whether a claim for customary rent and a later claim for declaration of title involved the same title issue. The lower appellate decisions differed on the effect of the earlier proceedings.',
+    issuesForDetermination: [
+      'Whether title to the land was directly in issue in the previous case.',
+      'Whether title was actually decided by the previous court.',
+      'Whether the title appeared from the previous judgment to be the ground on which it was based.',
+    ],
+    decisionSummary: 'The Supreme Court dismissed the appeal. John Idowu Conrad Taylor, F.J., dissented.',
+    reliefsClaimed: ['Declaration of title to the parcel of land known as Aniuno-Isigwu.'],
+    ordersMade: ['Appeal dismissed.'],
+  },
+  'case-011': {
+    proceduralHistory:
+      'The Chief Judge heard the appellant’s application and the respondents’ preliminary objection together. The Chief Judge granted the appellant’s application and dismissed the objection. The Court of Appeal reversed those orders, and the appellant appealed to the Supreme Court.',
+    factsSummary:
+      'The appellant challenged an NBA decision concerning counsel appearing before a military tribunal. He sought declarations and an interlocutory injunction against the respondent advocates; the proceedings also raised the NBA’s legal capacity and the admissibility of settlement communications.',
+    issuesForDetermination: [
+      'Whether the Nigerian Bar Association was a juristic person capable of suing and being sued in its own name.',
+      'Whether the Chief Judge was justified in barring the named senior advocates from appearing for the NBA.',
+      'Whether the affidavit evidence sworn on 29 April 1985 was inadmissible.',
+      'Whether the appellant waived his right to object to the appearance of the three senior advocates.',
+    ],
+    decisionSummary: 'The Supreme Court unanimously dismissed the appeal and affirmed the decision of the Court of Appeal.',
+    reliefsClaimed: ['Declarations concerning the NBA decision and an interlocutory injunction restraining the respondent advocates.'],
+    ordersMade: ['Appeal dismissed; decision of the Court of Appeal affirmed.'],
+  },
+  'case-012': {
+    proceduralHistory:
+      'The Lagos High Court refused the interlocutory injunction and discharged the interim order. The applicant appealed and applied for leave to appeal as an interested party.',
+    factsSummary:
+      'The application concerned property at No. 29 Queen’s Drive, Ikoyi. Ojukwu Transport Ltd claimed an interest in the property and sought leave to appeal, reinstatement in possession and protection from eviction while the substantive dispute remained pending.',
+    issuesForDetermination: [
+      'Whether Ojukwu Transport Ltd had sufficient interest to obtain leave to appeal under section 222(a) of the 1979 Constitution.',
+      'Whether the applicant should be reinstated in possession and the respondents restrained from eviction pending the appeal.',
+      'What further or consequential order the Court should make.',
+    ],
+    decisionSummary: 'The Court of Appeal granted the application for leave to appeal and addressed the applicant’s claimed interest in the property and the pending possession dispute.',
+    reliefsClaimed: [
+      'Leave to appeal under section 222(a) of the 1979 Constitution.',
+      'Reinstatement in possession of No. 29 Queen’s Drive, Ikoyi, and an order restraining eviction pending the appeal.',
+      'Such further or other order as the Court considered appropriate.',
+    ],
+    ordersMade: ['Application for leave to appeal granted.'],
+  },
+};
+
 export const IMPORTED_LANDMARK_CASES: CaseLaw[] = [
   {
     "id": "case-008",
@@ -473,5 +628,9 @@ export const IMPORTED_LANDMARK_CASES: CaseLaw[] = [
     ],
     "isLandmark": true
   }
-] as CaseLaw[];
+].map((caseLaw) => ({
+  ...caseLaw,
+  ...IMPORTED_CASE_DIGEST_OVERRIDES[caseLaw.id],
+  keyPrinciples: IMPORTED_CASE_PRINCIPLES[caseLaw.id] ?? caseLaw.keyPrinciples,
+})) as CaseLaw[];
 

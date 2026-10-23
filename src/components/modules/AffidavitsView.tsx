@@ -14,10 +14,7 @@ import {
 } from 'lucide-react';
 import {
   AFFIDAVITS,
-  AFFIDAVIT_CATEGORIES,
   affidavitById,
-  affidavitCategoryById,
-  affidavitsInCategory,
   searchAffidavits,
 } from '../../data/affidavits';
 import { AffidavitTemplate, LegalDraft } from '../../types';
@@ -27,8 +24,6 @@ import { DocxPreview } from '../DocxPreview';
 
 interface AffidavitsViewProps {
   onCustomizeDraft: (draft: LegalDraft) => void;
-  /** Category taken from the URL (`/affidavits/:categoryId`). */
-  categoryId?: string;
   /** Affidavit taken from the URL (`/affidavits/deposition/:affidavitId`). */
   affidavitId?: string;
   /** Agreement taken from the URL (`/affidavits/agreement/:agreementId`). */
@@ -161,7 +156,6 @@ AND
 
 export const AffidavitsView: React.FC<AffidavitsViewProps> = ({
   onCustomizeDraft,
-  categoryId,
   affidavitId,
   agreementId,
 }) => {
@@ -170,9 +164,6 @@ export const AffidavitsView: React.FC<AffidavitsViewProps> = ({
 
   const agreement = agreementId ? SAMPLE_AGREEMENTS.find((item) => item.id === agreementId) : undefined;
   if (agreement) return <AgreementDetail agreement={agreement} onCustomizeDraft={onCustomizeDraft} />;
-
-  const category = categoryId ? affidavitCategoryById(categoryId) : undefined;
-  if (category) return <CategoryPage categoryId={category.id} />;
 
   return <AffidavitDirectory onCustomizeDraft={onCustomizeDraft} />;
 };
@@ -210,9 +201,8 @@ const AffidavitDirectory: React.FC<{ onCustomizeDraft: (draft: LegalDraft) => vo
             SAMPLE AGREEMENTS AND AFFIDAVITS
           </h1>
           <p className="text-xs sm:text-sm text-neutral-700 max-w-3xl mt-1 leading-relaxed">
-            Sample agreements and sworn depositions for Nigerian practice. Open an agreement for a
-            drafting sample or open an affidavit category for the full sworn text, statutory basis
-            and practice notes.
+            Sample agreements and standalone affidavits for Nigerian practice. Open a document for
+            its full text, statutory basis, practice notes and copy-to-Word controls.
           </p>
 
           <div className="mt-6 relative">
@@ -221,14 +211,13 @@ const AffidavitDirectory: React.FC<{ onCustomizeDraft: (draft: LegalDraft) => vo
               type="text"
               value={query}
               onChange={(event) => setQuery(event.target.value)}
-              placeholder="Search agreements or affidavits e.g. 'tenancy', 'bail', 'sale of land', 'counter affidavit'..."
+              placeholder="Search agreements or affidavits e.g. 'change of name', 'marriage', 'tenancy'..."
               className="w-full bg-white text-xs sm:text-sm pl-11 pr-4 py-3.5 rounded-xl border border-neutral-200 text-neutral-900 focus:outline-none focus:border-yellow-400"
             />
           </div>
 
           <p className="text-[11px] text-neutral-500 mt-3">
-            {SAMPLE_AGREEMENTS.length} sample agreements and {AFFIDAVITS.length} affidavits across{' '}
-            {AFFIDAVIT_CATEGORIES.length} affidavit categories.
+            {SAMPLE_AGREEMENTS.length} sample agreements and {AFFIDAVITS.length} standalone affidavits.
           </p>
         </div>
 
@@ -278,42 +267,12 @@ const AffidavitDirectory: React.FC<{ onCustomizeDraft: (draft: LegalDraft) => vo
             </DirectoryColumn>
 
             <DirectoryColumn
-              title="Sample affidavits"
-              subtitle={`${AFFIDAVIT_CATEGORIES.length} affidavit categories`}
+              title="Affidavits"
+              subtitle={`${AFFIDAVITS.length} standalone affidavit templates`}
             >
-              {AFFIDAVIT_CATEGORIES.map((category) => {
-                const count = affidavitsInCategory(category.id).length;
-
-                return (
-                  <Link
-                    key={category.id}
-                    to={`/affidavits/${category.id}`}
-                    className="bg-yellow-100 border border-neutral-200 hover:border-yellow-500/50 rounded-xl p-4 transition shadow-sm group flex flex-col justify-between"
-                  >
-                    <div>
-                      <div className="flex items-center gap-2 mb-2">
-                        <ShieldCheck className="w-4 h-4 text-yellow-700" />
-                        <span className="text-[10px] font-bold text-yellow-700 uppercase tracking-wider">
-                          Sworn under the Oaths Act
-                        </span>
-                      </div>
-                      <h2 className="text-sm font-black font-serif text-neutral-900 group-hover:text-yellow-700 transition">
-                        {category.label}
-                      </h2>
-                      <p className="text-[11px] text-neutral-600 mt-1.5 leading-relaxed">
-                        {category.description}
-                      </p>
-                    </div>
-
-                    <div className="mt-4 pt-3 border-t border-neutral-200 flex items-center justify-between">
-                      <span className="text-[11px] text-neutral-500">
-                        {count} {count === 1 ? 'affidavit' : 'affidavits'}
-                      </span>
-                      <ChevronRight className="w-4 h-4 text-yellow-700" />
-                    </div>
-                  </Link>
-                );
-              })}
+              {AFFIDAVITS.map((affidavit) => (
+                <AffidavitCard key={affidavit.id} affidavit={affidavit} />
+              ))}
             </DirectoryColumn>
           </div>
         )}
@@ -459,90 +418,24 @@ const AffidavitCard: React.FC<{ affidavit: AffidavitTemplate }> = ({ affidavit }
 );
 
 // ---------------------------------------------------------------------------
-// Level 2 — the affidavits inside a category
-// ---------------------------------------------------------------------------
-
-const CategoryPage: React.FC<{ categoryId: AffidavitTemplate['category'] }> = ({ categoryId }) => {
-  const category = affidavitCategoryById(categoryId)!;
-  const affidavits = affidavitsInCategory(categoryId);
-  const [query, setQuery] = useState('');
-
-  const needle = query.trim().toLowerCase();
-  const visible = affidavits.filter(
-    (affidavit) =>
-      !needle ||
-      [affidavit.title, affidavit.description, affidavit.whenToUse, ...affidavit.keywords]
-        .join(' ')
-        .toLowerCase()
-        .includes(needle),
-  );
-
-  return (
-    <div className="bg-white text-neutral-900 min-h-screen py-8">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="bg-yellow-100 border border-yellow-400/70 rounded-2xl p-6 sm:p-8 mb-8 shadow-xl">
-          <Link
-            to="/affidavits"
-            className="inline-flex items-center gap-1.5 text-[11px] font-bold text-yellow-700 hover:text-yellow-800 uppercase tracking-wider"
-          >
-            <ArrowLeft className="w-3.5 h-3.5" />
-            All affidavits
-          </Link>
-
-          <h1 className="text-2xl sm:text-4xl font-black font-serif text-neutral-900 mt-2">
-            {category.label}
-          </h1>
-          <p className="text-xs sm:text-sm text-neutral-700 max-w-3xl mt-1 leading-relaxed">
-            {category.description}
-          </p>
-
-          <div className="mt-6 relative">
-            <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-yellow-700" />
-            <input
-              type="text"
-              value={query}
-              onChange={(event) => setQuery(event.target.value)}
-              placeholder="Find an affidavit in this category..."
-              className="w-full bg-white text-xs sm:text-sm pl-11 pr-4 py-3.5 rounded-xl border border-neutral-200 text-neutral-900 focus:outline-none focus:border-yellow-400"
-            />
-          </div>
-        </div>
-
-        {visible.length === 0 ? (
-          <p className="text-sm text-neutral-600">No affidavit here matches “{query}”.</p>
-        ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {visible.map((affidavit) => (
-              <AffidavitCard key={affidavit.id} affidavit={affidavit} />
-            ))}
-          </div>
-        )}
-      </div>
-    </div>
-  );
-};
-
-// ---------------------------------------------------------------------------
-// Level 3 — one affidavit: the sworn text and everything around it
+// Level 2 — one affidavit: the sworn text and everything around it
 // ---------------------------------------------------------------------------
 
 const AffidavitDetail: React.FC<{
   affidavit: AffidavitTemplate;
   onCustomizeDraft: (draft: LegalDraft) => void;
 }> = ({ affidavit, onCustomizeDraft }) => {
-  const category = affidavitCategoryById(affidavit.category);
-
   return (
     <div className="bg-white text-neutral-900 min-h-screen py-8">
       <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <div className="bg-yellow-100 border border-yellow-400/70 rounded-2xl p-6 sm:p-8 mb-6 shadow-xl">
           <Link
-            to={`/affidavits/${affidavit.category}`}
+            to="/affidavits"
             className="inline-flex items-center gap-1.5 text-[11px] font-bold text-yellow-700 hover:text-yellow-800 uppercase tracking-wider"
           >
             <ArrowLeft className="w-3.5 h-3.5" />
-            {category?.label ?? 'All affidavits'}
+            All affidavits
           </Link>
 
           <h1 className="text-xl sm:text-3xl font-black font-serif text-neutral-900 mt-2 leading-snug">
@@ -625,7 +518,7 @@ const AffidavitDetail: React.FC<{
               className="mt-4"
               html={buildWordDraft(
                 affidavit.title,
-                `LAWPEX — ${category?.label ?? 'Affidavit library'}`,
+                'LAWPEX — Standalone affidavit',
                 affidavit.sampleText,
               )}
               filename={affidavit.title}
@@ -638,7 +531,7 @@ const AffidavitDetail: React.FC<{
                   id: affidavit.id,
                   title: affidavit.title,
                   category: 'Affidavits',
-                  areaOfLaw: category?.label ?? 'Affidavits',
+                  areaOfLaw: 'Standalone affidavits',
                   description: affidavit.description,
                   courtHeadingRequired: affidavit.courtHeadingRequired,
                   sampleText: affidavit.sampleText,

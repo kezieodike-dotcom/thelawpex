@@ -410,7 +410,7 @@ export function AppShell() {
             element={<DraftLibraryView onCustomizeDraft={(draft) => setCustomizingDraft(draft)} />}
           />
 
-          {/* Affidavits: category → the deposition itself */}
+          {/* Agreements and standalone affidavits */}
           <Route
             path="/affidavits"
             element={<AffidavitsPage onCustomizeDraft={(draft) => setCustomizingDraft(draft)} />}
@@ -421,10 +421,6 @@ export function AppShell() {
           />
           <Route
             path="/affidavits/agreement/:agreementId"
-            element={<AffidavitsPage onCustomizeDraft={(draft) => setCustomizingDraft(draft)} />}
-          />
-          <Route
-            path="/affidavits/:categoryId"
             element={<AffidavitsPage onCustomizeDraft={(draft) => setCustomizingDraft(draft)} />}
           />
 
@@ -515,12 +511,11 @@ function CourtRulesPage() {
   return <CourtRulesView categoryId={categoryId} bookId={bookId} />;
 }
 
-/** Affidavits drill down category → the sworn text itself. */
+/** Affidavit directory → the selected sworn text itself. */
 function AffidavitsPage({ onCustomizeDraft }: { onCustomizeDraft: (draft: LegalDraft) => void }) {
-  const { categoryId, affidavitId, agreementId } = useParams<{ categoryId: string; affidavitId: string; agreementId: string }>();
+  const { affidavitId, agreementId } = useParams<{ affidavitId: string; agreementId: string }>();
   return (
     <AffidavitsView
-      categoryId={categoryId}
       affidavitId={affidavitId}
       agreementId={agreementId}
       onCustomizeDraft={onCustomizeDraft}

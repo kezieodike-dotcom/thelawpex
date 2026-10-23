@@ -1,0 +1,3 @@
+import fundamentalRightsEnforcementProcedureRules2009Text from './fundamentalRightsEnforcementProcedureRules2009Text.txt?raw';
+
+export { fundamentalRightsEnforcementProcedureRules2009Text };

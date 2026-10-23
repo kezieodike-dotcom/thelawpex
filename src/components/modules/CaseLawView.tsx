@@ -443,6 +443,10 @@ const DigestPanel: React.FC<{ judgment: CaseLaw }> = ({ judgment }) => {
             {judgment.proceduralHistory && (
               <DigestBlock title="Procedural history" body={judgment.proceduralHistory} />
             )}
+            <DigestBlock
+              title="Issues for determination"
+              body={judgment.issuesForDetermination.map((issue, index) => `${index + 1}. ${issue}`).join('\n\n')}
+            />
             <DigestBlock title="Facts" body={judgment.factsSummary} />
             <DigestBlock title="Decision / held" body={judgment.decisionSummary} tone="strong" />
           </div>
@@ -1424,6 +1428,92 @@ const normalizeRawReportCitationGrammar = (text: string) =>
 
 const manualRatioCitation = (judgment: CaseLaw, point: RatioPoint) => {
   const headingParts = point.heading.split(RATIO_HEADING_SEPARATOR).map((part) => part.trim());
+
+  if (judgment.id === 'case-008') {
+    if (
+      /^APPEAL\s+-\s+BRIEF WRITING\s+-\s+Attitude of Court to inelegantly drafted brief/i.test(
+        point.heading,
+      ) && /NIKI TOBI/i.test(point.attribution ?? '')
+    ) {
+      return '(Pp. 15-17, paras. A-D)';
+    }
+
+    if (
+      /^ACTION\s+-\s+APPLICABLE LAW TO A SUIT\s+-\s+Whether the applicable law to a suit is the lex situs/i.test(
+        point.heading,
+      )
+    ) {
+      return '(Pp. 17-20, paras. E-B)';
+    }
+
+    if (
+      /^CUSTOMARY LAW\s+-\s+CUSTOMARY TENANCY\s+-\s+Nature of a Kola tenancy/i.test(point.heading)
+    ) {
+      return '(Pp. 20-23, paras. D-C)';
+    }
+
+    if (
+      /^EVIDENCE\s+-\s+ADMISSIBILITY OF UNREGISTERED REGISTRABLE INSTRUMENT\s+-\s+The legal effect/i.test(
+        point.heading,
+      )
+    ) {
+      return '(Pp. 18-19)';
+    }
+
+    if (
+      /^COURT\s+-\s+RAISING ISSUE\(S\) SUO MOTU\s+-\s+Whether a Court can raise an issue suo motu and determine it without hearing parties/i.test(
+        point.heading,
+      )
+    ) {
+      return '(P. 26, paras. A-E)';
+    }
+
+    if (
+      /^CUSTOMARY LAW\s+-\s+DOCTRINE OF REPUGNANCY\s+-\s+Whether the Nnewi/i.test(point.heading)
+    ) {
+      return '(Pp. 28-35, paras. D-B)';
+    }
+
+    if (
+      /^EVIDENCE\s+-\s+DOCUMENTARY EVIDENCE\s+-\s+Effect of attestation by witness/i.test(
+        point.heading,
+      )
+    ) {
+      return '(Pp. 22-23, paras. G-C)';
+    }
+
+    if (
+      /^COURT\s+-\s+RAISING ISSUE\(S\) SUO MOTU\s+-\s+Circumstance\(s\) in which a court may raise/i.test(
+        point.heading,
+      )
+    ) {
+      return '(Pp. 39-40, paras. D-A)';
+    }
+
+    if (
+      /^ACTION\s+-\s+CLAIM\(S\)\/RELIEF\(S\)\s+-\s+Whether a relief claimed should be supported by pleadings/i.test(
+        point.heading,
+      )
+    ) {
+      return '(P. 41, para. F)';
+    }
+
+    if (
+      /^ACTION\s+-\s+CLAIM\(S\)\/RELIEF\(S\)\s+-\s+Position of the law on alternative claims/i.test(
+        point.heading,
+      )
+    ) {
+      return '(Pp. 41-44, paras. F-D)';
+    }
+
+    if (
+      /^APPEAL\s+-\s+BRIEF WRITING\s+-\s+Attitude of Court to inelegantly drafted brief/i.test(
+        point.heading,
+      ) && /EUGENE CHUKWUEMEKA UBAEZONU/i.test(point.attribution ?? '')
+    ) {
+      return '(Pp. 46-47, paras. A-F)';
+    }
+  }
 
   if (
     judgment.id === 'case-001' &&
@@ -2747,7 +2837,7 @@ const DigestBlock: React.FC<{ title: string; body: string; tone?: 'strong' }> = 
     <h3 className={`text-xs font-black uppercase tracking-wider ${tone === 'strong' ? 'text-yellow-300' : 'text-yellow-700'}`}>
       {title}
     </h3>
-    <p className={`mt-4 text-base leading-8 sm:text-[18px] sm:leading-9 ${tone === 'strong' ? 'text-neutral-100' : 'text-neutral-700'}`}>
+    <p className={`mt-4 whitespace-pre-line text-base leading-8 sm:text-[18px] sm:leading-9 ${tone === 'strong' ? 'text-neutral-100' : 'text-neutral-700'}`}>
       {body}
     </p>
   </div>
