@@ -36,7 +36,7 @@ export const LogoMark: React.FC<LogoMarkProps> = ({
       width={64}
       height={64}
       decoding="async"
-      className="w-full h-full object-contain"
+      className="h-full w-full scale-[1.1] object-cover object-center"
     />
   </span>
 );
