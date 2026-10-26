@@ -1,39 +1,40 @@
-import React, { useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import {
-  Activity,
   AlertTriangle,
   BarChart3,
   CheckCircle2,
   Database,
+  FileCheck2,
   FileText,
-  Mail,
-  Scale,
   Shield,
   Users,
 } from 'lucide-react';
-import { ADMIN_DOMAINS, KPI_TARGETS } from '../../data/platform';
+import { ADMIN_DOMAINS } from '../../data/platform';
+import { AdminCaseIngestionView } from './AdminCaseIngestionView';
+import { getCaseIngestionRecords } from '../../data/caseIngestion';
 
-type AdminTab = 'overview' | 'verifications' | 'content' | 'analytics';
-
-const verificationQueue = [
-  { id: 'usr-101', name: 'Barr. Temitope Alabi', kind: 'NBA number', credential: 'SCN/092104', status: 'Pending SCN verification' },
-  { id: 'usr-102', name: 'Hon. Justice M. K. Danjuma', kind: 'Judicial credential', credential: 'FCT High Court appointment letter', status: 'Manual review required' },
-  { id: 'usr-103', name: 'Adigun & Co. Legal Practitioners', kind: 'Firm account', credential: '10 requested seats', status: 'Seat admin review' },
-];
-
-const contentPipeline = [
-  { type: 'Judgments', queued: 228, review: 41, published: 15480 },
-  { type: 'Statutes', queued: 9, review: 12, published: 4620 },
-  { type: 'Court Rules', queued: 6, review: 17, published: 1248 },
-  { type: 'Articles', queued: 34, review: 19, published: 2020 },
-  { type: 'Videos', queued: 11, review: 7, published: 86 },
-];
+type AdminTab = 'overview' | 'case-law' | 'verifications' | 'content' | 'analytics';
 
 export const AdminPanelView: React.FC = () => {
   const [activeTab, setActiveTab] = useState<AdminTab>('overview');
+  const [records, setRecords] = useState(getCaseIngestionRecords);
+
+  useEffect(() => {
+    const refresh = () => setRecords(getCaseIngestionRecords());
+    window.addEventListener('lawpex-case-ingestion-updated', refresh);
+    return () => window.removeEventListener('lawpex-case-ingestion-updated', refresh);
+  }, []);
+
+  const ingestionCounts = useMemo(() => ({
+    total: records.length,
+    review: records.filter((record) => record.status === 'Under Review').length,
+    published: records.filter((record) => record.status === 'Published').length,
+    drafts: records.filter((record) => record.status === 'Draft').length,
+  }), [records]);
 
   const tabs: { id: AdminTab; label: string; icon: React.ElementType }[] = [
     { id: 'overview', label: 'Overview', icon: Shield },
+    { id: 'case-law', label: 'Case Law Ingestion', icon: FileCheck2 },
     { id: 'verifications', label: 'Verifications', icon: Users },
     { id: 'content', label: 'Content Ops', icon: Database },
     { id: 'analytics', label: 'Analytics', icon: BarChart3 },
@@ -89,9 +90,6 @@ export const AdminPanelView: React.FC = () => {
                     <div key={domain.domain} className="rounded-2xl border border-amber-100 bg-white p-4">
                       <div className="flex items-start justify-between gap-3">
                         <h3 className="text-sm font-black text-neutral-950">{domain.domain}</h3>
-                        <span className="rounded-full bg-amber-100 px-2 py-0.5 text-[10px] font-black text-amber-800">
-                          {domain.health}
-                        </span>
                       </div>
                       <ul className="mt-3 space-y-1.5 text-xs leading-5 text-neutral-600">
                         {domain.functions.map((item) => (
@@ -106,80 +104,38 @@ export const AdminPanelView: React.FC = () => {
                 </div>
               </Panel>
 
-              <Panel title="System Health" subtitle="Operational indicators for launch readiness.">
+              <Panel title="Live Case-Law Activity" subtitle="Counts from the current editorial ingestion workspace.">
                 <div className="space-y-3">
-                  <Health icon={Activity} label="Search latency" value="1.4s avg" state="Within PRD target" />
-                  <Health icon={Scale} label="Citation linking" value="94.2%" state="Needs continuous review" />
-                  <Health icon={Mail} label="Digest delivery" value="Scheduled" state="Email + in-app" />
-                  <Health icon={AlertTriangle} label="Manual reviews" value="53" state="Action required" warning />
+                  <Health icon={FileCheck2} label="Source records" value={String(ingestionCounts.total)} state="Uploaded into this browser workspace" />
+                  <Health icon={AlertTriangle} label="Awaiting review" value={String(ingestionCounts.review)} state="Requires editorial verification" warning={ingestionCounts.review > 0} />
+                  <Health icon={CheckCircle2} label="Published from ingestion" value={String(ingestionCounts.published)} state="Visible in public case-law search" />
+                  <Health icon={FileText} label="Drafts" value={String(ingestionCounts.drafts)} state="Not yet ready for publication" />
                 </div>
               </Panel>
             </div>
           )}
 
           {activeTab === 'verifications' && (
-            <Panel title="Verification Queue" subtitle="NBA, judicial and firm-account checks before subscription activation.">
-              <div className="space-y-2">
-                {verificationQueue.map((item) => (
-                  <div key={item.id} className="flex flex-col gap-3 rounded-2xl border border-amber-100 bg-white p-4 sm:flex-row sm:items-center sm:justify-between">
-                    <div>
-                      <h3 className="text-sm font-black text-neutral-950">{item.name}</h3>
-                      <p className="mt-1 text-xs text-neutral-500">
-                        {item.kind} · {item.credential} · {item.status}
-                      </p>
-                    </div>
-                    <div className="flex gap-2">
-                      <button className="rounded-xl bg-[#e6ad22] px-3 py-2 text-xs font-black text-[#181411]">Approve</button>
-                      <button className="rounded-xl border border-amber-200 bg-white px-3 py-2 text-xs font-black text-neutral-700">Request info</button>
-                    </div>
-                  </div>
-                ))}
-              </div>
+            <Panel title="Verification Queue" subtitle="The account-verification service is not connected to this workspace yet.">
+              <EmptyState title="No live verification records" detail="Connect the identity and account service before displaying or acting on verification data." />
             </Panel>
           )}
 
+          {activeTab === 'case-law' && <AdminCaseIngestionView />}
+
           {activeTab === 'content' && (
-            <Panel title="Publishing Workflow" subtitle="Draft, review and publish states for legal content ingestion.">
-              <div className="overflow-x-auto">
-                <table className="w-full min-w-[680px] border-separate border-spacing-0 text-left text-xs">
-                  <thead>
-                    <tr className="text-[10px] font-black uppercase tracking-[0.14em] text-neutral-500">
-                      <th className="border-b border-amber-100 p-3">Content type</th>
-                      <th className="border-b border-amber-100 p-3">Queued</th>
-                      <th className="border-b border-amber-100 p-3">Review</th>
-                      <th className="border-b border-amber-100 p-3">Published</th>
-                      <th className="border-b border-amber-100 p-3">Action</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {contentPipeline.map((item) => (
-                      <tr key={item.type}>
-                        <td className="border-b border-amber-50 p-3 font-black text-neutral-950">{item.type}</td>
-                        <td className="border-b border-amber-50 p-3">{item.queued}</td>
-                        <td className="border-b border-amber-50 p-3">{item.review}</td>
-                        <td className="border-b border-amber-50 p-3">{item.published.toLocaleString()}</td>
-                        <td className="border-b border-amber-50 p-3">
-                          <button className="rounded-lg bg-amber-100 px-2 py-1 font-black text-amber-800">Open queue</button>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
+            <Panel title="Publishing Workflow" subtitle="Live case-law ingestion is available in the Case Law Ingestion tab. Other content pipelines are not connected yet.">
+              <div className="grid gap-3 sm:grid-cols-3">
+                <LiveMetric label="Source records" value={ingestionCounts.total} />
+                <LiveMetric label="In review" value={ingestionCounts.review} />
+                <LiveMetric label="Published" value={ingestionCounts.published} />
               </div>
             </Panel>
           )}
 
           {activeTab === 'analytics' && (
-            <Panel title="Year 1 KPI Targets" subtitle="Growth, revenue, content depth, engagement, quality and performance targets.">
-              <div className="grid grid-cols-1 gap-3 md:grid-cols-2 xl:grid-cols-3">
-                {KPI_TARGETS.map((item) => (
-                  <div key={item.metric} className="rounded-2xl border border-amber-100 bg-white p-4">
-                    <p className="text-[10px] font-black uppercase tracking-[0.14em] text-amber-800">{item.category}</p>
-                    <h3 className="mt-2 text-sm font-black text-neutral-950">{item.metric}</h3>
-                    <p className="mt-2 text-2xl font-black tracking-tight text-neutral-950">{item.target}</p>
-                  </div>
-                ))}
-              </div>
+            <Panel title="Analytics" subtitle="Analytics will appear when the production event and reporting services are connected.">
+              <EmptyState title="No analytics data connected" detail="This panel intentionally shows no sample targets or fabricated performance figures." />
             </Panel>
           )}
         </section>
@@ -218,5 +174,19 @@ const Health: React.FC<{
       <div className="mt-1 text-lg font-black text-neutral-950">{value}</div>
       <div className="mt-1 text-[11px] text-neutral-500">{state}</div>
     </div>
+  </div>
+);
+
+const LiveMetric: React.FC<{ label: string; value: number }> = ({ label, value }) => (
+  <div className="rounded-2xl border border-amber-100 bg-white p-4">
+    <p className="text-[10px] font-black uppercase tracking-[0.14em] text-neutral-500">{label}</p>
+    <p className="mt-2 text-2xl font-black text-neutral-950">{value}</p>
+  </div>
+);
+
+const EmptyState: React.FC<{ title: string; detail: string }> = ({ title, detail }) => (
+  <div className="rounded-2xl border border-dashed border-neutral-300 bg-white px-5 py-10 text-center">
+    <p className="text-sm font-black text-neutral-900">{title}</p>
+    <p className="mx-auto mt-2 max-w-xl text-xs leading-6 text-neutral-500">{detail}</p>
   </div>
 );

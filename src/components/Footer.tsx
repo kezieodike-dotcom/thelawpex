@@ -22,6 +22,7 @@ const RESOURCE_LINKS = [
   { id: 'compliance', label: 'Compliance Hub' },
   { id: 'learning', label: 'Learning Centre' },
   { id: 'pricing', label: 'Pricing' },
+  { id: 'admin', label: 'Admin Portal' },
 ];
 
 export const Footer: React.FC = () => (
@@ -88,6 +89,7 @@ export const Footer: React.FC = () => (
             </button>
           </div>
         </div>
+
       </div>
 
       <div className="mt-10 flex flex-col gap-3 border-t border-amber-200 pt-6 text-[11px] text-neutral-500 md:flex-row md:items-center md:justify-between">

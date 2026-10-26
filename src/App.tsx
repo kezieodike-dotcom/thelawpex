@@ -285,7 +285,7 @@ export function AppShell() {
     setBarNumber(scBarNum);
     setUserRole(role);
     setIsLoggedIn(true);
-    navigate(pathForTab('dashboard'));
+    navigate(role === 'admin' ? '/admin' : pathForTab('dashboard'));
   };
 
   const handleLogout = () => {

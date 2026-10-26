@@ -16,6 +16,7 @@ import {
 import { HeroSearch } from './HeroSearch';
 import { TestimonialsSection } from './ui/testimonial-v2';
 import { LANDMARK_CASES } from '../data/legalData';
+import { getPublishedIngestedCases } from '../data/caseIngestion';
 
 interface HomeViewProps {
   setActiveTab: (tab: string) => void;
@@ -33,11 +34,11 @@ const normaliseCaseQuery = (value: string) =>
     .replace(/\s+/g, ' ')
     .trim();
 
-const findDirectCaseMatch = (query: string) => {
+const findDirectCaseMatch = (query: string, caseLaws: typeof LANDMARK_CASES) => {
   const needle = normaliseCaseQuery(query);
   if (!needle) return undefined;
 
-  const exactMatch = LANDMARK_CASES.find((item) => {
+  const exactMatch = caseLaws.find((item) => {
     const title = normaliseCaseQuery(item.title);
     const citation = normaliseCaseQuery(item.citation);
     return needle === normaliseCaseQuery(item.id)
@@ -50,7 +51,7 @@ const findDirectCaseMatch = (query: string) => {
 
   const ignoredTokens = new Set(['v', 'and', 'anor', 'ors', 'the']);
   const queryTokens = new Set(needle.split(' ').filter((token) => !ignoredTokens.has(token)));
-  const partyMatches = LANDMARK_CASES.filter((item) => {
+  const partyMatches = caseLaws.filter((item) => {
     const partyTokens = normaliseCaseQuery(item.title)
       .split(' ')
       .filter((token) => !ignoredTokens.has(token));
@@ -122,7 +123,8 @@ const moduleClass = (tone: string, index: number) => {
 };
 
 export const HomeView: React.FC<HomeViewProps> = ({ setActiveTab, onOpenSearch, onOpenCase, onOpenViewer }) => {
-  const latestCases = [...LANDMARK_CASES].sort((a, b) => b.year - a.year).slice(0, 5);
+  const caseLaws = [...LANDMARK_CASES, ...getPublishedIngestedCases()];
+  const latestCases = [...caseLaws].sort((a, b) => b.year - a.year).slice(0, 5);
   const primaryCase = latestCases[0];
   const secondaryCases = latestCases.slice(1);
 
@@ -130,7 +132,7 @@ export const HomeView: React.FC<HomeViewProps> = ({ setActiveTab, onOpenSearch, 
     <div className="lawpex-home overflow-hidden bg-[#fffdf6]">
       <HeroSearch
         onSearch={(query) => {
-          const directCase = query ? findDirectCaseMatch(query) : undefined;
+          const directCase = query ? findDirectCaseMatch(query, caseLaws) : undefined;
           if (directCase) {
             onOpenCase(directCase.id);
             return;

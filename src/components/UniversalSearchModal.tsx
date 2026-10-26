@@ -22,6 +22,7 @@ import {
   LANDMARK_CASES,
   NIGERIAN_LAWS_DATA,
 } from '../data/legalData';
+import { getPublishedIngestedCases } from '../data/caseIngestion';
 import { APPEAL_LADDERS, APPEAL_RIGHTS } from '../data/appeals';
 import { AFFIDAVITS } from '../data/affidavits';
 import { COURT_RULE_BOOKS } from '../data/courtRules';
@@ -108,7 +109,7 @@ const scoreRecord = (record: SearchRecord, query: string): number => {
 };
 
 const buildSearchIndex = (): SearchRecord[] => [
-  ...LANDMARK_CASES.map((item) => ({
+  ...[...LANDMARK_CASES, ...getPublishedIngestedCases()].map((item) => ({
     id: item.id,
     kind: 'cases' as const,
     title: item.title,

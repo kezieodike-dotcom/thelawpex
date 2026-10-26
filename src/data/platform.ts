@@ -58,6 +58,7 @@ export const USER_ROLE_OPTIONS: { id: UserRole; label: string; description: stri
   { id: 'law_firm', label: 'Chambers / firm', description: 'Firm seats, shared folders and internal notes' },
   { id: 'student', label: 'Law student', description: 'Learning centre, selected articles and free tier' },
   { id: 'compliance_officer', label: 'Compliance officer', description: 'Regulatory alerts and sector guides' },
+  { id: 'admin', label: 'Platform administrator', description: 'Editorial ingestion, review and publishing control' },
 ];
 
 export const SUBSCRIPTION_USAGE: Record<
@@ -74,55 +75,37 @@ export const ADMIN_DOMAINS = [
   {
     domain: 'Users',
     functions: ['Create and suspend accounts', 'Verify counsel and judges', 'Assign roles'],
-    health: '12 pending reviews',
   },
   {
     domain: 'Subscriptions',
     functions: ['Plan management', 'Seat allocation', 'Upgrades and cancellations'],
-    health: '3 failed renewals',
   },
   {
     domain: 'Content',
     functions: ['Draft, review and publish workflow', 'Editorial quality checks', 'Versioning'],
-    health: '41 drafts awaiting review',
   },
   {
     domain: 'Judgments',
     functions: ['Ingestion', 'Structuring', 'Tagging and citation linking'],
-    health: '228 queued judgments',
   },
   {
     domain: 'Statutes',
     functions: ['Upload', 'Amend', 'Repeal and consolidation status'],
-    health: '9 amendment checks',
   },
   {
     domain: 'Court Rules',
     functions: ['Order/rule management', 'State edition tracking', 'Keyword indexing'],
-    health: '6 gazette checks',
   },
   {
     domain: 'AI Knowledge Base',
     functions: ['Corpus curation', 'Embedding refresh', 'Retrieval quality review'],
-    health: '94.2% citation coverage',
   },
   {
     domain: 'Emails',
     functions: ['Templates', 'Campaign scheduling', 'Deliverability monitoring'],
-    health: 'Digest scheduled',
   },
   {
     domain: 'Analytics',
     functions: ['Usage', 'Search quality', 'Conversion and revenue reporting'],
-    health: 'Live',
   },
-];
-
-export const KPI_TARGETS = [
-  { metric: 'Registered users', target: '10,000', category: 'Growth' },
-  { metric: 'Paid subscribers', target: '3,000', category: 'Revenue' },
-  { metric: 'Searchable legal documents', target: '100,000', category: 'Content depth' },
-  { metric: 'AI legal queries per month', target: '50,000', category: 'Engagement' },
-  { metric: 'User satisfaction', target: '95%', category: 'Quality' },
-  { metric: 'Search response time', target: 'Under 2 seconds', category: 'Performance' },
 ];

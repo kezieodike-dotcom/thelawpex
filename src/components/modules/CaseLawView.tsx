@@ -17,6 +17,7 @@ import {
   X,
 } from 'lucide-react';
 import { LANDMARK_CASES } from '../../data/legalData';
+import { getPublishedIngestedCases } from '../../data/caseIngestion';
 import { CaseJudgmentDocument, loadCaseJudgmentDocument, mergeCaseJudgmentDocument } from '../../data/judgmentLoader';
 import { searchCaseLaws } from '../../lib/caseSearch';
 import { CaseLaw } from '../../types';
@@ -34,8 +35,9 @@ const CASE_PAGE_BG =
   'bg-[radial-gradient(circle_at_12%_0%,rgba(250,204,21,0.22),transparent_30rem),linear-gradient(180deg,#fffdf6,#ffffff_24rem)]';
 
 export const CaseLawView: React.FC<CaseLawViewProps> = ({ courtSlug, caseId }) => {
+  const caseLaws = [...LANDMARK_CASES, ...getPublishedIngestedCases()];
   if (caseId) {
-    const judgment = LANDMARK_CASES.find((item) => item.id === caseId);
+    const judgment = caseLaws.find((item) => item.id === caseId);
     if (judgment) return <CaseDetail key={judgment.id} judgment={judgment} />;
   }
 
@@ -53,10 +55,11 @@ const UnifiedCaseSearch: React.FC = () => {
   const [activeSuggestion, setActiveSuggestion] = useState(-1);
   const searchRef = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
+  const caseLaws = useMemo(() => [...LANDMARK_CASES, ...getPublishedIngestedCases()], []);
   const trimmedQuery = query.trim();
   const results = useMemo(
-    () => searchCaseLaws(LANDMARK_CASES, trimmedQuery),
-    [trimmedQuery],
+    () => searchCaseLaws(caseLaws, trimmedQuery),
+    [caseLaws, trimmedQuery],
   );
   const suggestions = trimmedQuery.length >= 2 ? results.slice(0, 6) : [];
 
@@ -208,7 +211,7 @@ const UnifiedCaseSearch: React.FC = () => {
           </form>
 
           <div className="mt-5 flex flex-wrap gap-x-6 gap-y-2 text-sm font-bold text-neutral-600">
-            <span>{LANDMARK_CASES.length} verified reports</span>
+            <span>{caseLaws.length} verified reports</span>
             <span>Full judgments</span>
             <span>Ratios and principles</span>
           </div>

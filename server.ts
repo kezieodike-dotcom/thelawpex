@@ -38,6 +38,112 @@ async function startServer() {
     res.json({ status: "ok", service: "LAWPEX AI Litigation Server", timestamp: new Date().toISOString() });
   });
 
+  // Case-law ingestion prepares an editorial draft; it never publishes directly.
+  app.post(
+    "/api/admin/case-law/extract",
+    express.raw({ type: "multipart/form-data", limit: "64mb" }),
+    async (req, res) => {
+      try {
+        if (!Buffer.isBuffer(req.body)) {
+          return res.status(400).json({ error: "A multipart judgment upload is required." });
+        }
+
+        const { fields, files } = parseMultipartForm(req.body, req.headers["content-type"] || "");
+        const document = files.find((file) => file.fieldName === "document");
+        if (!document) return res.status(400).json({ error: "Upload a PDF or DOCX judgment." });
+
+        const extension = document.filename.split(".").pop()?.toLowerCase();
+        if (!extension || !["pdf", "docx"].includes(extension) || document.data.length > 64 * 1024 * 1024) {
+          return res.status(400).json({ error: "Only PDF and DOCX judgments up to 64 MB are supported." });
+        }
+
+        const suppliedTitle = fields.title?.trim() || document.filename.replace(/\.(pdf|docx)$/i, "");
+        const manualDraft = {
+          title: suppliedTitle,
+          citation: fields.citation?.trim() || "",
+          court: fields.court || "Supreme Court of Nigeria",
+          year: Number(fields.year) || new Date().getFullYear(),
+          judicialDivision: "",
+          dateDelivered: "",
+          suitNumber: "",
+          presidingJudges: [],
+          appearances: { appellant: "", respondent: "" },
+          areaOfLaw: "",
+          subject: "",
+          proceduralHistory: "",
+          factsSummary: "",
+          issuesForDetermination: [],
+          decisionSummary: "",
+          ratios: [],
+          principles: [],
+          authorities: [],
+          statutes: [],
+          practiceNotes: [],
+          fullJudgmentText: "",
+        };
+
+        const ai = getGenAI();
+        if (!ai) {
+          return res.json({
+            draft: manualDraft,
+            warnings: ["GEMINI_API_KEY is not configured. Complete the extraction manually and verify every source reference."],
+          });
+        }
+
+        const docxText = extension === "docx" ? extractSupportingDocumentText(document).slice(0, 180_000) : "";
+        const pdfPart = extension === "pdf" ? [{ inlineData: { mimeType: "application/pdf", data: document.data.toString("base64") } }] : [];
+        const prompt = `Extract a Nigerian law report into the JSON schema below. This is an editorial draft, not a final publication.
+
+SOURCE METADATA
+Title supplied by admin: ${suppliedTitle}
+Citation supplied by admin: ${fields.citation || "Not supplied"}
+Court supplied by admin: ${fields.court || "Not supplied"}
+Year supplied by admin: ${fields.year || "Not supplied"}
+
+NON-NEGOTIABLE RULES
+- Preserve the source judgment's exact wording for every ratio decidendi exactText. Never summarise a ratio and never invent a quotation.
+- Identify the exact sourcePage and sourceParagraph for each ratio. Use a page range and paragraph range when the quote spans them.
+- Keep principles of law distinct from ratio decidendi. Do not repeat a ratio as a principle; write principles as short propositions supported by the judgment.
+- Separate procedural history, facts, issues for determination and decision/held.
+- Preserve the full judgment as source wording where the document permits reliable extraction; never reconstruct missing text. Add a warning whenever the full text, pagination or paragraph labels cannot be verified.
+- Paragraph lettering begins at the leading judgment, not in the headnote or ratio summary. Preserve labelled paragraphs as blocks, not line-by-line fragments, and retain the source page breaks.
+- Use the approved citation form: party names, year, LDLR number and court in the citation; keep the suit number in its separate field and do not put it into the citation.
+- If a field cannot be verified from the source, return an empty string or empty array and add a warning.
+- Return JSON only, matching this shape:
+${JSON.stringify({ ...manualDraft, ratios: [{ heading: "", exactText: "", attribution: "", sourcePage: "", sourceParagraph: "" }], warnings: [""] }, null, 2)}
+
+${docxText ? `EXTRACTED DOCX TEXT:\n${docxText}` : "The attached PDF is the authoritative source document."}`;
+
+        const response = await ai.models.generateContent({
+          model: AI_MODEL,
+          contents: [{ role: "user", parts: [{ text: prompt }, ...pdfPart] }],
+          config: {
+            systemInstruction: "You are a meticulous Nigerian electronic law-report editor. Work only from the supplied judgment. Do not fabricate, paraphrase quoted judicial words, or fill missing page/paragraph references by guesswork.",
+            temperature: 0.1,
+            responseMimeType: "application/json",
+          },
+        });
+
+        const raw = response.text?.trim() || "";
+        const cleaned = raw.replace(/^```(?:json)?\s*/i, "").replace(/\s*```$/i, "");
+        let draft: Record<string, unknown>;
+        try {
+          draft = JSON.parse(cleaned);
+        } catch {
+          return res.status(502).json({ error: "The extraction service returned invalid structured data. The source was preserved for manual review." });
+        }
+
+        return res.json({
+          draft: { ...manualDraft, ...draft },
+          warnings: Array.isArray(draft.warnings) ? draft.warnings : [],
+        });
+      } catch (error: any) {
+        console.error("Error in /api/admin/case-law/extract:", error);
+        return res.status(500).json({ error: error.message || "Failed to prepare the case-law review draft." });
+      }
+    },
+  );
+
   // AI Legal Assistant Query Endpoint
   app.post("/api/ai/ask", async (req, res) => {
     try {
