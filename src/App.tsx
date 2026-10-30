@@ -12,25 +12,29 @@ import {
 import { Navbar } from './components/Navbar';
 import { Footer } from './components/Footer';
 import { AssistantLauncher } from './components/AssistantLauncher';
-import { HomeView } from './components/HomeView';
-import { NotFoundView } from './components/NotFoundView';
-import { AuthMode, AuthPage } from './components/AuthModal';
-
-import { DashboardView } from './components/DashboardView';
-import { AILegalAssistantView } from './components/AILegalAssistantView';
-import { AreasOfLawView } from './components/modules/AreasOfLawView';
-import { AppealsCentreView } from './components/modules/AppealsCentreView';
-import { DraftLibraryView } from './components/modules/DraftLibraryView';
-import { AffidavitsView } from './components/modules/AffidavitsView';
-import { CourtroomPracticalsView } from './components/modules/CourtroomPracticalsView';
-import { LitigationAIView } from './components/modules/LitigationAIView';
-import { LegalArticlesView } from './components/modules/LegalArticlesView';
-import { ComplianceHubView } from './components/modules/ComplianceHubView';
-import { LearningCentreView } from './components/modules/LearningCentreView';
-import { PricingView } from './components/modules/PricingView';
-import { AdminPanelView } from './components/modules/AdminPanelView';
 import { HOME_ROUTE, pathForTab, routeForPath, tabForPath } from './routes';
 import { UserRole, SubscriptionTier, LegalDraft } from './types';
+import type { AuthMode } from './components/AuthModal';
+
+// Keep route-specific data and UI out of the initial shell. In particular,
+// this prevents the case-law corpus and large law/rule text assets from being
+// parsed before the user opens the corresponding module.
+const HomeView = lazy(() => import('./components/HomeView').then((module) => ({ default: module.HomeView })));
+const NotFoundView = lazy(() => import('./components/NotFoundView').then((module) => ({ default: module.NotFoundView })));
+const AuthPage = lazy(() => import('./components/AuthModal').then((module) => ({ default: module.AuthPage })));
+const DashboardView = lazy(() => import('./components/DashboardView').then((module) => ({ default: module.DashboardView })));
+const AILegalAssistantView = lazy(() => import('./components/AILegalAssistantView').then((module) => ({ default: module.AILegalAssistantView })));
+const AreasOfLawView = lazy(() => import('./components/modules/AreasOfLawView').then((module) => ({ default: module.AreasOfLawView })));
+const AppealsCentreView = lazy(() => import('./components/modules/AppealsCentreView').then((module) => ({ default: module.AppealsCentreView })));
+const DraftLibraryView = lazy(() => import('./components/modules/DraftLibraryView').then((module) => ({ default: module.DraftLibraryView })));
+const AffidavitsView = lazy(() => import('./components/modules/AffidavitsView').then((module) => ({ default: module.AffidavitsView })));
+const CourtroomPracticalsView = lazy(() => import('./components/modules/CourtroomPracticalsView').then((module) => ({ default: module.CourtroomPracticalsView })));
+const LitigationAIView = lazy(() => import('./components/modules/LitigationAIView').then((module) => ({ default: module.LitigationAIView })));
+const LegalArticlesView = lazy(() => import('./components/modules/LegalArticlesView').then((module) => ({ default: module.LegalArticlesView })));
+const ComplianceHubView = lazy(() => import('./components/modules/ComplianceHubView').then((module) => ({ default: module.ComplianceHubView })));
+const LearningCentreView = lazy(() => import('./components/modules/LearningCentreView').then((module) => ({ default: module.LearningCentreView })));
+const PricingView = lazy(() => import('./components/modules/PricingView').then((module) => ({ default: module.PricingView })));
+const AdminPanelView = lazy(() => import('./components/modules/AdminPanelView').then((module) => ({ default: module.AdminPanelView })));
 
 const LegalDocumentRoute = lazy(() => import('./components/LegalDocumentRoute'));
 const CaseLawView = lazy(() => import('./components/modules/CaseLawView').then((module) => ({ default: module.CaseLawView })));

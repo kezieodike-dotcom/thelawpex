@@ -1429,8 +1429,95 @@ const normalizeRawReportCitationGrammar = (text: string) =>
     '($1, para. $2)',
   );
 
+// Amaechi's ratios are lifted from the full, multi-opinion judgment. Keep the
+// verified current-view coordinates here so the ratio view does not briefly
+// fall back to the source document's empty `(P., para.)` placeholders while
+// the judgment payload is being resolved.
+const AMAECHI_RATIO_CITATIONS = [
+  '(P. 44, paras. A-B)',
+  '(P. 46, paras. A-B)',
+  '(P. 46, paras. B-C)',
+  '(Pp. 46-47, paras. C-B)',
+  '(Pp. 51-54, paras. C-C)',
+  '(Pp. 54-56, paras. C-C)',
+  '(P. 58, paras. B-C)',
+  '(Pp. 58-59, paras. D-C)',
+  '(P. 60, paras. A-B)',
+  '(Pp. 62-64, paras. C-A)',
+  '(P. 64, paras. A-B)',
+  '(P. 65, para. A)',
+  '(P. 65, para. B)',
+  '(P. 66, para. A)',
+  '(Pp. 68-69, paras. C-B)',
+  '(P. 69, para. C)',
+  '(P. 70, para. A)',
+  '(Pp. 70-71, paras. C-C)',
+  '(Pp. 73-74, paras. B-A)',
+  '(P. 74, paras. A-B)',
+  '(Pp. 80-81, paras. B-A)',
+  '(Pp. 82-83, paras. A-A)',
+  '(P. 95, paras. A-B)',
+  '(Pp. 95-96, paras. C-B)',
+  '(Pp. 101-102, paras. C-B)',
+  '(Pp. 102-103, paras. C-B)',
+  '(Pp. 107-108, paras. B-B)',
+  '(P. 110, para. B)',
+  '(Pp. 110-111, paras. A-A)',
+  '(P. 111, paras. A-C)',
+  '(Pp. 128-130, paras. B-B)',
+  '(P. 134, para. D)',
+  '(P. 135, paras. A-B)',
+  '(P. 135, para. B)',
+  '(P. 136, paras. A-B)',
+  '(P. 137, paras. A-B)',
+  '(P. 139, para. B)',
+  '(P. 153, para. C)',
+  '(P. 158, para. A)',
+  '(P. 162, para. C)',
+  '(P. 164, paras. B-C)',
+  '(Pp. 164-165, paras. D-A)',
+  '(P. 169, para. A)',
+  '(P. 169, paras. B-C)',
+  '(P. 170, paras. B-C)',
+  '(Pp. 176-177, paras. B-A)',
+  '(P. 178, para. C)',
+  '(P. 178, para. A)',
+  '(P. 187, para. B)',
+  '(P. 188, paras. B-C)',
+  '(P. 189, para. B)',
+  '(Pp. 201-202, paras. D-B)',
+  '(P. 205, para. B)',
+  '(P. 208, para. B)',
+  '(P. 234, para. A)',
+  '(P. 234, para. B)',
+  '(P. 235, paras. B-C)',
+  '(P. 236, paras. A-B)',
+  '(Pp. 236-237, paras. D-A)',
+  '(P. 237, para. B)',
+  '(P. 240, para. A)',
+  '(P. 240, para. C)',
+  '(Pp. 240-241, paras. C-A)',
+  '(P. 246, para. B)',
+  '(Pp. 247-248, paras. D-A)',
+  '(P. 248, paras. A-B)',
+  '(P. 252, para. A)',
+  '(P. 252, paras. A-B)',
+  '(P. 252, paras. B-C)',
+  '(Pp. 252-253, paras. C-A)',
+  '(P. 253, para. B)',
+  '(Pp. 256-257, paras. B-C)',
+  '(P. 259, paras. A-B)',
+] as const;
+
 const manualRatioCitation = (judgment: CaseLaw, point: RatioPoint) => {
   const headingParts = point.heading.split(RATIO_HEADING_SEPARATOR).map((part) => part.trim());
+
+  if (judgment.id === 'case-009') {
+    const ratioIndex = getExactRatioPoints(judgment).findIndex(
+      (candidate) => candidate.heading === point.heading && candidate.body === point.body,
+    );
+    return ratioIndex > -1 ? AMAECHI_RATIO_CITATIONS[ratioIndex] : undefined;
+  }
 
   if (judgment.id === 'case-008') {
     if (
@@ -2245,6 +2332,13 @@ const findReportPositionCitation = (judgment: CaseLaw, heading: string): ReportC
 
 const resolveRatioReportCitation = (judgment: CaseLaw, point: RatioPoint) => {
   const manualCitation = manualRatioCitation(judgment, point);
+  if (manualCitation) {
+    return {
+      citation: manualCitation,
+      resolved: true,
+    };
+  }
+
   const target =
     findCurrentReportCitation(judgment, point.body || point.fullText) ??
     findCurrentReportCitation(judgment, point.fullText) ??
@@ -2254,8 +2348,8 @@ const resolveRatioReportCitation = (judgment: CaseLaw, point: RatioPoint) => {
     findReportPositionCitation(judgment, point.heading);
 
   return {
-    citation: manualCitation ?? (target ? reportCitationText(target) : undefined),
-    resolved: Boolean(manualCitation || target),
+    citation: target ? reportCitationText(target) : undefined,
+    resolved: Boolean(target),
   };
 };
 
