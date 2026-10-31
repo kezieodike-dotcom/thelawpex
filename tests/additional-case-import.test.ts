@@ -42,6 +42,7 @@ for (const [id, citation, count] of expected) {
     ratios.forEach((r, i) => {
       assert.ok(r.evidence, `${id} ratio ${i + 1} requires both quotation boundaries`);
       assert.match(r.attribution!, /\(Pp?\. \d+(?:-\d+)?, paras?\. [A-G](?:-[A-G])?\)/);
+      assert.ok(metadata.ratioDecidendi[i].endsWith(r.attribution!), `${id} ratio ${i + 1}: stored references must match the reader`);
     });
   });
 }

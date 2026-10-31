@@ -884,15 +884,20 @@ const splitSourceBlockForPagination = (
   }));
 };
 
-const paginateSourceJudgmentText = (text: string, sourceLinePadding = 90, strictHeadings = false) => {
+const paginateSourceJudgmentText = (text: string, sourceLinePadding = 90, strictHeadings = false, fillJudgmentPages = false) => {
   const blocks = getSourceJudgmentBlocks(text, strictHeadings).flatMap((block) => splitSourceBlockForPagination(block));
   const pages: { blocks: SourceJudgmentBlock[] }[] = [];
   let current: SourceJudgmentBlock[] = [];
   let pageSize = 0;
   let hasForcedLeadingJudgmentPage = false;
   const targetCharactersPerPage = 5000;
+  const flushPage = () => {
+    if (current.length) pages.push({ blocks: current });
+    current = [];
+    pageSize = 0;
+  };
 
-  blocks.forEach((block) => {
+  blocks.forEach((block, blockIndex) => {
     const weightedSize = block.text.length + (block.isHeading ? 220 : sourceLinePadding);
     const shouldForceLeadPage =
       current.length > 0 &&
@@ -900,10 +905,50 @@ const paginateSourceJudgmentText = (text: string, sourceLinePadding = 90, strict
       block.startsLeadingJudgment;
 
     if (shouldForceLeadPage) {
-      pages.push({ blocks: current });
-      current = [];
-      pageSize = 0;
-      hasForcedLeadingJudgmentPage = true;
+      flushPage();
+    }
+    if (shouldForceLeadPage || (fillJudgmentPages && block.startsLeadingJudgment)) hasForcedLeadingJudgmentPage = true;
+
+    // Imported opinions can be one very long source paragraph. Fill the remaining
+    // page at whole-word boundaries, keeping a judge's heading with their opinion.
+    if (fillJudgmentPages && hasForcedLeadingJudgmentPage) {
+      if (block.isHeading || (block.startsLeadingJudgment && block.text.length < 180)) {
+        if (current.length && pageSize + weightedSize + 600 > targetCharactersPerPage) flushPage();
+        current.push(block);
+        pageSize += weightedSize;
+        return;
+      }
+      let remainder = block;
+      while (remainder.text) {
+        const available = targetCharactersPerPage - pageSize - sourceLinePadding;
+        const finalBlockAllowance = blockIndex === blocks.length - 1 ? 500 : 0;
+        if (remainder.text.length <= available + finalBlockAllowance) {
+          current.push(remainder);
+          pageSize += remainder.text.length + sourceLinePadding;
+          break;
+        }
+        if (current.length && available < 600) {
+          flushPage();
+          continue;
+        }
+        const boundary = remainder.text.lastIndexOf(' ', available);
+        if (boundary <= 0) {
+          // Never cut a source word, even an unusually long unbroken token.
+          if (current.length) { flushPage(); continue; }
+          current.push(remainder);
+          pageSize += remainder.text.length + sourceLinePadding;
+          break;
+        }
+        const text = remainder.text.slice(0, boundary);
+        current.push({ ...remainder, text, sourceText: remainder.sourceText ? text : undefined });
+        flushPage();
+        const rest = remainder.text.slice(boundary + 1);
+        remainder = {
+          ...remainder, text: rest, sourceText: remainder.sourceText ? rest : undefined,
+          isHeading: false, isRatioHeading: false, startsLeadingJudgment: false, sourceLabel: undefined,
+        };
+      }
+      return;
     }
 
     const shouldStartNewPage =
@@ -926,8 +971,14 @@ const paginateSourceJudgmentText = (text: string, sourceLinePadding = 90, strict
 
 const denseSourceJudgmentIds = new Set(['case-003', 'case-004']);
 
+// Keep earlier editorial pagination and versioned admin-review proofs unchanged.
 const paginateJudgmentSourceText = (judgment: CaseLaw, text: string) =>
-  paginateSourceJudgmentText(text, denseSourceJudgmentIds.has(judgment.id) ? 0 : 90, Boolean(judgment.reportFormatVersion) || STRUCTURED_IMPORT_CASE_IDS.has(judgment.id));
+  paginateSourceJudgmentText(
+    text,
+    denseSourceJudgmentIds.has(judgment.id) ? 0 : 90,
+    Boolean(judgment.reportFormatVersion) || STRUCTURED_IMPORT_CASE_IDS.has(judgment.id),
+    STRUCTURED_IMPORT_CASE_IDS.has(judgment.id) && !judgment.reportFormatVersion,
+  );
 
 const exactSectionStops = [
   /^\(?READ FULL JUDGMENT\)?$/i,
