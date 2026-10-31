@@ -1,4 +1,5 @@
 import { CaseLaw } from '../types';
+import { publicationGaps, type ReportValidation } from '../lib/caseReportReview';
 
 export type CaseIngestionStatus = 'Draft' | 'Under Review' | 'Approved' | 'Published' | 'Rejected';
 
@@ -14,9 +15,17 @@ export interface CaseAuditEvent {
   at: string;
   action: string;
   status: CaseIngestionStatus;
+  snapshotKey?: string;
 }
 
 export interface AdminCaseRecord {
+  sourceExtraction?: { text: string; sha256: string; textSha256: string; pages: number; incomplete: boolean };
+  leadingJudgmentHeading?: string;
+  duplicateResolution?: string;
+  principleSources?: string[];
+  preparedReportText?: string;
+  validation?: ReportValidation;
+  review?: { reviewer: string; source: boolean; metadata: boolean; ratios: boolean; principles: boolean };
   id: string;
   status: CaseIngestionStatus;
   createdAt: string;
@@ -88,6 +97,9 @@ export const upsertCaseIngestionRecord = (record: AdminCaseRecord) => {
 export const updateCaseIngestionStatus = (id: string, status: CaseIngestionStatus) => {
   const record = getCaseIngestionRecords().find((item) => item.id === id);
   if (!record) return;
+  if (['Approved', 'Published'].includes(status) && publicationGaps(record).length) throw new Error('A verified report and editorial signoff are required.');
+  if (status === 'Approved' && record.status !== 'Under Review') throw new Error('Move the draft to review before approval.');
+  if (status === 'Published' && record.status !== 'Approved') throw new Error('Approve the report before publication.');
   upsertCaseIngestionRecord({
     ...record,
     status,
@@ -98,10 +110,12 @@ export const updateCaseIngestionStatus = (id: string, status: CaseIngestionStatu
 
 export const getPublishedIngestedCases = (): CaseLaw[] =>
   getCaseIngestionRecords()
-    .filter((record) => record.status === 'Published')
+    .filter((record) => record.status === 'Published' && publicationGaps(record).length === 0)
     .map((record) => toPublishedCaseLaw(record));
 
 export const toPublishedCaseLaw = (record: AdminCaseRecord): CaseLaw => ({
+  reportFormatVersion: 'lawpex-reviewed-v1',
+  ratioSourceReferences: record.ratios.map(ratio => ({ page: Number(ratio.sourcePage.split('-')[0]), paragraph: ratio.sourceParagraph.split('-')[0] })),
   id: record.id,
   title: record.title,
   citation: record.citation,
@@ -123,20 +137,20 @@ export const toPublishedCaseLaw = (record: AdminCaseRecord): CaseLaw => ({
   authoritiesCited: record.authorities,
   statutesConsidered: record.statutes,
   practiceNotes: record.practiceNotes,
-  fullJudgmentText: record.fullJudgmentText || undefined,
+  fullJudgmentText: record.preparedReportText || record.fullJudgmentText || undefined,
   hasFullJudgment: Boolean(record.fullJudgmentText),
   preserveSourceFormatting: true,
   verbatimWholeCase: true,
   isLandmark: false,
 });
 
-const formatRatio = (ratio: IngestedRatioDraft) => {
+export const formatRatio = (ratio: IngestedRatioDraft) => {
   const page = ratio.sourcePage.trim().replace(/^p{1,2}\.?\s*/i, '');
   const paragraph = ratio.sourceParagraph.trim().replace(/^para(?:graph)?\.?\s*/i, '');
-  const location = [page && `P. ${page}`, paragraph && `para. ${paragraph}`]
+  const location = [page && `${page.includes('-') ? 'Pp.' : 'P.'} ${page}`, paragraph && `${paragraph.includes('-') ? 'paras.' : 'para.'} ${paragraph}`]
     .filter(Boolean)
     .join(', ');
-  const attribution = ratio.attribution ? `Per ${ratio.attribution}${location ? ` (${location})` : ''}` : location ? `(${location})` : '';
+  const attribution = ratio.attribution ? `Per ${ratio.attribution.replace(/^Per\s+/i, '').trim()}${location ? ` (${location})` : ''}` : location ? `(${location})` : '';
   return [ratio.heading, ratio.exactText && `"${ratio.exactText}"`, attribution].filter(Boolean).join('\n\n');
 };
 
@@ -149,7 +163,7 @@ export const saveSourceDocument = (storageKey: string, file: File): Promise<void
     request.onsuccess = () => {
       const transaction = request.result.transaction(SOURCE_STORE_NAME, 'readwrite');
       transaction.objectStore(SOURCE_STORE_NAME).put(file, storageKey);
-      transaction.oncomplete = () => resolve();
+      transaction.oncomplete = () => { request.result.close(); resolve(); };
       transaction.onerror = () => reject(transaction.error);
     };
   });
@@ -159,10 +173,12 @@ export const getSourceDocument = (storageKey: string): Promise<Blob | null> => {
   if (typeof indexedDB === 'undefined') return Promise.resolve(null);
   return new Promise((resolve, reject) => {
     const request = indexedDB.open(SOURCE_DB_NAME, 1);
+    request.onupgradeneeded = () => request.result.createObjectStore(SOURCE_STORE_NAME);
     request.onerror = () => reject(request.error);
     request.onsuccess = () => {
       const transaction = request.result.transaction(SOURCE_STORE_NAME, 'readonly');
       const lookup = transaction.objectStore(SOURCE_STORE_NAME).get(storageKey);
+      transaction.oncomplete = () => request.result.close();
       lookup.onsuccess = () => resolve((lookup.result as Blob | undefined) ?? null);
       lookup.onerror = () => reject(lookup.error);
     };

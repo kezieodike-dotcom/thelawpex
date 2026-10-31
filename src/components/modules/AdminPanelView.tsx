@@ -1,192 +1,124 @@
-import React, { useEffect, useMemo, useState } from 'react';
-import {
-  AlertTriangle,
-  BarChart3,
-  CheckCircle2,
-  Database,
-  FileCheck2,
-  FileText,
-  Shield,
-  Users,
-} from 'lucide-react';
-import { ADMIN_DOMAINS } from '../../data/platform';
-import { AdminCaseIngestionView } from './AdminCaseIngestionView';
+import React, { lazy, Suspense, useEffect, useMemo, useState } from 'react';
+import { Link, useSearchParams } from 'react-router-dom';
+import { ArrowDownToLine, ArrowRight, ArrowUpRight, BookOpen, ChartNoAxesCombined, CheckCheck, ChevronRight, Clock3, FileCheck2, Files, LayoutDashboard, Menu, Plus, Search, ShieldCheck, Users, X } from 'lucide-react';
+import { LogoMark } from '../LogoMark';
 import { getCaseIngestionRecords } from '../../data/caseIngestion';
+import caseCatalog from '../../data/caseCatalog.json';
+import './admin-workspace.css';
 
-type AdminTab = 'overview' | 'case-law' | 'verifications' | 'content' | 'analytics';
+const AdminCaseIngestionView = lazy(() => import('./AdminCaseIngestionView').then((module) => ({ default: module.AdminCaseIngestionView })));
+const NAV = [
+  { id: 'overview', label: 'Overview', icon: LayoutDashboard },
+  { id: 'case-law', label: 'Case workspace', icon: FileCheck2 },
+  { id: 'content', label: 'Published library', icon: BookOpen },
+  { id: 'verifications', label: 'Verifications', icon: Users },
+  { id: 'analytics', label: 'Analytics', icon: ChartNoAxesCombined },
+] as const;
+type AdminTab = typeof NAV[number]['id'];
 
 export const AdminPanelView: React.FC = () => {
-  const [activeTab, setActiveTab] = useState<AdminTab>('overview');
+  const [params, setParams] = useSearchParams();
+  const activeTab: AdminTab = NAV.find((item) => item.id === params.get('view'))?.id ?? 'overview';
   const [records, setRecords] = useState(getCaseIngestionRecords);
-
+  const [menuOpen, setMenuOpen] = useState(false);
+  const [query, setQuery] = useState('');
+  const [court, setCourt] = useState('All courts');
   useEffect(() => {
     const refresh = () => setRecords(getCaseIngestionRecords());
     window.addEventListener('lawpex-case-ingestion-updated', refresh);
-    return () => window.removeEventListener('lawpex-case-ingestion-updated', refresh);
+    window.addEventListener('storage', refresh);
+    return () => {
+      window.removeEventListener('lawpex-case-ingestion-updated', refresh);
+      window.removeEventListener('storage', refresh);
+    };
   }, []);
-
-  const ingestionCounts = useMemo(() => ({
-    total: records.length,
-    review: records.filter((record) => record.status === 'Under Review').length,
-    published: records.filter((record) => record.status === 'Published').length,
-    drafts: records.filter((record) => record.status === 'Draft').length,
-  }), [records]);
-
-  const tabs: { id: AdminTab; label: string; icon: React.ElementType }[] = [
-    { id: 'overview', label: 'Overview', icon: Shield },
-    { id: 'case-law', label: 'Case Law Ingestion', icon: FileCheck2 },
-    { id: 'verifications', label: 'Verifications', icon: Users },
-    { id: 'content', label: 'Content Ops', icon: Database },
-    { id: 'analytics', label: 'Analytics', icon: BarChart3 },
-  ];
+  const navigate = (view: AdminTab, extra: Record<string, string> = {}) => {
+    setParams({ view, ...extra });
+    setMenuOpen(false);
+    window.scrollTo({ top: 0, behavior: 'instant' });
+  };
+  const counts = {
+    drafts: records.filter((r) => r.status === 'Draft').length,
+    review: records.filter((r) => r.status === 'Under Review').length,
+    approved: records.filter((r) => r.status === 'Approved').length,
+  };
+  const library = useMemo(() => [...caseCatalog, ...records.filter((r) => r.status === 'Published')], [records]);
+  const visibleCases = library.filter((item) =>
+    (court === 'All courts' || item.court === court) &&
+    `${item.title} ${item.citation} ${item.subject}`.toLowerCase().includes(query.trim().toLowerCase()),
+  );
+  const recent = [...records].sort((a, b) => b.updatedAt.localeCompare(a.updatedAt)).slice(0, 5);
+  const title = NAV.find((item) => item.id === activeTab)!.label;
 
   return (
-    <div className="min-h-screen bg-[#f8f5ee] py-8 text-neutral-900">
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <section className="lawpex-panel rounded-3xl p-6 sm:p-8">
-          <div className="flex flex-col gap-5 lg:flex-row lg:items-center lg:justify-between">
-            <div>
-              <div className="inline-flex items-center gap-2 rounded-full bg-[#181411] px-3 py-1.5 text-[10px] font-black uppercase tracking-[0.16em] text-amber-300">
-                <Shield className="h-3.5 w-3.5" />
-                Super admin control plane
-              </div>
-              <h1 className="mt-4 text-3xl font-black tracking-tight text-neutral-950">
-                LAWPEX Platform Administration
-              </h1>
-              <p className="mt-2 max-w-3xl text-sm leading-7 text-neutral-600">
-                Governs users, subscriptions, content publishing, legal corpus quality, email
-                automation, analytics and AI retrieval quality as specified in the PRD.
-              </p>
-            </div>
-
-            <div className="flex flex-wrap gap-2">
-              {tabs.map((tab) => {
-                const Icon = tab.icon;
-                return (
-                  <button
-                    key={tab.id}
-                    onClick={() => setActiveTab(tab.id)}
-                    className={`lawpex-focus-ring inline-flex items-center gap-2 rounded-xl px-3 py-2 text-xs font-black ${
-                      activeTab === tab.id
-                        ? 'bg-[#181411] text-white'
-                        : 'border border-amber-200 bg-white/80 text-neutral-600 hover:border-amber-400 hover:text-neutral-950'
-                    }`}
-                  >
-                    <Icon className="h-4 w-4" />
-                    {tab.label}
-                  </button>
-                );
-              })}
-            </div>
+    <div className="admin-workspace">
+      <aside className="admin-rail">
+        <Link to="/" className="admin-brand" aria-label="LAWPEX home">
+          <LogoMark className="h-10 w-10 rounded-lg" alt="" />
+          <span><strong>LAWPEX</strong><small>Administration</small></span>
+        </Link>
+        <button className="admin-mobile-toggle" aria-label={menuOpen ? 'Close admin navigation' : 'Open admin navigation'} aria-expanded={menuOpen} aria-controls="admin-navigation" onClick={() => setMenuOpen(!menuOpen)}>{menuOpen ? <X /> : <Menu />}</button>
+        <div id="admin-navigation" className={`admin-rail-content ${menuOpen ? 'is-open' : ''}`}>
+          <p className="admin-nav-label">WORKSPACE</p>
+          <nav aria-label="Admin navigation">
+            {NAV.map(({ id, label, icon: Icon }) => <button key={id} aria-current={activeTab === id ? 'page' : undefined} onClick={() => navigate(id)}><Icon size={19} /><span>{label}</span>{id === 'case-law' && counts.review > 0 && <b>{counts.review}</b>}</button>)}
+          </nav>
+          <div className="admin-rail-bottom">
+            <Link to="/case-law"><ArrowUpRight size={18} /> Open public site</Link>
+            <div className="admin-storage"><ShieldCheck size={19} /><span>Editorial workspace<small>Records saved in this browser</small></span></div>
           </div>
-        </section>
+        </div>
+      </aside>
 
-        <section className="mt-8">
-          {activeTab === 'overview' && (
-            <div className="grid grid-cols-1 gap-6 xl:grid-cols-[1.1fr_0.9fr]">
-              <Panel title="Administrative Domains" subtitle="The PRD control-plane functions, grouped by operating domain.">
-                <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
-                  {ADMIN_DOMAINS.map((domain) => (
-                    <div key={domain.domain} className="rounded-2xl border border-amber-100 bg-white p-4">
-                      <div className="flex items-start justify-between gap-3">
-                        <h3 className="text-sm font-black text-neutral-950">{domain.domain}</h3>
-                      </div>
-                      <ul className="mt-3 space-y-1.5 text-xs leading-5 text-neutral-600">
-                        {domain.functions.map((item) => (
-                          <li key={item} className="flex gap-2">
-                            <CheckCircle2 className="mt-0.5 h-3.5 w-3.5 shrink-0 text-emerald-600" />
-                            {item}
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-                  ))}
-                </div>
-              </Panel>
+      <div className="admin-main">
+        <header className="admin-topbar"><span>Administration <ChevronRight size={14} /> <strong>{title}</strong></span><Link to="/">Back to LAWPEX <ArrowUpRight size={16} /></Link></header>
+        <div className="admin-body">
+          <div className="admin-page-heading">
+            <div><p className="admin-eyebrow">CONTENT & EDITORIAL</p><h1>{activeTab === 'overview' ? 'Your editorial overview' : title}</h1><p>{activeTab === 'overview' ? 'Cases, review activity and publishing at a glance.' : activeTab === 'case-law' ? 'Judgment intake and source-verified editorial review.' : activeTab === 'content' ? `${library.length} published cases in the LAWPEX collection.` : 'Workspace services and reporting.'}</p></div>
+            {activeTab !== 'case-law' && <button className="admin-button primary" onClick={() => navigate('case-law', { upload: '1' })}><Plus size={18} /> Upload judgment</button>}
+          </div>
 
-              <Panel title="Live Case-Law Activity" subtitle="Counts from the current editorial ingestion workspace.">
-                <div className="space-y-3">
-                  <Health icon={FileCheck2} label="Source records" value={String(ingestionCounts.total)} state="Uploaded into this browser workspace" />
-                  <Health icon={AlertTriangle} label="Awaiting review" value={String(ingestionCounts.review)} state="Requires editorial verification" warning={ingestionCounts.review > 0} />
-                  <Health icon={CheckCircle2} label="Published from ingestion" value={String(ingestionCounts.published)} state="Visible in public case-law search" />
-                  <Health icon={FileText} label="Drafts" value={String(ingestionCounts.drafts)} state="Not yet ready for publication" />
-                </div>
-              </Panel>
+          {activeTab === 'overview' && <>
+            <div className="admin-metrics">
+              {[
+                { label: 'Published cases', value: library.length, icon: BookOpen, view: 'content' as AdminTab, tone: 'green', status: '' },
+                { label: 'Awaiting review', value: counts.review, icon: Clock3, view: 'case-law' as AdminTab, tone: 'yellow', status: 'Under Review' },
+                { label: 'Approved', value: counts.approved, icon: CheckCheck, view: 'case-law' as AdminTab, tone: 'blue', status: 'Approved' },
+                { label: 'Drafts', value: counts.drafts, icon: Files, view: 'case-law' as AdminTab, tone: 'neutral', status: 'Draft' },
+              ].map(({ label, value, icon: Icon, view, tone, status }) => <button key={label} className="admin-metric" onClick={() => navigate(view, status ? { status } : {})}><span className={`admin-metric-icon ${tone}`}><Icon size={20} /></span><span className="admin-metric-label">{label}</span><strong>{value}</strong><ArrowUpRight size={16} className="admin-metric-arrow" /></button>)}
             </div>
-          )}
 
-          {activeTab === 'verifications' && (
-            <Panel title="Verification Queue" subtitle="The account-verification service is not connected to this workspace yet.">
-              <EmptyState title="No live verification records" detail="Connect the identity and account service before displaying or acting on verification data." />
-            </Panel>
-          )}
+            <div className="admin-overview-grid">
+              <section className="admin-section">
+                <div className="admin-section-heading"><h2>Recent editorial activity</h2><button className="admin-text-button" onClick={() => navigate('case-law')}>View queue <ArrowRight size={16} /></button></div>
+                {recent.length ? <div className="admin-records">{recent.map((r) => <button key={r.id} onClick={() => navigate('case-law', { record: r.id })}><span className="admin-document-icon"><FileCheck2 size={20} /></span><span><strong>{r.title}</strong><small>{r.citation || 'Citation pending'}</small></span><Status status={r.status} /><ChevronRight size={16} /></button>)}</div> : <div className="admin-empty"><span className="admin-empty-icon"><ArrowDownToLine size={28} /></span><h3>Your editorial queue is clear</h3><p>No uploaded judgments in this browser workspace.</p><button className="admin-button" onClick={() => navigate('case-law', { upload: '1' })}><Plus size={16} /> Add a judgment</button></div>}
+                <div className="admin-section-footer"><ShieldCheck size={16} /> {records.length} source records in this browser</div>
+              </section>
+              <section className="admin-pipeline">
+                <h2>Publishing pipeline</h2>
+                {[
+                  ['01', 'Draft', 'Source uploaded', counts.drafts],
+                  ['02', 'Under Review', 'Editorial verification', counts.review],
+                  ['03', 'Approved', 'Ready for publication', counts.approved],
+                  ['04', 'Published', 'Published from this workspace', records.filter((r) => r.status === 'Published').length],
+                ].map(([number, status, caption, count]) => <button key={status} onClick={() => navigate('case-law', { status: String(status) })}><span className="admin-step">{number}</span><span><strong>{status}</strong><small>{caption}</small></span><b>{count}</b><ChevronRight size={14} /></button>)}
+              </section>
+            </div>
+            <section className="admin-section admin-library-preview"><div className="admin-section-heading"><div><h2>Published collection</h2><p>Available in public case-law search</p></div><button className="admin-text-button" onClick={() => navigate('content')}>View all cases <ArrowRight size={16} /></button></div><CaseTable cases={library.slice(-5).reverse()} /></section>
+          </>}
 
-          {activeTab === 'case-law' && <AdminCaseIngestionView />}
+          {activeTab === 'content' && <section className="admin-section"><div className="admin-library-toolbar"><label className="admin-search"><Search size={18} /><input aria-label="Search published cases" placeholder="Search title, citation or subject" value={query} onChange={(e) => setQuery(e.target.value)} />{query && <button aria-label="Clear search" onClick={() => setQuery('')}><X size={16} /></button>}</label><select aria-label="Filter by court" value={court} onChange={(e) => setCourt(e.target.value)}><option>All courts</option><option>Supreme Court of Nigeria</option><option>Court of Appeal</option></select></div><CaseTable cases={visibleCases} /><div className="admin-section-footer" role="status">{visibleCases.length} of {library.length} cases</div></section>}
 
-          {activeTab === 'content' && (
-            <Panel title="Publishing Workflow" subtitle="Live case-law ingestion is available in the Case Law Ingestion tab. Other content pipelines are not connected yet.">
-              <div className="grid gap-3 sm:grid-cols-3">
-                <LiveMetric label="Source records" value={ingestionCounts.total} />
-                <LiveMetric label="In review" value={ingestionCounts.review} />
-                <LiveMetric label="Published" value={ingestionCounts.published} />
-              </div>
-            </Panel>
-          )}
-
-          {activeTab === 'analytics' && (
-            <Panel title="Analytics" subtitle="Analytics will appear when the production event and reporting services are connected.">
-              <EmptyState title="No analytics data connected" detail="This panel intentionally shows no sample targets or fabricated performance figures." />
-            </Panel>
-          )}
-        </section>
+          {activeTab === 'case-law' && <Suspense fallback={<div className="admin-loading" role="status">Loading editorial workspace...</div>}><AdminCaseIngestionView key={params.get('record') || params.get('status') || 'workspace'} initialSelectedId={params.get('record')} initialStatus={params.get('status')} /></Suspense>}
+          {activeTab === 'verifications' && <ServiceEmpty icon={Users} title="Verification service not connected" detail="Account verification records will appear here once an identity service is connected." />}
+          {activeTab === 'analytics' && <ServiceEmpty icon={ChartNoAxesCombined} title="No reporting service connected" detail="Traffic and usage data are not available in this workspace." />}
+        </div>
+        <footer className="admin-footer"><span>LAWPEX Administration</span><span>Editorial control. Source integrity.</span></footer>
       </div>
     </div>
   );
 };
 
-const Panel: React.FC<{ title: string; subtitle: string; children: React.ReactNode }> = ({
-  title,
-  subtitle,
-  children,
-}) => (
-  <div className="lawpex-card rounded-3xl p-6">
-    <div className="mb-5 border-b border-amber-100 pb-4">
-      <h2 className="text-xl font-black tracking-tight text-neutral-950">{title}</h2>
-      <p className="mt-1 text-xs leading-6 text-neutral-600">{subtitle}</p>
-    </div>
-    {children}
-  </div>
-);
-
-const Health: React.FC<{
-  icon: React.ElementType;
-  label: string;
-  value: string;
-  state: string;
-  warning?: boolean;
-}> = ({ icon: Icon, label, value, state, warning }) => (
-  <div className="flex items-start gap-3 rounded-2xl border border-amber-100 bg-white p-4">
-    <span className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-xl ${warning ? 'bg-red-50 text-red-700' : 'bg-amber-100 text-amber-800'}`}>
-      <Icon className="h-5 w-5" />
-    </span>
-    <div>
-      <div className="text-xs font-bold text-neutral-500">{label}</div>
-      <div className="mt-1 text-lg font-black text-neutral-950">{value}</div>
-      <div className="mt-1 text-[11px] text-neutral-500">{state}</div>
-    </div>
-  </div>
-);
-
-const LiveMetric: React.FC<{ label: string; value: number }> = ({ label, value }) => (
-  <div className="rounded-2xl border border-amber-100 bg-white p-4">
-    <p className="text-[10px] font-black uppercase tracking-[0.14em] text-neutral-500">{label}</p>
-    <p className="mt-2 text-2xl font-black text-neutral-950">{value}</p>
-  </div>
-);
-
-const EmptyState: React.FC<{ title: string; detail: string }> = ({ title, detail }) => (
-  <div className="rounded-2xl border border-dashed border-neutral-300 bg-white px-5 py-10 text-center">
-    <p className="text-sm font-black text-neutral-900">{title}</p>
-    <p className="mx-auto mt-2 max-w-xl text-xs leading-6 text-neutral-500">{detail}</p>
-  </div>
-);
+const Status = ({ status }: { status: string }) => <span className="admin-status" data-status={status}>{status}</span>;
+const CaseTable = ({ cases }: { cases: { id: string; title: string; citation: string; court: string }[] }) => <div className="admin-table-wrap"><table className="admin-table"><thead><tr><th>Case title</th><th>Court</th><th>Status</th><th><span className="sr-only">Open case</span></th></tr></thead><tbody>{cases.map((item) => <tr key={item.id}><td><Link to={`/case-law/case/${item.id}`}>{item.title}</Link><small>{item.citation}</small></td><td>{item.court === 'Supreme Court of Nigeria' ? 'Supreme Court' : item.court}</td><td><Status status="Published" /></td><td><Link className="admin-icon-button" aria-label={`Open ${item.title}`} title="Open case" to={`/case-law/case/${item.id}`}><ArrowUpRight size={18} /></Link></td></tr>)}</tbody></table>{!cases.length && <div className="admin-empty"><Search size={25} /><h3>No matching cases</h3><p>Try another name or citation.</p></div>}</div>;
+const ServiceEmpty = ({ icon: Icon, title, detail }: { icon: React.ElementType; title: string; detail: string }) => <section className="admin-section"><div className="admin-empty"><span className="admin-empty-icon"><Icon size={28} /></span><h2>{title}</h2><p>{detail}</p><span className="admin-status">Not connected</span></div></section>;

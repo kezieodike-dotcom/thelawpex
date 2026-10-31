@@ -78,7 +78,7 @@ test('exact title-prefix matches outrank body-text matches', () => {
 
 test('the public Case Laws page is a unified accessible search interface', async () => {
   const source = await readFile(
-    new URL('../src/components/modules/CaseLawView.tsx', import.meta.url),
+    new URL('../src/components/modules/CaseLawSearchView.tsx', import.meta.url),
     'utf8',
   );
 
@@ -90,7 +90,8 @@ test('the public Case Laws page is a unified accessible search interface', async
   assert.match(source, /lawpex-case-motion relative z-20 overflow-visible/);
   assert.match(source, /max-h-\[21rem\].*sm:max-h-\[26rem\]/);
   assert.match(source, /to=\{`\/case-law\/case\/\$\{suggestion\.judgment\.id\}`\}/);
-  assert.match(source, /if \(courtSlug\) return <Navigate replace to="\/case-law"/);
+  const detail = await readFile(new URL('../src/components/modules/CaseLawView.tsx', import.meta.url), 'utf8');
+  assert.match(detail, /if \(courtSlug\) return <Navigate replace to="\/case-law"/);
   assert.doesNotMatch(source, /const CourtDirectory/);
   assert.doesNotMatch(source, /const CourtCaseList/);
 });

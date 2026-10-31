@@ -1,0 +1,44 @@
+[
+  {
+    "id": "case-013",
+    "file": "AMAYO V1.docx",
+    "sha256": "e3124a305a65c1eb6ee9720202ad7a08a030b92f77cba05ba970c7b29d2eeba2",
+    "paragraphs": 42,
+    "ratios": 1
+  },
+  {
+    "id": "case-014",
+    "file": "AJIBOYE V.docx",
+    "sha256": "e5c7286097cc8f4a368aef072c57412122c94846ae1984e2f1290ae4237b747f",
+    "paragraphs": 1022,
+    "ratios": 10
+  },
+  {
+    "id": "case-015",
+    "file": "AKINLAGUN.docx",
+    "sha256": "6cfd436746fbdfbd0dcbad8ac0bef7216afe6467a112a15432bf51c5c4374c4d",
+    "paragraphs": 1223,
+    "ratios": 16
+  },
+  {
+    "id": "case-016",
+    "file": "AMADI V.docx",
+    "sha256": "ddf80fe90fea5ff2c251bd89f459afa9f484ace426b1795485fb5ea6b0618d57",
+    "paragraphs": 607,
+    "ratios": 2
+  },
+  {
+    "id": "case-017",
+    "file": "AIGBOBAHI.docx",
+    "sha256": "d3eb2402eaa5a3b74e0ef49ac30c532a9ec3fcaa8ea2e2687cc0e4be0e73fc5f",
+    "paragraphs": 97,
+    "ratios": 13
+  },
+  {
+    "id": "case-018",
+    "file": "AMAYO V.docx",
+    "sha256": "2087c40c847727d4da5e98078a8f5d91cdf7a2ed6ad43a163328f2aaad6ff84b",
+    "paragraphs": 678,
+    "ratios": 8
+  }
+]

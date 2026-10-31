@@ -1,0 +1,64 @@
+[
+  {
+    "file": "AMAYO V1", "id": "case-013", "title": "Amayo v. Erinmwingbovo",
+    "subject": "Inherited land and possessory title under Bini customary law",
+    "areaOfLaw": "Land & Property Law, Customary Law",
+    "proceduralHistory": "The Edo State High Court, Benin, granted the respondent's claims to possessory title, damages for trespass and an injunction. The defendant appealed to the Court of Appeal, which dismissed the appeal and affirmed the trial judgment.",
+    "issuesForDetermination": ["Whether the trial Judge was right in giving judgment to the plaintiff/respondent on the evidence of inheritance, possession and the earlier proceedings."],
+    "keyPrinciples": ["Acquisition of a new title to land through purchase or allocation under Bini customary law requires the Oba's approval; this must be distinguished from inheritance of an existing family holding.", "Long, uninterrupted family possession and inheritance may establish the better possessory right against a competing claimant."],
+    "authoritiesCited": ["Bello v. Eweka (1981) 1 SC 101", "Atiti Gold v. Beatrice Osaseren", "Okeaya v. Aguebor (1970) 1 All NLR 8-9", "Arase v. Arase (1981) 5 SC"],
+    "practiceNotes": ["The supplied judgment contains differing dates for the trial decision. Those source dates are preserved; no replacement date has been inferred."]
+  },
+  {
+    "file": "AJIBOYE V", "id": "case-014", "title": "Ajiboye v. Ishola",
+    "subject": "Res judicata, issue estoppel and proof of title to land",
+    "areaOfLaw": "Evidence, Civil Procedure, Land & Property Law",
+    "proceduralHistory": "Following earlier appeals and a retrial, the Upper Area Court, Omu-Aran dismissed the land claim. The appellate High Court reversed that decision. An initial Court of Appeal proceeding was affected by the absence of leave. After leave was obtained, the Court of Appeal heard the appeal afresh and restored the trial decision. The Supreme Court dismissed the present appeal.",
+    "issuesForDetermination": ["Whether the Court of Appeal was right to set aside the appellate High Court's decision and restore the trial Upper Area Court's dismissal of the claim.", "Whether the earlier Supreme Court decision deprived the Court of Appeal of jurisdiction through res judicata."],
+    "keyPrinciples": ["Res judicata requires a final determination by a competent court and identity of parties or privies, issues and subject matter.", "Issue estoppel can operate between the same parties on a finally determined question even where the later cause of action differs.", "A judgment that is a nullity creates neither enforceable rights nor obligations.", "The recognised methods of proving title must be distinguished from the transaction or event by which ownership was acquired.", "A claimant for a declaration of title must prove the claim by credible evidence, while being entitled to rely on defence evidence that supports it.", "Appellate interference with the trial court's assessment of evidence requires a proper basis, such as findings contrary to the accepted evidence."],
+    "authoritiesCited": ["Igwego v. Ezeugo (1992) 6 NWLR (Pt.249) 561", "Odjevwedje v. Echanokpe (1987) 1 NWLR (Pt.52) 633", "Idundun v. Okumagba (1976) 9-10 SC 227", "Onwugbufor v. Okoye (1996) 1 NWLR (Pt.424) 252"],
+    "statutesConsidered": ["Evidence Act 1990, section 46"]
+  },
+  {
+    "file": "AKINLAGUN", "id": "case-015", "title": "Akinlagun & Ors v. Oshoboja & Anor",
+    "subject": "Appellate issues, customary tenancy and forfeiture",
+    "areaOfLaw": "Appeals, Customary Law, Land & Property Law",
+    "proceduralHistory": "The Lagos State High Court, Ikeja granted a declaration of title but refused declarations of customary tenancy, forfeiture and possession. On the parties' appeals, the Court of Appeal upheld title and ordered forfeiture against the customary tenants. The Supreme Court dismissed the tenants' further appeal.",
+    "issuesForDetermination": ["Whether the Court of Appeal could determine customary tenancy and reverse the High Court's finding without a substantive ground challenging that finding.", "Whether failure to consider the defendants' grounds of cross-appeal occasioned a miscarriage of justice.", "Whether the plaintiff proved title sufficient to justify the declaration.", "Whether the appellants were entitled to an injunction against the plaintiff."],
+    "keyPrinciples": ["Issues for determination, including those reframed by an appellate court, must arise from competent grounds of appeal.", "An omnibus ground challenges the weight of the evidence generally; it does not replace a specific ground alleging an error of law or challenging a particular finding.", "A ground from which no issue is formulated is treated as abandoned, while an issue unsupported by a ground is incompetent.", "A court decides the case presented by the parties and must not construct a different case for them.", "Customary tenancy is a distinct customary relationship; recognition of the overlord may establish it even without payment of tribute.", "Denial of the overlord's title or unauthorised alienation may expose a customary tenant to forfeiture, but the overlord must pursue enforcement through the court.", "Facts admitted by the parties do not require further proof.", "The Supreme Court reviews challenged findings of the Court of Appeal, not a direct appeal against the trial court's findings."],
+    "authoritiesCited": ["Ajibona v. Kolawole (1996) 10 NWLR (Pt.476) 22", "Anyaoke v. Adi (1986) 3 NWLR (Pt.31) 731", "Madumere v. Okafor (1996) 4 NWLR (Pt.445) 637", "Chief Onyia v. Onia & Ors (1989) 1 NWLR (Pt.99) 514", "Are v. Ipaye (1986) 3 NWLR (Pt.29) 416"],
+    "statutesConsidered": ["Evidence Act, section 75", "Constitution of the Federal Republic of Nigeria 1999, section 233(2)"]
+  },
+  {
+    "file": "AMADI V", "id": "case-016", "title": "Amadi v. Orisakwe & Ors",
+    "subject": "Proof of execution of a conveyance and appellate interference",
+    "areaOfLaw": "Evidence, Land & Property Law",
+    "factsSummary": "Lawrence Amadi claimed a 99-year lease granted in 1942 and a subsequent outright sale in 1961 of land at 27 Mbaise Road, Owerri. He relied on a conveyance said to bear the respondents' signatures. After alleged entry and damage by the respondents, he sued. His wife was substituted following his death during trial. The dispute concerned execution of the conveyance, the extent of the land and the courts' treatment of the evidence.",
+    "proceduralHistory": "The action was instituted in the High Court of Imo State, Owerri, as HOW/26/71. The High Court dismissed the claim and the Court of Appeal, Port Harcourt Division affirmed. The Supreme Court allowed the appeal and set aside both decisions.",
+    "issuesForDetermination": ["Whether the appellant was entitled to the plot measuring 50 feet by 100 feet.", "Whether the Court of Appeal was right to affirm the trial court's treatment of the deed of conveyance, exhibit A.", "Whether the appellant established with certainty the area of land claimed."],
+    "keyPrinciples": ["Concurrent findings ordinarily stand when supported by evidence, but the Supreme Court must intervene where perversity, material legal error or wrong conclusions would cause a miscarriage of justice.", "A disputed signature may be proved through an attesting magistrate or a person familiar with the signature, or examined by comparison with admitted or court-directed specimens under the Evidence Act."],
+    "authoritiesCited": ["Chinwendu v. Mbamali (1980) 3-4 SC 31", "Lamai v. Orbih (1980) 5-7 SC 28", "Adenle v. Olude (2002) 18 NWLR (Pt.799) 413"],
+    "statutesConsidered": ["Evidence Act, section 108(1)-(2)"],
+    "practiceNotes": ["The source summary refers to Rivers State, whereas the judgment identifies the High Court of Imo State, Owerri. The digest follows the judgment; the original source wording remains preserved."]
+  },
+  {
+    "file": "AIGBOBAHI", "id": "case-017", "title": "Aigbobahi & Ors v. Aifuwa & Ors",
+    "subject": "Competence of grounds of appeal and proof of title",
+    "areaOfLaw": "Appeals, Evidence, Land & Property Law",
+    "proceduralHistory": "The Edo State High Court, Abudu granted the respondents' land claims and dismissed the appellants' counterclaim. The Court of Appeal, Benin dismissed the appeal after striking out certain grounds. The Supreme Court held that striking out those grounds was erroneous but dismissed the appeal on its merits.",
+    "issuesForDetermination": ["Whether the Court of Appeal was right to strike out grounds 2, 4 and 5 of the appellants' grounds of appeal.", "Whether the Court of Appeal erred by failing to consider issue 5 concerning exhibit 7."],
+    "keyPrinciples": ["A land claimant may establish title by any one of the recognised methods where the evidence sufficiently proves the claim; all five methods need not be established.", "A ground of appeal is not incompetent merely because it combines error of law and misdirection, provided the complaint is clear rather than vague.", "Grounds unsupported by formulated issues are treated as abandoned; appeals are determined on competent issues distilled from the grounds.", "Courts must resolve disputes properly brought before them according to law and procedure, giving substance priority over mere defects of form.", "A declaration of title requires the claimant to identify the land with certainty.", "Concurrent findings are not ordinarily reversed without a demonstrated basis such as miscarriage of justice.", "Misdirection may arise from misunderstanding the issues or inadequately or incorrectly summarising evidence, including a failure to direct where required."],
+    "authoritiesCited": ["Idundun v. Okumagba (1976) 9-10 SC 227", "Aderounmu v. Olowu (2000) 4 NWLR (Pt.652) 253", "Nnajifor v. Ukonu (1986) 4 NWLR (Pt.36) 505", "Ibori v. Agbi (2004) 6 NWLR (Pt.868) 78", "Chidiak v. Laguda (1964) NMLR 123"],
+    "statutesConsidered": ["Court of Appeal Rules 1981, Order 3 rule 2"]
+  },
+  {
+    "file": "AMAYO V", "id": "case-018", "title": "Amayo v. Erinmwingbovo",
+    "subject": "Traditional history, possession and trespass to land",
+    "areaOfLaw": "Land & Property Law, Evidence, Customary Law",
+    "proceduralHistory": "The Edo State High Court, Benin granted the plaintiff's land claims. The Court of Appeal dismissed the defendant's appeal. The defendant appealed further to the Supreme Court, which dismissed the appeal.",
+    "issuesForDetermination": ["Whether the plaintiff proved title under Bini native law and custom.", "Whether failure to pronounce on the admissibility of exhibit OE1 occasioned a miscarriage of justice.", "Whether reliance on previous proceedings in exhibits OE1 and OE4 was proper under section 34 of the Evidence Act 1990.", "Whether the finding of trespass was justified.", "Whether the identity of the land was established."],
+    "keyPrinciples": ["A land claimant may rely on one or more recognised methods of proof; uncontradicted traditional evidence may itself sustain the claim.", "In competing land claims, the court considers who has established the better title, with attention to the applicable historical customary rules.", "Trespass protects exclusive possession or the right to possession; where ownership is disputed, the claimant must establish a better title.", "Relevant evidence that remains unchallenged and undiscredited should be considered and relied upon.", "An error warrants reversal when it causes a miscarriage of justice, not merely because an error can be identified.", "Concurrent findings supported by credible evidence ordinarily remain undisturbed unless shown to be perverse or otherwise legally unsustainable."],
+    "authoritiesCited": ["Akunyili v. Ejidike (1996) 5 NWLR (Pt.449) 381", "Idundun v. Okumagba (1976) 9-10 SC 227", "Aikhionbare v. Omoregie (1976) 12 SC 11", "Amakor v. Obiefuna (1974) All NLR (Pt.1) 119", "Bankole v. Pelu (1991) 8 NWLR (Pt.211) 523"],
+    "statutesConsidered": ["Evidence Act 1990, section 34"]
+  }
+]

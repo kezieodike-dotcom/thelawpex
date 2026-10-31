@@ -38,6 +38,7 @@ const AdminPanelView = lazy(() => import('./components/modules/AdminPanelView').
 
 const LegalDocumentRoute = lazy(() => import('./components/LegalDocumentRoute'));
 const CaseLawView = lazy(() => import('./components/modules/CaseLawView').then((module) => ({ default: module.CaseLawView })));
+const CaseLawSearchView = lazy(() => import('./components/modules/CaseLawSearchView').then((module) => ({ default: module.CaseLawSearchView })));
 const CourtRulesView = lazy(() => import('./components/modules/CourtRulesView').then((module) => ({ default: module.CourtRulesView })));
 const NigerianLawsView = lazy(() => import('./components/modules/NigerianLawsView').then((module) => ({ default: module.NigerianLawsView })));
 const UniversalSearchModal = lazy(() => import('./components/UniversalSearchModal').then((module) => ({ default: module.UniversalSearchModal })));
@@ -45,11 +46,7 @@ const UniversalViewerModal = lazy(() => import('./components/UniversalViewerModa
 const DraftCustomizerModal = lazy(() => import('./components/DraftCustomizerModal').then((module) => ({ default: module.DraftCustomizerModal })));
 
 const LegalDocumentFallback = () => (
-  <div className="flex min-h-[55vh] items-center justify-center px-5" role="status">
-    <div className="rounded-lg border border-amber-200 bg-white px-5 py-4 text-sm font-bold text-neutral-700 shadow-sm">
-      Loading LAWPEX…
-    </div>
-  </div>
+  <div className="min-h-[55vh]" role="status" aria-busy="true" aria-label="Loading page" />
 );
 
 /** Keeps the document title and meta description in sync with the current page. */
@@ -247,6 +244,7 @@ export function AppShell() {
   const [customizingDraft, setCustomizingDraft] = useState<LegalDraft | null>(null);
 
   const activeTab = tabForPath(pathname);
+  const isAdminWorkspace = pathname === '/admin';
 
   usePageMeta(pathname);
   useScrollToTop(pathname);
@@ -313,12 +311,12 @@ export function AppShell() {
   return (
     <div className="lawpex-shell min-h-screen text-neutral-900 font-sans flex flex-col selection:bg-yellow-400 selection:text-neutral-950">
       {/* Universal Top Navigation */}
-      <Navbar
+      {!isAdminWorkspace && <Navbar
         activeTab={activeTab}
         openAuthModal={openAuthModal}
         isLoggedIn={isLoggedIn}
         onLogout={handleLogout}
-      />
+      />}
 
       {/* One URL per page */}
       <main className="flex-1">
@@ -389,7 +387,7 @@ export function AppShell() {
           />
 
           {/* Case law: court → list of cases → the case itself */}
-          <Route path="/case-law" element={<CaseLawPage />} />
+          <Route path="/case-law" element={<CaseLawSearchView />} />
           <Route path="/case-law/case/:caseId" element={<CaseLawPage />} />
           <Route path="/case-law/:courtSlug" element={<CaseLawPage />} />
 
@@ -457,10 +455,10 @@ export function AppShell() {
       </main>
 
       {/* Footer */}
-      <Footer />
+      {!isAdminWorkspace && <Footer />}
 
       {/* Ai Draft Wizard launcher is redundant inside the wizard itself. */}
-      {activeTab !== 'ai-assistant' && <AssistantLauncher />}
+      {!isAdminWorkspace && activeTab !== 'ai-assistant' && <AssistantLauncher />}
 
       {/* Modals & Overlays */}
       {isSearchOpen && (

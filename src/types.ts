@@ -92,6 +92,8 @@ export interface AreaResourceBundle {
 }
 
 export interface CaseLaw {
+  reportFormatVersion?: 'lawpex-reviewed-v1';
+  ratioSourceReferences?: Array<{ page: number; paragraph: string }>;
   id: string;
   title: string;
   citation: string;

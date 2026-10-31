@@ -27,7 +27,7 @@ test('whole-case pages retain every supporting judge heading before that judge o
   const caseView = await readFile(caseViewUrl, 'utf8');
 
   assert.match(caseView, /const reportSectionsFromSourceBlocks/);
-  assert.match(caseView, /reportSectionsFromSourceBlocks\(blocks\)\.map/);
+  assert.match(caseView, /sourceLinkedReportSections\(blocks\) : reportSectionsFromSourceBlocks\(blocks\)/);
 
   const judgment = JSON.parse(
     await readFile(new URL('../src/data/judgments/case-005.json', import.meta.url), 'utf8'),

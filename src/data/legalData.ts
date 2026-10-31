@@ -11,6 +11,7 @@ import {
   LearningCourse,
 } from '../types';
 import { IMPORTED_LANDMARK_CASES } from './importedLandmarkCases';
+import { ADDITIONAL_CASES } from './additionalCases';
 
 export const AREAS_OF_LAW: AreaOfLaw[] = [
   {
@@ -891,7 +892,8 @@ Per BOLOUKUROMO MOSES UGO JCA (Pp. 9-10, paras. F-A)`
     ],
     isLandmark: false,
   },
-  ...IMPORTED_LANDMARK_CASES
+  ...IMPORTED_LANDMARK_CASES,
+  ...ADDITIONAL_CASES
 ];
 
 export const COURT_RULES_DATA: CourtRule[] = [

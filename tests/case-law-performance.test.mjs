@@ -26,3 +26,21 @@ test('case citation targets are memoized per merged judgment document', async ()
   assert.match(caseViewSource, /reportCitationTargetsCache\.get\(judgment\)/);
   assert.match(caseViewSource, /reportCitationTargetsCache\.set\(judgment,/);
 });
+
+test('the case landing route does not load the judgment reader or full search corpus', async () => {
+  const app = await readFile(new URL('../src/App.tsx', import.meta.url), 'utf8');
+  assert.match(app, /path="\/case-law" element=\{<CaseLawSearchView \/>\}/);
+  const landing = await readFile(new URL('../src/components/modules/CaseLawSearchView.tsx', import.meta.url), 'utf8');
+  assert.doesNotMatch(landing, /from ['"].*(?:legalData|CaseLawView|judgmentLoader|reportQuoteLocator)['"]/);
+  assert.match(landing, /import\('\.\.\/\.\.\/data\/legalData'\)/);
+  assert.match(landing, /caseCatalog\.json/);
+});
+
+test('the case search animation never hides the search interface', async () => {
+  const css = await readFile(new URL('../src/index.css', import.meta.url), 'utf8');
+  const rule = css.match(/\.lawpex-case-motion\s*\{([^}]+)\}/)?.[1];
+  assert.ok(rule);
+  assert.doesNotMatch(rule, /opacity:\s*0/);
+  const animation = css.slice(css.indexOf('@keyframes lawpex-case-rise'), css.indexOf('@keyframes lawpex-hero-aurora'));
+  assert.doesNotMatch(animation, /opacity:\s*0/);
+});
