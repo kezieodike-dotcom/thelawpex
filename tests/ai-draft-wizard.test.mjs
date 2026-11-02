@@ -10,6 +10,7 @@ import {
   validateDraftWizardInput,
 } from '../src/lib/aiDraftWizard.ts';
 import { extractSupportingDocumentText, parseMultipartForm } from '../src/server/draftWizard.ts';
+import * as draftPrompts from '../src/server/draftWizard.ts';
 
 const projectFile = (path) => new URL(`../${path}`, import.meta.url);
 
@@ -64,6 +65,67 @@ test('draft wizard serialises the complete matter into multipart form data', () 
   assert.equal(form.getAll('documents').length, 1);
 });
 
+test('agreement validation asks for a transaction description, not a case scenario', () => {
+  assert.deepEqual(validateDraftWizardInput({ draftType: 'agreement', facts: ' ', instructions: '' }), {
+    facts: 'Describe the nature of the agreement and the transaction.',
+    instructions: 'Tell the wizard what agreement to prepare and any specific terms.',
+  });
+  assert.deepEqual(validateDraftWizardInput({
+    draftType: 'agreement', facts: 'A buyer is acquiring land in Port Harcourt.',
+    instructions: 'Prepare a deed of assignment with completion conditions.',
+  }), {});
+});
+
+test('agreement requests carry optional title, parties and supporting documents without court fields', () => {
+  const form = buildDraftWizardFormData({
+    draftType: 'agreement', agreementTitle: ' Deed of Assignment ',
+    agreementParties: ' Ada: assignor; Chidi: assignee ',
+    court: 'Stale court value', claimant: 'Stale claimant', defendant: 'Stale defendant',
+    facts: ' Sale of land in Rivers State. ', instructions: ' Include completion conditions. ',
+    files: [new File(['Existing title'], 'title.txt')],
+  });
+  assert.equal(form.get('draftType'), 'agreement');
+  assert.equal(form.get('agreementTitle'), 'Deed of Assignment');
+  assert.equal(form.get('agreementParties'), 'Ada: assignor; Chidi: assignee');
+  assert.equal(form.get('facts'), 'Sale of land in Rivers State.');
+  assert.equal(form.getAll('documents').length, 1);
+  for (const field of ['court', 'claimant', 'defendant', 'matterTitle']) assert.equal(form.has(field), false);
+});
+
+test('server prepares an agreement-specific brief and professional review notice', () => {
+  const build = draftPrompts.buildDraftWizardPrompt;
+  assert.equal(typeof build, 'function');
+  const result = build({
+    draftType: 'agreement', agreementTitle: 'Deed of Mortgage',
+    agreementParties: 'Mortgagor: Ada; Mortgagee: Chidi',
+    facts: 'Security over land in Lagos.', instructions: 'Secure the agreed loan.',
+    court: 'Do not use this court',
+  }, 'Existing title supplied.', false);
+  assert.match(result.prompt, /AGREEMENT TITLE: Deed of Mortgage/);
+  assert.match(result.prompt, /PARTIES AND THEIR ROLES: Mortgagor: Ada; Mortgagee: Chidi/);
+  assert.match(result.prompt, /NATURE OF THE AGREEMENT/);
+  assert.match(result.prompt, /Existing title supplied/);
+  assert.doesNotMatch(result.prompt, /CLAIMANT|DEFENDANT|CASE SCENARIO|Do not use this court/);
+  assert.match(result.systemInstruction, /Do not add court headings/);
+  assert.match(result.systemInstruction, /Never invent/);
+  assert.match(result.systemInstruction, /execution|signature/);
+  assert.match(result.notice, /execution/);
+  assert.equal(result.documentTitle, 'Deed of Mortgage');
+});
+
+test('agreement title, parties and uploads remain optional; legacy requests stay court drafts', () => {
+  const build = draftPrompts.buildDraftWizardPrompt;
+  assert.equal(typeof build, 'function');
+  const agreement = build({ draftType: 'agreement', facts: 'A service arrangement.', instructions: 'Draft terms.' }, '', false);
+  assert.equal(agreement.documentTitle, 'LAWPEX Legal Agreement');
+  assert.match(agreement.prompt, /PARTIES AND THEIR ROLES: Not supplied/);
+  const court = build({ facts: 'An unlawful eviction.', instructions: 'Claim damages.', court: 'High Court of Rivers State' }, '', true);
+  assert.match(court.prompt, /COURT \/ JURISDICTION: High Court of Rivers State/);
+  assert.match(court.prompt, /CASE SCENARIO AND ISSUES/);
+  assert.match(court.prompt, /attached PDF/);
+  assert.throws(() => build({ draftType: 'other' }, '', false), /Invalid draft type/);
+});
+
 test('server parser reads browser multipart fields and supporting files', async () => {
   const form = new FormData();
   form.set('facts', 'The landlord changed the locks.');
@@ -96,10 +158,10 @@ test('assistant route is presented as the Ai Draft Wizard throughout navigation'
 test('draft wizard exposes the approved four-stage drafting workflow', async () => {
   const source = await readFile(projectFile('src/components/AILegalAssistantView.tsx'), 'utf8');
 
-  assert.match(source, /Provide Case Scenario\/Issues/);
-  assert.match(source, /Upload Letters\/Documents/);
-  assert.match(source, /Provide Draft Instructions/);
-  assert.match(source, /Review & Download/);
+  assert.match(source, /Case scenario and issues/);
+  assert.match(source, /Add the documents behind the brief/);
+  assert.match(source, /Lawyer's drafting instruction/);
+  assert.match(source, /Generated working draft/);
   assert.match(source, /accept="\.pdf,\.docx,\.txt,\.md"/);
   assert.match(source, /\/api\/ai\/draft-wizard/);
   assert.match(source, /Download \.docx/);
@@ -112,7 +174,14 @@ test('wizard step controls allow direct navigation through all four stages', asy
 
   assert.match(source, /const selectStage = \(nextStage: WizardStage\) => \{\s*setStage\(nextStage\);/);
   assert.match(source, /Your draft will appear here/);
-  assert.match(source, /onClick=\{\(\) => setStage\(3\)\}/);
+  assert.match(source, /onClick=\{\(\) => selectStage\(3\)\}/);
+});
+
+test('the first wizard tool offers court documents and legal agreements separately', async () => {
+  const source = await readFile(projectFile('src/components/AILegalAssistantView.tsx'), 'utf8');
+  assert.match(source, /Court Ready Working Document/);
+  assert.match(source, /Legal Agreement/);
+  assert.match(source, /AgreementDraftPanel/);
 });
 
 test('server handles multipart legal drafting without persisting uploads', async () => {
