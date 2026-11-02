@@ -129,7 +129,7 @@ const CaseDetail: React.FC<{ judgment: CaseLaw }> = ({ judgment }) => {
                 <p className="mt-1 text-xs font-black leading-5 text-amber-800">{judgment.citation}</p>
               </div>
 
-              <nav className="lawpex-scrollbar-hide flex max-h-[calc(100dvh-5.5rem)] flex-col gap-1.5 overflow-y-auto p-1.5 lg:max-h-none lg:gap-2 lg:overflow-visible lg:p-2" aria-label="Case sections">
+              <nav className="lawpex-scrollbar-hide flex max-h-[calc(100dvh-12rem)] flex-col gap-1.5 overflow-y-auto p-1.5 lg:max-h-none lg:gap-2 lg:overflow-visible lg:p-2" aria-label="Case sections">
                 {caseSectionTabs.map((item, index) => (
                   <TabButton
                     key={item.id}

@@ -12,6 +12,7 @@ import {
 import { Navbar } from './components/Navbar';
 import { Footer } from './components/Footer';
 import { AssistantLauncher } from './components/AssistantLauncher';
+import { MobileScrollNavigator } from './components/MobileScrollNavigator';
 import { HOME_ROUTE, pathForTab, routeForPath, tabForPath } from './routes';
 import { UserRole, SubscriptionTier, LegalDraft } from './types';
 import type { AuthMode } from './components/AuthModal';
@@ -459,6 +460,7 @@ export function AppShell() {
 
       {/* Ai Draft Wizard launcher is redundant inside the wizard itself. */}
       {!isAdminWorkspace && activeTab !== 'ai-assistant' && <AssistantLauncher />}
+      {!isAdminWorkspace && <MobileScrollNavigator key={pathname} inCaseRail={pathname.startsWith('/case-law/case/')} />}
 
       {/* Modals & Overlays */}
       {isSearchOpen && (
