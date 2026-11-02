@@ -1,8 +1,12 @@
 export const DRAFT_WIZARD_ACCEPTED_EXTENSIONS = ['.pdf', '.docx', '.txt', '.md'] as const;
 export const DRAFT_WIZARD_MAX_FILE_BYTES = 10 * 1024 * 1024;
 export const DRAFT_WIZARD_MAX_FILES = 8;
+export type DraftWizardType = 'court' | 'agreement';
 
 export interface DraftWizardInput {
+  draftType?: DraftWizardType;
+  agreementTitle?: string;
+  agreementParties?: string;
   matterTitle?: string;
   court?: string;
   claimant?: string;
@@ -14,14 +18,19 @@ export interface DraftWizardInput {
 
 export type DraftWizardErrors = Partial<Record<'facts' | 'instructions', string>>;
 
-export function validateDraftWizardInput(input: Pick<DraftWizardInput, 'facts' | 'instructions'>): DraftWizardErrors {
+export function validateDraftWizardInput(input: Pick<DraftWizardInput, 'draftType' | 'facts' | 'instructions'>): DraftWizardErrors {
   const errors: DraftWizardErrors = {};
+  const agreement = input.draftType === 'agreement';
 
   if (!input.facts.trim()) {
-    errors.facts = "Provide the client's case scenario and legal issues.";
+    errors.facts = agreement
+      ? 'Describe the nature of the agreement and the transaction.'
+      : "Provide the client's case scenario and legal issues.";
   }
   if (!input.instructions.trim()) {
-    errors.instructions = 'Tell the wizard what legal document to prepare.';
+    errors.instructions = agreement
+      ? 'Tell the wizard what agreement to prepare and any specific terms.'
+      : 'Tell the wizard what legal document to prepare.';
   }
 
   return errors;
@@ -43,10 +52,16 @@ export function validateDraftWizardFile(file: Pick<File, 'name' | 'size'>): stri
 
 export function buildDraftWizardFormData(input: DraftWizardInput): FormData {
   const form = new FormData();
-  form.set('matterTitle', input.matterTitle?.trim() ?? '');
-  form.set('court', input.court?.trim() ?? '');
-  form.set('claimant', input.claimant?.trim() ?? '');
-  form.set('defendant', input.defendant?.trim() ?? '');
+  form.set('draftType', input.draftType ?? 'court');
+  if (input.draftType === 'agreement') {
+    form.set('agreementTitle', input.agreementTitle?.trim() ?? '');
+    form.set('agreementParties', input.agreementParties?.trim() ?? '');
+  } else {
+    form.set('matterTitle', input.matterTitle?.trim() ?? '');
+    form.set('court', input.court?.trim() ?? '');
+    form.set('claimant', input.claimant?.trim() ?? '');
+    form.set('defendant', input.defendant?.trim() ?? '');
+  }
   form.set('facts', input.facts.trim());
   form.set('instructions', input.instructions.trim());
   input.files?.forEach((file) => form.append('documents', file, file.name));

@@ -12,6 +12,7 @@ import {
   Download,
   FileCheck2,
   FileSearch,
+  FileSignature,
   FileText,
   Gavel,
   LoaderCircle,
@@ -33,8 +34,10 @@ import {
   validateDraftWizardFile,
   validateDraftWizardInput,
   type DraftWizardErrors,
+  type DraftWizardType,
 } from '../lib/aiDraftWizard';
 import { downloadDraftDocx } from '../lib/downloadDraftDocx';
+import { AgreementDraftPanel } from './AgreementDraftPanel';
 
 type WizardStage = 1 | 2 | 3 | 4;
 type AssistantMode = 'draft' | 'board' | 'revisor' | 'researcher';
@@ -110,7 +113,7 @@ const ASSISTANT_MODES: Array<{
   description: string;
   icon: React.ElementType;
 }> = [
-  { id: 'draft', label: 'Draft Wizard', description: 'Build court-ready working drafts', icon: WandSparkles },
+  { id: 'draft', label: 'Draft Wizard', description: 'Court documents and legal agreements', icon: WandSparkles },
   { id: 'board', label: 'Board Assistant', description: 'Minutes, reports and board packs', icon: BriefcaseBusiness },
   { id: 'revisor', label: 'Revisor', description: 'Review uploaded documents against instructions', icon: FileSearch },
   { id: 'researcher', label: 'Researcher', description: 'Turn a legal question into a research brief', icon: BookOpenCheck },
@@ -121,6 +124,7 @@ const FIELD_CLASS =
 
 export const AILegalAssistantView: React.FC = () => {
   const [mode, setMode] = useState<AssistantMode>('draft');
+  const [draftType, setDraftType] = useState<DraftWizardType | null>(null);
   const [stage, setStage] = useState<WizardStage>(1);
   const [form, setForm] = useState<MatterForm>(EMPTY_FORM);
   const [files, setFiles] = useState<File[]>([]);
@@ -158,6 +162,7 @@ export const AILegalAssistantView: React.FC = () => {
   useEffect(() => {
     const prompt = searchParams.get('prompt');
     if (!prompt) return;
+    setDraftType('court');
     setForm((current) => ({ ...current, instructions: prompt }));
     searchParams.delete('prompt');
     setSearchParams(searchParams, { replace: true });
@@ -372,8 +377,22 @@ export const AILegalAssistantView: React.FC = () => {
           </aside>
 
           <div className="min-w-0">
-        {mode === 'draft' ? (
-          <>
+        <div id="assistant-draft" hidden={mode !== 'draft'} className="scroll-mt-24">
+          <div role="group" aria-label="Draft type" className="mb-7 grid gap-3 sm:grid-cols-2">
+            {([
+              { id: 'court', label: 'Court Ready Working Document', icon: Gavel },
+              { id: 'agreement', label: 'Legal Agreement', icon: FileSignature },
+            ] as const).map((option) => {
+              const Icon = option.icon;
+              const selected = draftType === option.id;
+              return <button key={option.id} type="button" onClick={() => setDraftType(option.id)} aria-pressed={selected} className={`lawpex-focus-ring flex min-h-24 min-w-0 items-center gap-4 rounded-lg border px-5 py-5 text-left text-base font-semibold transition-colors ${selected ? 'border-amber-500 bg-amber-300 text-stone-950' : 'border-amber-200 bg-white text-stone-800 hover:bg-amber-50'}`}>
+                <Icon className="h-6 w-6 shrink-0" />
+                <span className="min-w-0 flex-1">{option.label}</span>
+                {selected && <Check className="h-5 w-5 shrink-0" />}
+              </button>;
+            })}
+          </div>
+          <div hidden={draftType !== 'court'}>
           <section className="min-w-0 border border-amber-200 bg-white shadow-[0_24px_70px_-56px_rgba(68,49,12,0.55)]">
             <div className="border-b border-amber-200 bg-amber-50 px-5 py-4 sm:px-8">
               <div className="flex items-center justify-between gap-4">
@@ -524,8 +543,10 @@ export const AILegalAssistantView: React.FC = () => {
               </button>
             </div>
           </section>
-          </>
-        ) : (
+          </div>
+          <AgreementDraftPanel active={mode === 'draft' && draftType === 'agreement'} />
+        </div>
+        {mode !== 'draft' && (
           <AssistantModePanel
             mode={mode}
             boardForm={boardForm}
