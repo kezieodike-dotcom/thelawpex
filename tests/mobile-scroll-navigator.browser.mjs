@@ -83,6 +83,7 @@ try {
   await slider.waitFor({ state: 'hidden' });
   await page.getByRole('button', { name: '5. Read the whole case', exact: true }).click();
   await slider.waitFor();
+  await page.waitForFunction(() => scrollY < 3);
   await page.evaluate(() => {
     const reader = document.createElement('div');
     reader.id = 'scroll-reader-fixture';
@@ -117,7 +118,7 @@ try {
   assert.ok((await page.evaluate(() => scrollY)) < 3, 'route change cancels drag');
   await slider.waitFor({ state: 'hidden' });
   console.log('Mobile layouts and route cleanup passed');
-  for (const path of ['/', '/case-law', '/court-rules', '/court-rules/supreme-court', '/nigerian-laws', '/nigerian-laws/federation']) {
+  for (const path of ['/', '/case-law', '/court-rules', '/court-rules/high-court', '/nigerian-laws', '/nigerian-laws/federation']) {
     await page.goto(base + path, { waitUntil: 'commit', timeout: 90000 });
     await page.locator('main h1').first().waitFor({ timeout: 120000 });
     assert.equal(await slider.count(), 0, 'landing and listing pages must not show the handle: ' + path);
@@ -151,16 +152,18 @@ try {
   const edges = await page.locator('[data-page-number] p').evaluateAll(elements => elements.map(element => element.getBoundingClientRect()).filter(rect => rect.top < innerHeight && rect.bottom > 64).map(rect => rect.right));
   assert.ok(edges.length && Math.max(...edges) <= lawNav.x, 'fits law reader margin');
   await page.screenshot({ path: 'tmp/mobile-scroll-navigator/law-mobile.png', animations: 'disabled' });
-  await page.goto(base + '/court-rules/supreme-court/supreme-court-rules-2024', { waitUntil: 'commit', timeout: 90000 });
-  await page.locator('[data-page-number]').first().waitFor({ timeout: 90000 });
-  await slider.waitFor();
-  await start();
-  await drag(0.5);
-  await page.mouse.up();
-  assert.ok((await page.evaluate(() => scrollY)) > 600, 'long rule books support fast navigation');
-  assert.match(await slider.getAttribute('aria-valuetext'), /Page \d+ of \d+/);
-  const rulesNav = await slider.boundingBox();
-  assert.ok(rulesNav.x >= 288 && rulesNav.x + rulesNav.width <= 320, 'rule-book navigation is also on the right');
+  for (const path of ['/court-rules/supreme-court', '/court-rules/supreme-court/supreme-court-rules-2024']) {
+    await page.goto(base + path, { waitUntil: 'commit', timeout: 90000 });
+    await page.locator('[data-page-number]').first().waitFor({ timeout: 90000 });
+    await slider.waitFor();
+    await start();
+    await drag(0.5);
+    await page.mouse.up();
+    assert.ok((await page.evaluate(() => scrollY)) > 600, 'long rule books support fast navigation');
+    assert.match(await slider.getAttribute('aria-valuetext'), /Page \d+ of \d+/);
+    const rulesNav = await slider.boundingBox();
+    assert.ok(rulesNav.x >= 288 && rulesNav.x + rulesNav.width <= 320, 'rule-book navigation is also on the right');
+  }
   await page.screenshot({ path: 'tmp/mobile-scroll-navigator/rules-mobile.png', animations: 'disabled' });
   await page.setViewportSize({ width: 1440, height: 1000 });
   await slider.waitFor({ state: 'hidden' });
