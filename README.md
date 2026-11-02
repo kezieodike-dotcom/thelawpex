@@ -33,7 +33,7 @@ refreshed and navigated with the browser back/forward buttons.
 | `/compliance`            | Compliance Hub                                   |
 | `/learning`              | Learning Centre                                  |
 | `/pricing`               | Pricing / Subscriptions                          |
-| `/admin`                 | Admin Panel                                      |
+| `/admin`                 | Old workspace transfer / link to separate admin |
 | anything else            | 404 page                                         |
 
 ## Branding
@@ -56,7 +56,7 @@ non-`/api` path so deep links work on a hard refresh.
 
 ## Run locally
 
-**Prerequisites:** Node.js 18+
+**Prerequisites:** Node.js 22+
 
 1. Install dependencies:
    ```
@@ -92,3 +92,13 @@ npm start        # serves the production build
 - `POST /api/ai/ask` — general legal research query
 - `POST /api/ai/draft` — generate a Nigerian court document
 - `POST /api/ai/summarize` — summarize a judgment
+
+## Separate administration and shared publishing
+
+The admin app lives in [`admin/`](admin/) and builds independently for `admin.lawpex.com`.
+Run `npm run dev:admin` locally or `npm run build:admin` for its production frontend.
+Both sites use a shared PostgreSQL database so verified cases published in admin appear
+on the public website for every visitor. Drafts and source files require an admin session.
+
+See [the setup and deployment guide](doc/admin-deployment.md) for database initialization,
+admin credentials, hosting/DNS settings, and transferring existing browser-only records.

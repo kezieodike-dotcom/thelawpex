@@ -2,7 +2,7 @@ import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Search, ChevronRight, Award, X } from 'lucide-react';
 import caseCatalog from '../../data/caseCatalog.json';
-import { getPublishedIngestedCases } from '../../data/caseIngestion';
+import { usePublishedCases } from '../../lib/publishedCases';
 import { searchCaseLaws, type CaseSearchDocument } from '../../lib/caseSearch';
 
 type SearchCase = CaseSearchDocument & { isLandmark?: boolean };
@@ -18,7 +18,7 @@ export const CaseLawSearchView: React.FC = () => {
   const [activeSuggestion, setActiveSuggestion] = useState(-1);
   const searchRef = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
-  const publishedCases = useMemo(() => getPublishedIngestedCases(), []);
+  const { cases: publishedCases, error: libraryError, refresh: refreshLibrary } = usePublishedCases();
   const [fullCases, setFullCases] = useState<SearchCase[] | null>(null);
   const [searchStatus, setSearchStatus] = useState<'idle' | 'loading' | 'ready' | 'error'>('idle');
   const [retry, setRetry] = useState(0);
@@ -89,8 +89,9 @@ export const CaseLawSearchView: React.FC = () => {
 
   return (
     <div className={`${CASE_PAGE_BG} min-h-screen py-7 text-neutral-900 sm:py-12`}>
+      {libraryError && <p role="status" className="mx-auto max-w-7xl px-4 text-sm text-amber-900">Newly published cases could not be loaded. The existing collection is available. <button onClick={() => void refreshLibrary()} className="underline">Retry</button></p>}
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <header className="lawpex-module-hero lawpex-case-motion relative z-20 overflow-visible rounded-2xl border-b border-amber-200 p-6 pb-8 sm:p-8 sm:pb-10">
+        <header className="lawpex-module-hero lawpex-case-search-hero lawpex-case-motion relative z-20 overflow-visible rounded-2xl border-b border-amber-200 p-6 pb-8 sm:p-8 sm:pb-10">
           <div className="max-w-4xl">
             <span className="inline-flex items-center bg-[#facc15] px-3 py-1.5 text-xs font-black uppercase text-neutral-950">
               Unified Nigerian law reports
@@ -103,7 +104,7 @@ export const CaseLawSearchView: React.FC = () => {
             </p>
           </div>
 
-          <form className="lawpex-no-reveal mt-8 max-w-5xl" onSubmit={handleSubmit} role="search">
+          <form className="lawpex-case-search-form lawpex-no-reveal mt-8 max-w-5xl" onSubmit={handleSubmit} role="search">
             <label htmlFor="case-law-search" className="mb-2 block text-sm font-black text-neutral-800">
               Search the case library
             </label>

@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { ArrowRight, Mail, MapPin, ShieldCheck } from 'lucide-react';
 import { LogoMark } from './LogoMark';
 import { pathForTab } from '../routes';
+import { adminSiteUrl } from '../lib/adminLocation';
 
 const LITIGATION_LINKS = [
   { id: 'ai-assistant', label: 'Ai Draft Wizard' },
@@ -114,9 +115,9 @@ const FooterLinkGroup: React.FC<{
     <ul className="mt-4 space-y-2.5 text-sm text-neutral-600">
       {links.map((link) => (
         <li key={link.id}>
-          <Link to={pathForTab(link.id)} className="lawpex-focus-ring rounded-md hover:text-[#181411]">
+          {link.id === 'admin' ? <a href={adminSiteUrl()} className="lawpex-focus-ring rounded-md hover:text-[#181411]">{link.label}</a> : <Link to={pathForTab(link.id)} className="lawpex-focus-ring rounded-md hover:text-[#181411]">
             {link.label}
-          </Link>
+          </Link>}
         </li>
       ))}
     </ul>

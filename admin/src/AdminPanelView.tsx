@@ -1,12 +1,14 @@
 import React, { lazy, Suspense, useEffect, useMemo, useState } from 'react';
-import { Link, useSearchParams } from 'react-router-dom';
+import { useSearchParams } from 'react-router-dom';
 import { ArrowDownToLine, ArrowRight, ArrowUpRight, BookOpen, ChartNoAxesCombined, CheckCheck, ChevronRight, Clock3, FileCheck2, Files, LayoutDashboard, Menu, Plus, Search, ShieldCheck, Users, X } from 'lucide-react';
-import { LogoMark } from '../LogoMark';
-import { getCaseIngestionRecords } from '../../data/caseIngestion';
-import caseCatalog from '../../data/caseCatalog.json';
+import { LogoMark } from '../../src/components/LogoMark';
+import { getCaseIngestionRecords } from './storage';
+import { publicSiteUrl } from './api';
+import caseCatalog from '../../src/data/caseCatalog.json';
 import './admin-workspace.css';
 
 const AdminCaseIngestionView = lazy(() => import('./AdminCaseIngestionView').then((module) => ({ default: module.AdminCaseIngestionView })));
+const Link = ({ to, ...props }: React.ComponentProps<'a'> & { to: string }) => <a href={publicSiteUrl(to)} {...props} />;
 const NAV = [
   { id: 'overview', label: 'Overview', icon: LayoutDashboard },
   { id: 'case-law', label: 'Case workspace', icon: FileCheck2 },
@@ -53,10 +55,10 @@ export const AdminPanelView: React.FC = () => {
   return (
     <div className="admin-workspace">
       <aside className="admin-rail">
-        <Link to="/" className="admin-brand" aria-label="LAWPEX home">
+        <a href={publicSiteUrl()} className="admin-brand" aria-label="LAWPEX home">
           <LogoMark className="h-10 w-10 rounded-lg" alt="" />
           <span><strong>LAWPEX</strong><small>Administration</small></span>
-        </Link>
+        </a>
         <button className="admin-mobile-toggle" aria-label={menuOpen ? 'Close admin navigation' : 'Open admin navigation'} aria-expanded={menuOpen} aria-controls="admin-navigation" onClick={() => setMenuOpen(!menuOpen)}>{menuOpen ? <X /> : <Menu />}</button>
         <div id="admin-navigation" className={`admin-rail-content ${menuOpen ? 'is-open' : ''}`}>
           <p className="admin-nav-label">WORKSPACE</p>
@@ -64,14 +66,14 @@ export const AdminPanelView: React.FC = () => {
             {NAV.map(({ id, label, icon: Icon }) => <button key={id} aria-current={activeTab === id ? 'page' : undefined} onClick={() => navigate(id)}><Icon size={19} /><span>{label}</span>{id === 'case-law' && counts.review > 0 && <b>{counts.review}</b>}</button>)}
           </nav>
           <div className="admin-rail-bottom">
-            <Link to="/case-law"><ArrowUpRight size={18} /> Open public site</Link>
-            <div className="admin-storage"><ShieldCheck size={19} /><span>Editorial workspace<small>Records saved in this browser</small></span></div>
+            <a href={publicSiteUrl('/case-law')}><ArrowUpRight size={18} /> Open public site</a>
+            <div className="admin-storage"><ShieldCheck size={19} /><span>Shared editorial workspace<small>Records saved to the shared library</small></span></div>
           </div>
         </div>
       </aside>
 
       <div className="admin-main">
-        <header className="admin-topbar"><span>Administration <ChevronRight size={14} /> <strong>{title}</strong></span><Link to="/">Back to LAWPEX <ArrowUpRight size={16} /></Link></header>
+        <header className="admin-topbar"><span>Administration <ChevronRight size={14} /> <strong>{title}</strong></span><a href={publicSiteUrl()}>Back to LAWPEX <ArrowUpRight size={16} /></a></header>
         <div className="admin-body">
           <div className="admin-page-heading">
             <div><p className="admin-eyebrow">CONTENT & EDITORIAL</p><h1>{activeTab === 'overview' ? 'Your editorial overview' : title}</h1><p>{activeTab === 'overview' ? 'Cases, review activity and publishing at a glance.' : activeTab === 'case-law' ? 'Judgment intake and source-verified editorial review.' : activeTab === 'content' ? `${library.length} published cases in the LAWPEX collection.` : 'Workspace services and reporting.'}</p></div>
@@ -91,8 +93,8 @@ export const AdminPanelView: React.FC = () => {
             <div className="admin-overview-grid">
               <section className="admin-section">
                 <div className="admin-section-heading"><h2>Recent editorial activity</h2><button className="admin-text-button" onClick={() => navigate('case-law')}>View queue <ArrowRight size={16} /></button></div>
-                {recent.length ? <div className="admin-records">{recent.map((r) => <button key={r.id} onClick={() => navigate('case-law', { record: r.id })}><span className="admin-document-icon"><FileCheck2 size={20} /></span><span><strong>{r.title}</strong><small>{r.citation || 'Citation pending'}</small></span><Status status={r.status} /><ChevronRight size={16} /></button>)}</div> : <div className="admin-empty"><span className="admin-empty-icon"><ArrowDownToLine size={28} /></span><h3>Your editorial queue is clear</h3><p>No uploaded judgments in this browser workspace.</p><button className="admin-button" onClick={() => navigate('case-law', { upload: '1' })}><Plus size={16} /> Add a judgment</button></div>}
-                <div className="admin-section-footer"><ShieldCheck size={16} /> {records.length} source records in this browser</div>
+                {recent.length ? <div className="admin-records">{recent.map((r) => <button key={r.id} onClick={() => navigate('case-law', { record: r.id })}><span className="admin-document-icon"><FileCheck2 size={20} /></span><span><strong>{r.title}</strong><small>{r.citation || 'Citation pending'}</small></span><Status status={r.status} /><ChevronRight size={16} /></button>)}</div> : <div className="admin-empty"><span className="admin-empty-icon"><ArrowDownToLine size={28} /></span><h3>Your editorial queue is clear</h3><p>No uploaded judgments in the shared workspace.</p><button className="admin-button" onClick={() => navigate('case-law', { upload: '1' })}><Plus size={16} /> Add a judgment</button></div>}
+                <div className="admin-section-footer"><ShieldCheck size={16} /> {records.length} source records in shared storage</div>
               </section>
               <section className="admin-pipeline">
                 <h2>Publishing pipeline</h2>

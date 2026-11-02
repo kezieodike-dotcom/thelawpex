@@ -16,7 +16,7 @@ import {
   X,
 } from 'lucide-react';
 import { LANDMARK_CASES } from '../../data/legalData';
-import { getPublishedIngestedCases } from '../../data/caseIngestion';
+import { usePublishedCases } from '../../lib/publishedCases';
 import { CaseJudgmentDocument, loadCaseJudgmentDocument, mergeCaseJudgmentDocument } from '../../data/judgmentLoader';
 import { createQuoteIndex, locateReportQuote, normalizeQuoteText } from '../../lib/reportQuoteLocator';
 import { CaseLaw } from '../../types';
@@ -43,10 +43,14 @@ const STRUCTURED_IMPORT_CASE_IDS = new Set(['case-013', 'case-014', 'case-015', 
 const isSourceLinkedReport = (judgment: CaseLaw) => judgment.reportFormatVersion === 'lawpex-reviewed-v1' || SOURCE_LINKED_CASE_IDS.has(judgment.id);
 
 export const CaseLawView: React.FC<CaseLawViewProps> = ({ courtSlug, caseId }) => {
-  const caseLaws = [...LANDMARK_CASES, ...getPublishedIngestedCases()];
+  const { cases: publishedCases, loaded, error, refresh } = usePublishedCases();
+  const caseLaws = [...LANDMARK_CASES, ...publishedCases];
   if (caseId) {
     const judgment = caseLaws.find((item) => item.id === caseId);
     if (judgment) return <CaseDetail key={judgment.id} judgment={judgment} />;
+    if (caseId.startsWith('ingested-')) return <div className="mx-auto max-w-4xl px-6 py-16" role="status">
+      {!loaded ? <p>Loading published judgment...</p> : <><h1 className="text-2xl font-bold">{error ? 'The case library is unavailable' : 'This judgment is not currently published'}</h1><p className="mt-3">{error || 'It may have been withdrawn for editorial review.'}</p><button className="mt-4 underline" onClick={() => void refresh()}>Try again</button><Link className="ml-6 underline" to="/case-law">Browse case law</Link></>}
+    </div>;
   }
 
   if (courtSlug) return <Navigate replace to="/case-law" />;
@@ -129,7 +133,7 @@ const CaseDetail: React.FC<{ judgment: CaseLaw }> = ({ judgment }) => {
                 <p className="mt-1 text-xs font-black leading-5 text-amber-800">{judgment.citation}</p>
               </div>
 
-              <nav className="lawpex-scrollbar-hide flex max-h-[calc(100dvh-5.5rem)] flex-col gap-1.5 overflow-y-auto p-1.5 lg:max-h-none lg:gap-2 lg:overflow-visible lg:p-2" aria-label="Case sections">
+              <nav className="lawpex-scrollbar-hide flex max-h-[calc(100dvh-12rem)] flex-col gap-1.5 overflow-y-auto p-1.5 lg:max-h-none lg:gap-2 lg:overflow-visible lg:p-2" aria-label="Case sections">
                 {caseSectionTabs.map((item, index) => (
                   <TabButton
                     key={item.id}

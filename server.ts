@@ -5,17 +5,23 @@ import { GoogleGenAI } from "@google/genai";
 import dotenv from "dotenv";
 import { extractSupportingDocumentText, parseMultipartForm } from "./src/server/draftWizard";
 import { extractCaseSource, suggestCaseReport } from "./src/server/caseReportExtraction";
+import { configuredCaseRepository, type PostgresCaseRepository } from './src/server/caseRepository';
+import { configuredAdminAuth, type AdminAuthConfig } from './src/server/adminAuth';
+import { createPublishingRouter } from './src/server/casePublishing';
 
 dotenv.config();
 
 // Gemini model used for all AI endpoints. Override via GEMINI_MODEL if needed.
 const AI_MODEL = process.env.GEMINI_MODEL || "gemini-2.5-flash";
 
-async function startServer() {
+export function createApiApp(options: { repository?: PostgresCaseRepository | null; auth?: AdminAuthConfig | null } = {}) {
   const app = express();
-  const PORT = Number(process.env.PORT) || 3000;
-
-  app.use(express.json());
+  app.disable('x-powered-by');
+  app.use(express.json({ limit: '16mb' }));
+  app.use('/api', createPublishingRouter({
+    repository: options.repository === undefined ? configuredCaseRepository() : options.repository,
+    auth: options.auth === undefined ? configuredAdminAuth() : options.auth,
+  }));
 
   // Lazy instantiate GoogleGenAI
   const getGenAI = () => {
@@ -391,18 +397,26 @@ Return only the complete draft. Use clear [TO BE SUPPLIED] placeholders for miss
     res.status(404).json({ error: `No API route for ${req.method} ${req.originalUrl}` });
   });
 
+  return app;
+}
+
+export async function startServer() {
+  const app = createApiApp();
+  const isAdmin = process.env.LAWPEX_APP === 'admin';
+  const PORT = Number(process.env.PORT) || (isAdmin ? 3001 : 3000);
   // Vite middleware in dev or static files in prod
   if (process.env.NODE_ENV !== "production") {
     // Do not accept browser requests until Vite is ready. The former lazy start
     // returned 503 responses during dependency optimisation, which made large
     // reports such as Amaechi appear to fail intermittently.
     const vite = await createViteServer({
+      ...(isAdmin ? { configFile: path.resolve('admin/vite.config.ts') } : {}),
       server: { middlewareMode: true },
       appType: "spa",
     });
     app.use(vite.middlewares);
   } else {
-    const distPath = path.join(process.cwd(), "dist");
+    const distPath = path.join(process.cwd(), isAdmin ? 'dist-admin' : 'dist');
     app.use(express.static(distPath));
 
     // SPA fallback: every client-side route (/pricing, /case-law, ...) must return index.html
@@ -416,5 +430,3 @@ Return only the complete draft. Use clear [TO BE SUPPLIED] placeholders for miss
     console.log(`LAWPEX Server running on http://0.0.0.0:${PORT}`);
   });
 }
-
-startServer();

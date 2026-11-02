@@ -22,7 +22,8 @@ import {
   LANDMARK_CASES,
   NIGERIAN_LAWS_DATA,
 } from '../data/legalData';
-import { getPublishedIngestedCases } from '../data/caseIngestion';
+import { usePublishedCases } from '../lib/publishedCases';
+import type { CaseLaw } from '../types';
 import { APPEAL_LADDERS, APPEAL_RIGHTS } from '../data/appeals';
 import { AFFIDAVITS } from '../data/affidavits';
 import { COURT_RULE_BOOKS } from '../data/courtRules';
@@ -108,8 +109,8 @@ const scoreRecord = (record: SearchRecord, query: string): number => {
   return termScore + record.priority;
 };
 
-const buildSearchIndex = (): SearchRecord[] => [
-  ...[...LANDMARK_CASES, ...getPublishedIngestedCases()].map((item) => ({
+const buildSearchIndex = (publishedCases: CaseLaw[]): SearchRecord[] => [
+  ...[...LANDMARK_CASES, ...publishedCases].map((item) => ({
     id: item.id,
     kind: 'cases' as const,
     title: item.title,
@@ -257,7 +258,8 @@ export const UniversalSearchModal: React.FC<UniversalSearchModalProps> = ({
     if (isOpen) setQuery(initialQuery);
   }, [initialQuery, isOpen]);
 
-  const index = useMemo(buildSearchIndex, []);
+  const { cases: publishedCases } = usePublishedCases();
+  const index = useMemo(() => buildSearchIndex(publishedCases), [publishedCases]);
   const needle = query.trim().toLowerCase();
 
   const results = useMemo(() => {

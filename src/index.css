@@ -462,6 +462,15 @@ select {
   color: rgba(255, 255, 255, 0.92) !important;
 }
 
+.lawpex-case-search-hero {
+  overflow: visible;
+}
+
+/* Keep autocomplete above later hero content, including the report statistics. */
+.lawpex-case-search-hero > .lawpex-case-search-form {
+  z-index: 2;
+}
+
 .lawpex-module-tile {
   min-height: 218px;
   box-shadow: 0 18px 44px -36px rgba(24, 20, 17, 0.65);
