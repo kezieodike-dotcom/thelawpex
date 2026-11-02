@@ -3,7 +3,7 @@ import { createRequire } from 'node:module';
 import { mkdir } from 'node:fs/promises';
 const require = createRequire(import.meta.url);
 const { chromium } = require(process.env.PLAYWRIGHT_MODULE || 'C:/Users/USER/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/node_modules/playwright');
-const base = process.env.TEST_BASE_URL || 'http://127.0.0.1:3000';
+const base = process.env.TEST_BASE_URL || process.argv[2] || 'http://127.0.0.1:3000';
 const readyBy = Date.now() + 120000;
 while (true) {
   try {
@@ -15,7 +15,7 @@ while (true) {
 }
 console.log('Starting mobile navigator browser checks');
 const browser = await chromium.launch({ executablePath: process.env.CHROME_PATH || 'C:/Program Files (x86)/Microsoft/Edge/Application/msedge.exe', headless: true, timeout: 60000, args: ['--no-proxy-server'] });
-const page = await browser.newPage({ viewport: { width: 390, height: 844 } });
+const page = await browser.newPage({ viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true });
 page.setDefaultTimeout(45000);
 const errors = [];
 page.on('pageerror', error => errors.push(error.message));
@@ -34,7 +34,7 @@ const progress = () => page.evaluate(() => scrollY / (document.documentElement.s
 try {
   await page.goto(base + '/case-law/case/case-001', { waitUntil: 'commit', timeout: 90000 });
   console.log('Case page response received');
-  await page.getByRole('button', { name: '5. Read the whole case', exact: true }).click();
+  await page.getByRole('button', { name: '5. Read the whole case', exact: true }).click({ timeout: 120000 });
   await page.locator('[data-report-page-number="7"]').waitFor();
   await slider.waitFor();
   console.log('Case reader and draggable navigator loaded');
@@ -110,6 +110,22 @@ try {
   await page.goto(base + '/nigerian-laws/federation/cama-2020', { waitUntil: 'commit', timeout: 90000 });
   await page.locator('[data-page-number]').first().waitFor({ timeout: 45000 });
   await slider.waitFor();
+  const readerSearch = page.getByRole('textbox', { name: /^Search / }).first();
+  await readerSearch.focus();
+  await page.waitForTimeout(100);
+  assert.equal(await slider.isVisible(), true, 'the handle must remain visible when a reader search field retains focus');
+  const touchBefore = await page.evaluate(() => scrollY);
+  const touchThumb = await slider.locator('[data-scroll-thumb]').boundingBox();
+  const touchRail = await slider.boundingBox();
+  const touch = await page.context().newCDPSession(page);
+  await touch.send('Input.dispatchTouchEvent', { type: 'touchStart', touchPoints: [{ x: touchThumb.x + touchThumb.width / 2, y: touchThumb.y + touchThumb.height / 2 }] });
+  await touch.send('Input.dispatchTouchEvent', { type: 'touchMove', touchPoints: [{ x: touchRail.x + touchRail.width / 2, y: touchRail.y + 22 + 0.35 * (touchRail.height - 44) }] });
+  await page.waitForTimeout(150);
+  await touch.send('Input.dispatchTouchEvent', { type: 'touchEnd', touchPoints: [] });
+  await touch.detach();
+  assert.ok((await page.evaluate(() => scrollY)) > touchBefore + 500, 'finger dragging must work while the search field retains focus');
+  assert.equal(await slider.isVisible(), true, 'touch release must not hide the handle');
+  await readerSearch.evaluate(element => element.blur());
   await start();
   await drag(0.45);
   assert.match(await slider.getAttribute('aria-valuetext'), /Page \d+ of \d+/);
@@ -125,9 +141,11 @@ try {
   assert.deepEqual(errors, []);
   console.log('Drag, page hints, keyboard, cancellation, embedded readers, mobile layouts, route cleanup, desktop visibility passed');
 } catch (error) {
+  console.error(error);
   await mkdir('tmp/mobile-scroll-navigator', { recursive: true });
   await page.screenshot({ path: 'tmp/mobile-scroll-navigator/failure.png', timeout: 10000 }).catch(() => {});
   console.error('Browser location:', page.url());
+  console.error('Page errors:', errors);
   throw error;
 } finally {
   await browser.close();

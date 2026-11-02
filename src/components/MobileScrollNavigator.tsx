@@ -63,7 +63,6 @@ export const MobileScrollNavigator: React.FC<{ inCaseRail?: boolean }> = ({ inCa
     let queued: number | null = null;
     const update = () => {
       queued = null;
-      const editing = document.activeElement?.matches('input, textarea, select, [contenteditable="true"]');
       const target = gesture.current ? gesture.current.target : currentTarget();
       let bounds = scrollBounds(target);
       // Virtualized law pages can change height as they load beneath a held handle.
@@ -71,7 +70,7 @@ export const MobileScrollNavigator: React.FC<{ inCaseRail?: boolean }> = ({ inCa
         moveTo(target, gesture.current.fraction * bounds.maximum);
         bounds = scrollBounds(target);
       }
-      const available = mobile.matches && !editing && bounds.available;
+      const available = mobile.matches && bounds.available;
       if (!available && gesture.current) stop();
       const next = { available, progress: bounds.progress, label: available ? positionLabel(target, bounds.progress) : '' };
       setPosition(previous => previous.available === next.available && previous.progress === next.progress && previous.label === next.label ? previous : next);
