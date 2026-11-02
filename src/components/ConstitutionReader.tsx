@@ -453,7 +453,11 @@ export const LegalDocumentReader: React.FC<LegalDocumentReaderProps> = ({
   const themeClass = theme === 'dark' ? 'bg-neutral-950 text-neutral-100' : theme === 'sepia' ? 'bg-[#f4eddf] text-[#30271d]' : 'bg-[#f5f7f5] text-neutral-950';
   const pageClass = theme === 'dark' ? 'border-neutral-800 bg-neutral-900 text-neutral-100' : theme === 'sepia' ? 'border-[#d8cbb4] bg-[#fbf5e9] text-[#30271d]' : 'border-neutral-200 bg-white text-neutral-950';
   return (
-    <main className={`min-h-[100dvh] overflow-x-hidden ${themeClass}`} style={{ fontFamily: uiFont }}>
+    <main
+      data-long-text-reader={pages.length > 1 || pages.some(page => page.text.length >= 6000) ? '' : undefined}
+      className={`min-h-[100dvh] overflow-x-hidden ${themeClass}`}
+      style={{ fontFamily: uiFont }}
+    >
       <header className="border-b border-emerald-950/20 bg-[#123b2a] text-white print:bg-white print:text-black">
         <div className="mx-auto max-w-[1680px] px-4 py-6 sm:px-8 lg:px-10">
           <div className="flex flex-wrap items-start justify-between gap-5">

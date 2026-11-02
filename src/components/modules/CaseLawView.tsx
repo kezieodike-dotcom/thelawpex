@@ -133,7 +133,7 @@ const CaseDetail: React.FC<{ judgment: CaseLaw }> = ({ judgment }) => {
                 <p className="mt-1 text-xs font-black leading-5 text-amber-800">{judgment.citation}</p>
               </div>
 
-              <nav className="lawpex-scrollbar-hide flex max-h-[calc(100dvh-12rem)] flex-col gap-1.5 overflow-y-auto p-1.5 lg:max-h-none lg:gap-2 lg:overflow-visible lg:p-2" aria-label="Case sections">
+              <nav className="lawpex-scrollbar-hide flex max-h-[calc(100dvh-5.5rem)] flex-col gap-1.5 overflow-y-auto p-1.5 lg:max-h-none lg:gap-2 lg:overflow-visible lg:p-2" aria-label="Case sections">
                 {caseSectionTabs.map((item, index) => (
                   <TabButton
                     key={item.id}
@@ -2274,7 +2274,7 @@ export const WholeCasePanel: React.FC<{
         ? 2
         : 1;
   return (
-    <div className="space-y-5">
+    <div className="space-y-5 pr-3 lg:pr-0 print:pr-0">
       <div className="border-b border-amber-100 pb-4">
         <h2 className="text-lg font-black tracking-tight text-neutral-950 sm:text-xl">The whole case</h2>
         <p className="mt-1.5 max-w-3xl text-[12px] leading-5 text-neutral-600 sm:text-sm sm:leading-6">

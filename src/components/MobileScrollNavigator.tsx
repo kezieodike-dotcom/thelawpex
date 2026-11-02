@@ -42,7 +42,7 @@ const positionLabel = (target: ScrollTarget, progress: number) => {
   return 'Page ' + page + ' of ' + (last.dataset.reportPageNumber ?? last.dataset.pageNumber);
 };
 
-export const MobileScrollNavigator: React.FC<{ inCaseRail?: boolean }> = ({ inCaseRail = false }) => {
+export const MobileScrollNavigator: React.FC = () => {
   const [position, setPosition] = useState({ available: false, progress: 0, label: '0%' });
   const [dragging, setDragging] = useState(false);
   const [focused, setFocused] = useState(false);
@@ -63,14 +63,15 @@ export const MobileScrollNavigator: React.FC<{ inCaseRail?: boolean }> = ({ inCa
     let queued: number | null = null;
     const update = () => {
       queued = null;
+      const eligible = mobile.matches && Boolean(document.querySelector('[data-case-report-id], [data-long-text-reader]'));
       const target = gesture.current ? gesture.current.target : currentTarget();
       let bounds = scrollBounds(target);
       // Virtualized law pages can change height as they load beneath a held handle.
-      if (gesture.current && Math.abs(bounds.top - gesture.current.fraction * bounds.maximum) > 1) {
+      if (eligible && gesture.current && Math.abs(bounds.top - gesture.current.fraction * bounds.maximum) > 1) {
         moveTo(target, gesture.current.fraction * bounds.maximum);
         bounds = scrollBounds(target);
       }
-      const available = mobile.matches && bounds.available;
+      const available = eligible && bounds.available;
       if (!available && gesture.current) stop();
       const next = { available, progress: bounds.progress, label: available ? positionLabel(target, bounds.progress) : '' };
       setPosition(previous => previous.available === next.available && previous.progress === next.progress && previous.label === next.label ? previous : next);
@@ -81,9 +82,13 @@ export const MobileScrollNavigator: React.FC<{ inCaseRail?: boolean }> = ({ inCa
     const visibility = () => { if (document.hidden) stop(); schedule(); };
     refresh.current = schedule;
     const observer = new ResizeObserver(schedule);
+    const contentObserver = new MutationObserver(schedule);
     observer.observe(document.body);
     const main = document.querySelector('main');
-    if (main) observer.observe(main);
+    if (main) {
+      observer.observe(main);
+      contentObserver.observe(main, { childList: true, subtree: true, attributes: true, attributeFilter: ['data-long-text-reader'] });
+    }
     window.addEventListener('resize', schedule);
     window.addEventListener('blur', stop);
     window.addEventListener('pointerup', stop);
@@ -99,6 +104,7 @@ export const MobileScrollNavigator: React.FC<{ inCaseRail?: boolean }> = ({ inCa
       stop();
       if (queued !== null) cancelAnimationFrame(queued);
       observer.disconnect();
+      contentObserver.disconnect();
       window.removeEventListener('resize', schedule);
       window.removeEventListener('blur', stop);
       window.removeEventListener('pointerup', stop);
@@ -135,7 +141,7 @@ export const MobileScrollNavigator: React.FC<{ inCaseRail?: boolean }> = ({ inCa
       aria-valuenow={Math.round(position.progress * 100)}
       aria-valuetext={position.label}
       title="Drag to move through the document"
-      className={'lawpex-focus-ring fixed z-30 touch-none select-none rounded-full [-webkit-touch-callout:none] lg:hidden print:hidden ' + (inCaseRail ? 'bottom-[calc(1.25rem+env(safe-area-inset-bottom))] left-6 h-[clamp(5.5rem,calc(100dvh-34rem),17.5rem)] w-11' : 'bottom-[calc(6rem+env(safe-area-inset-bottom))] right-0 h-52 max-h-[calc(100dvh-14rem)] w-7')}
+      className="lawpex-focus-ring fixed bottom-[calc(6rem+env(safe-area-inset-bottom))] right-0 z-30 h-52 max-h-[calc(100dvh-14rem)] w-7 touch-none select-none rounded-full [-webkit-touch-callout:none] lg:hidden print:hidden"
       onContextMenu={event => event.preventDefault()}
       onPointerDown={event => {
         if (event.button !== 0) return;
@@ -182,7 +188,7 @@ export const MobileScrollNavigator: React.FC<{ inCaseRail?: boolean }> = ({ inCa
         >
           <GripVertical className="h-5 w-5" aria-hidden="true" />
           {(dragging || focused) && (
-            <span role="status" className={'pointer-events-none absolute whitespace-nowrap rounded-md border border-amber-200 bg-white px-2.5 py-1.5 text-xs font-semibold text-neutral-900 shadow-md ' + (inCaseRail ? 'left-full ml-2' : 'right-full mr-2')}>
+            <span role="status" className="pointer-events-none absolute right-full mr-2 whitespace-nowrap rounded-md border border-amber-200 bg-white px-2.5 py-1.5 text-xs font-semibold text-neutral-900 shadow-md">
               {position.label}
             </span>
           )}
