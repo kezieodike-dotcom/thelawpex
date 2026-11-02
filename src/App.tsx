@@ -460,7 +460,7 @@ export function AppShell() {
 
       {/* Ai Draft Wizard launcher is redundant inside the wizard itself. */}
       {!isAdminWorkspace && activeTab !== 'ai-assistant' && <AssistantLauncher />}
-      {!isAdminWorkspace && <MobileScrollNavigator key={pathname} inCaseRail={pathname.startsWith('/case-law/case/')} />}
+      {!isAdminWorkspace && <MobileScrollNavigator key={pathname} />}
 
       {/* Modals & Overlays */}
       {isSearchOpen && (

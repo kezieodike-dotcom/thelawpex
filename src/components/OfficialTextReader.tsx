@@ -35,6 +35,7 @@ export const OfficialTextReader: React.FC<OfficialTextReaderProps> = ({
 
   return (
     <section
+      data-long-text-reader={pages.length > 1 || documentText.length >= 6000 ? '' : undefined}
       className="lawpex-no-reveal overflow-hidden rounded-lg border border-neutral-300 bg-white shadow-sm"
       aria-label={`${title} text reader`}
     >
@@ -69,6 +70,7 @@ export const OfficialTextReader: React.FC<OfficialTextReaderProps> = ({
           {pages.map((page, index) => (
             <article
               key={`${page.pageNumber || 'page'}-${index}`}
+              data-page-number={page.pageNumber || undefined}
               className="rounded-md border border-neutral-200 bg-white px-4 py-6 text-neutral-900 shadow-[0_10px_30px_-24px_rgba(15,23,42,0.45)] sm:px-8 sm:py-9 lg:px-12"
             >
               {page.pageNumber && (
