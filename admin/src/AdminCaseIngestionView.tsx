@@ -330,7 +330,7 @@ export const AdminCaseIngestionView: React.FC<{ initialSelectedId?: string | nul
 
           <div className="mt-5 space-y-3">
             <label className="block text-xs font-black text-neutral-800">Case title<input value={title} onChange={(event) => setTitle(event.target.value)} className={FIELD_CLASS} placeholder="Adekunle v. State" /></label>
-            <label className="block text-xs font-black text-neutral-800">Citation<input value={citation} onChange={(event) => setCitation(event.target.value)} className={FIELD_CLASS} placeholder="(2025) LDLR-124 (SC)" /></label>
+            <label className="block text-xs font-black text-neutral-800">Citation<input value={citation} onChange={(event) => setCitation(event.target.value)} className={FIELD_CLASS} placeholder="(2025) LDLR-124 (S.C)" /></label>
             <div className="grid gap-3">
               <label className="block text-xs font-black text-neutral-800">Court<select value={court} onChange={(event) => setCourt(event.target.value as CaseLaw['court'])} className={FIELD_CLASS}><option>Supreme Court of Nigeria</option><option>Court of Appeal</option><option>Federal High Court</option><option>National Industrial Court</option><option>State High Court</option></select></label>
               <label className="block text-xs font-black text-neutral-800">Year<input type="number" value={year} onChange={(event) => setYear(event.target.value)} className={FIELD_CLASS} /></label>
@@ -430,7 +430,7 @@ const ReviewEditor: React.FC<{ record: AdminCaseRecord; onChange: (patch: Partia
 
       <div hidden={section !== 'Case details'} className="mt-6 grid gap-5 lg:grid-cols-2">
         <label className="text-xs font-black text-neutral-800">Case title<input value={record.title} onChange={(event) => onChange({ title: event.target.value })} className={FIELD_CLASS} /></label>
-        <label className="text-xs font-black text-neutral-800">Citation<input value={record.citation} onChange={(event) => onChange({ citation: event.target.value })} className={FIELD_CLASS} placeholder="(2025) LDLR-124 (SC)" /></label>
+        <label className="text-xs font-black text-neutral-800">Citation<input value={record.citation} onChange={(event) => onChange({ citation: event.target.value })} className={FIELD_CLASS} placeholder="(2025) LDLR-124 (S.C)" /></label>
         <label className="text-xs font-black text-neutral-800">Court<select value={record.court} onChange={(event) => onChange({ court: event.target.value as CaseLaw['court'] })} className={FIELD_CLASS}><option>Supreme Court of Nigeria</option><option>Court of Appeal</option><option>Federal High Court</option><option>National Industrial Court</option><option>State High Court</option></select></label>
         <label className="text-xs font-black text-neutral-800">Subject<input value={record.subject} onChange={(event) => onChange({ subject: event.target.value })} className={FIELD_CLASS} /></label>
         {(['judicialDivision', 'dateDelivered', 'suitNumber', 'areaOfLaw'] as const).map(key => <label key={key} className="text-xs font-black text-neutral-800">{{ judicialDivision: 'Judicial division', dateDelivered: 'Date delivered', suitNumber: 'Suit number', areaOfLaw: 'Area of law' }[key]}<input value={record[key]} onChange={event => onChange({ [key]: event.target.value })} className={FIELD_CLASS} /></label>)}

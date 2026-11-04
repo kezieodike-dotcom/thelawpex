@@ -17,8 +17,9 @@ for (const {file, ...editorial} of batch) {
   const paragraphs = extracted[file];
   if (!paragraphs) throw new Error(`Missing source: ${file}`);
   const first = paragraphs.find(p => /LDLR/.test(p));
-  const citation = first.match(/\((\d{4})\)\s*LDLR-(\d+)\s*\((SC|CA)\)/);
+  const citation = first.match(/\((\d{4})\)\s*LDLR-(\d+)\s*\((S\.?C|C\.?A)\)/);
   if (!citation) throw new Error(`Unrecognised citation: ${first}`);
+  const courtCode = citation[3].replace('.', '');
   const ratioIndex = paragraphs.findIndex(p => p.trim() === 'RATIO DECIDENDI');
   const ratioDecidendi = [];
   let pending = [];
@@ -42,7 +43,7 @@ for (const {file, ...editorial} of batch) {
   if (!facts || !decision || !ratioDecidendi.length) throw new Error(`Incomplete report: ${file}`);
   const coramStart = paragraphs.findIndex(p => /Before Their Lordship/i.test(p));
   const between = paragraphs.findIndex(p => /^BETWEEN\s*$/i.test(p));
-  const judges = paragraphs.slice(coramStart + 1, between).filter(p => p.trim() && !/^Justice /i.test(p)).map(p => `${clean(p)}, J${citation[3]}`);
+  const judges = paragraphs.slice(coramStart + 1, between).filter(p => p.trim() && !/^Justice /i.test(p)).map(p => `${clean(p)}, J${courtCode}`);
   const date = clean(paragraphs.find(p => /^On /.test(p)) || '').replace(/^On /, '').replace(/, the (\d+)(?:st|nd|rd|th) day of ([A-Za-z]+), (\d+)/, ', $1 $2 $3');
   const suitNumber = clean(paragraphs.find(p => /^Suit No:/i.test(p)) || '').replace(/^Suit No:\s*/i, '');
   const appearanceIndex = paragraphs.findIndex(p => /^Appearances:/i.test(p));
@@ -74,9 +75,9 @@ for (const {file, ...editorial} of batch) {
   await writeFile(path.join(root, `src/data/judgments/${editorial.id}.json`), JSON.stringify(judgment, null, 2) + '\n');
   cases.push({
     ...editorial,
-    citation: `(${citation[1]}) LDLR-${citation[2]} (${citation[3]})`,
+    citation: `(${citation[1]}) LDLR-${citation[2]} (${courtCode[0]}.${courtCode[1]})`,
     year: Number(citation[1]),
-    court: citation[3] === 'SC' ? 'Supreme Court of Nigeria' : 'Court of Appeal',
+    court: courtCode === 'SC' ? 'Supreme Court of Nigeria' : 'Court of Appeal',
     suitNumber,
     judicialDivision: clean(paragraphs.find(p => /JUDICIAL DIVISION/.test(p)) || '').replace(/^\(|\)$/g, ''),
     dateDelivered: date,

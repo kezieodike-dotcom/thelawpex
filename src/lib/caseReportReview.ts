@@ -87,9 +87,9 @@ export function validateEditorialFields(record: AdminCaseRecord): string[] {
   for (const [label, value] of Object.entries({ title: record.title, citation: record.citation, facts: record.factsSummary, 'procedural history': record.proceduralHistory, decision: record.decisionSummary, 'date delivered': record.dateDelivered, 'suit number': record.suitNumber })) {
     if (!value?.trim()) errors.push(`Missing ${label}.`);
   }
-  const citation = record.citation.match(/^\((\d{4})\) LDLR-(\d+) \((SC|CA)\)$/);
-  const court = record.court === 'Supreme Court of Nigeria' ? 'SC' : record.court === 'Court of Appeal' ? 'CA' : '';
-  if (!citation || Number(citation[1]) !== record.year || citation[3] !== court) errors.push('Citation must match year and court: (2025) LDLR-124 (SC) or (CA).');
+  const citation = record.citation.match(/^\((\d{4})\) LDLR-(\d+) \((S\.C|C\.A)\)$/);
+  const court = record.court === 'Supreme Court of Nigeria' ? 'S.C' : record.court === 'Court of Appeal' ? 'C.A' : '';
+  if (!citation || Number(citation[1]) !== record.year || citation[3] !== court) errors.push('Citation must match year and court: (2025) LDLR-124 (S.C) or (C.A).');
   if (!record.presidingJudges.some(judge => judge.trim())) errors.push('The coram is missing.');
   if (!record.issuesForDetermination.some(issue => issue.trim())) errors.push('Issues for determination are missing.');
   if (!record.ratios.length) errors.push('No ratios have been entered.');

@@ -1,5 +1,7 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
+import { LegalPageText } from './LegalPageText';
+import { useSourceLegalLayout } from '../lib/sourceLegalLayout';
 import {
   Bookmark,
   ChevronDown,
@@ -61,7 +63,6 @@ interface ConstitutionSchedule {
 
 type ReadingTheme = 'light' | 'sepia' | 'dark';
 
-const legalTextFont = '"Source Serif 4", "Book Antiqua", "Palatino Linotype", Georgia, serif';
 const uiFont = 'Inter, ui-sans-serif, system-ui, sans-serif';
 const chapterPattern = /^CHAPTER\s+([IVXLCDM]+)$/i;
 const partPattern = /^PART\s+([IVXLCDM]+)$/i;
@@ -106,69 +107,6 @@ const nextNonEmptyLine = (lines: string[], index: number) => {
     if (value) return value;
   }
   return '';
-};
-
-const marginalNoteStartPattern = /^(?:Form(?:\s+of)?(?:\s+\d+)?|Time\s+to|Title\s+of|Functions?(?:\s+of)?|Remuneration|Proceedings(?:\s+of)?|Cap\.|Allowances|Qualifications|Tenure|Meetings|Powers?(?:\s+of)?|Duties?(?:\s+of)?|Composition(?:\s+of)?|Mode\s+of|Notice\s+of)/i;
-const structuralLinePattern = /^(?:\d{1,3}[.)]|\d{1,3}\s*[—-]|\([a-z0-9]+\)|ORDER\b|ORUER\b|ORDLR\b|CHAPTER\b|PART\b|FORM\s+\d+)/i;
-
-const marginalNoteIndices = (lines: string[]) => {
-  const indices = new Set<number>();
-  lines.forEach((line, startIndex) => {
-    const trimmed = line.trim();
-    if (!trimmed || !marginalNoteStartPattern.test(trimmed) || trimmed.length > 42) return;
-    indices.add(startIndex);
-
-    // PDF text extraction can interleave a marginal note with the rule body.
-    // Keep the short continuation lines in the note rail without moving the
-    // numbered rule or any full sentence out of the main text column.
-    for (let index = startIndex + 1; index < Math.min(lines.length, startIndex + 9); index += 1) {
-      const continuation = lines[index].trim();
-      if (!continuation || structuralLinePattern.test(continuation)) continue;
-      const previous = lines[index - 1]?.trim() ?? '';
-      if (continuation.length <= 20 && (/^[a-z]/.test(continuation) || (/^LFN[,\s]/i.test(continuation) && /^Cap\./i.test(previous)))) {
-        indices.add(index);
-      }
-    }
-  });
-  return indices;
-};
-
-const LegalPageText: React.FC<{
-  text: string;
-  pageNumber: number;
-  fontScale: number;
-  anchorByPageLine: Map<string, { id: string; kind: 'chapter' | 'schedule' | 'section' }>;
-}> = ({ text, pageNumber, fontScale, anchorByPageLine }) => {
-  const lines = text.split(/\r?\n/);
-  const noteIndices = marginalNoteIndices(lines);
-
-  return (
-    <div className="space-y-0 break-words text-[15px] leading-[1.9] sm:text-[17px] sm:leading-[2.05]" style={{ fontFamily: legalTextFont, fontSize: `clamp(15px, ${17 * fontScale}px, 22px)`, letterSpacing: '0.012em', wordSpacing: '0.035em' }}>
-      {lines.map((line, lineIndex) => {
-        const trimmed = line.trim();
-        if (!trimmed) return <div key={`${pageNumber}-${lineIndex}`} aria-hidden="true" className="h-3 sm:h-4" />;
-
-        const marginal = noteIndices.has(lineIndex);
-        const anchor = anchorByPageLine.get(`${pageNumber}:${lineIndex}`);
-        const content = anchor ? (
-          <span id={anchor.id} className={`scroll-mt-28 ${anchor.kind === 'chapter' || anchor.kind === 'schedule' ? 'font-bold text-emerald-950' : ''}`}>
-            {line}
-          </span>
-        ) : line;
-
-        return (
-          <div key={`${pageNumber}-${lineIndex}`} className={`grid min-w-0 grid-cols-1 gap-1 sm:grid-cols-[minmax(0,1fr)_12rem] sm:gap-7 ${structuralLinePattern.test(trimmed) ? 'pt-2' : ''}`}>
-            <p className={`min-w-0 whitespace-pre-wrap break-words ${marginal ? 'sm:invisible' : ''}`}>{marginal ? '' : content}</p>
-            {marginal && (
-              <aside className="-mx-1 my-1 min-w-0 rounded border-l-4 border-yellow-400/80 bg-yellow-50 px-3 py-2 text-[12px] font-semibold leading-5 text-emerald-950/75 sm:mx-0 sm:my-0 sm:rounded-none sm:border-l-2 sm:bg-transparent sm:py-0.5">
-                {line}
-              </aside>
-            )}
-          </div>
-        );
-      })}
-    </div>
-  );
 };
 
 const buildStructure = (pages: ConstitutionPage[], documentId: string) => {
@@ -295,6 +233,7 @@ export const LegalDocumentReader: React.FC<LegalDocumentReaderProps> = ({
   initialSectionId,
 }) => {
   const isConstitutionDocument = documentId === 'constitution' || documentId === 'const-1999';
+  const sourceLayout = useSourceLegalLayout(documentPath);
   const pages = useMemo(
     () => parsePages(documentText).filter((page) => !isConstitutionDocument || (page.pageNumber > 5 && page.text.trim().length > 0)),
     [documentText, isConstitutionDocument],
@@ -393,7 +332,7 @@ export const LegalDocumentReader: React.FC<LegalDocumentReaderProps> = ({
       else if (chapter) window.setTimeout(() => goToChapter(chapter), 0);
       else if (schedule) window.setTimeout(() => goToSchedule(schedule), 0);
     }
-  }, [documentId, initialSectionId, structure.sections, structure.chapters, structure.schedules]);
+  }, [documentId, initialSectionId, structure.sections, structure.chapters, structure.schedules, sourceLayout]);
 
   useEffect(() => {
     const saved = JSON.parse(window.localStorage.getItem('constitution-bookmarks') || '[]') as string[];
@@ -591,7 +530,7 @@ export const LegalDocumentReader: React.FC<LegalDocumentReaderProps> = ({
                     <span>PDF page {page.pageNumber}{pageCount ? ` of ${pageCount}` : ''}</span>
                   </div>
                   {isVisible ? (
-                    <LegalPageText text={page.text} pageNumber={page.pageNumber} fontScale={fontScale} anchorByPageLine={anchorByPageLine} />
+                    <LegalPageText text={page.text} pageNumber={page.pageNumber} fontScale={fontScale} anchorByPageLine={anchorByPageLine} sourceLayout={sourceLayout?.pages[String(page.pageNumber)]} />
                   ) : (
                     <div aria-hidden="true" className="h-72 animate-pulse rounded bg-emerald-950/[0.03] sm:h-[30rem]" />
                   )}

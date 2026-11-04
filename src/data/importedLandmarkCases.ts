@@ -159,7 +159,7 @@ export const IMPORTED_LANDMARK_CASES: CaseLaw[] = [
   {
     "id": "case-008",
     "title": "Mojekwu v. Mojekwu",
-    "citation": "(1997) LDLR-01 (CA)",
+    "citation": "(1997) LDLR-01 (C.A)",
     "hasFullJudgment": true,
     "suitNumber": "CA/E/145/94",
     "court": "Court of Appeal",
@@ -230,7 +230,7 @@ export const IMPORTED_LANDMARK_CASES: CaseLaw[] = [
   {
     "id": "case-009",
     "title": "Amaechi v. INEC & Ors",
-    "citation": "(2008) LDLR-02 (SC)",
+    "citation": "(2008) LDLR-02 (S.C)",
     "hasFullJudgment": true,
     "suitNumber": "SC.252/2007",
     "court": "Supreme Court of Nigeria",
@@ -435,7 +435,7 @@ export const IMPORTED_LANDMARK_CASES: CaseLaw[] = [
   {
     "id": "case-010",
     "title": "Madukolu & Ors v. Nkemdilim",
-    "citation": "(1962) LDLR-03 (SC)",
+    "citation": "(1962) LDLR-03 (S.C)",
     "hasFullJudgment": true,
     "suitNumber": "F.S.C.344/1960",
     "court": "Supreme Court of Nigeria",
@@ -497,7 +497,7 @@ export const IMPORTED_LANDMARK_CASES: CaseLaw[] = [
   {
     "id": "case-011",
     "title": "Fawehinmi v. NBA & Ors",
-    "citation": "(1989) LDLR-04 (SC)",
+    "citation": "(1989) LDLR-04 (S.C)",
     "hasFullJudgment": true,
     "suitNumber": "SC.229/1986",
     "court": "Supreme Court of Nigeria",
@@ -569,7 +569,7 @@ export const IMPORTED_LANDMARK_CASES: CaseLaw[] = [
   {
     "id": "case-012",
     "title": "Ojukwu v. Military Gov. of Lagos State & Ors",
-    "citation": "(1985) LDLR-05 (CA)",
+    "citation": "(1985) LDLR-05 (C.A)",
     "hasFullJudgment": true,
     "suitNumber": "CA/L/196/85",
     "court": "Court of Appeal",

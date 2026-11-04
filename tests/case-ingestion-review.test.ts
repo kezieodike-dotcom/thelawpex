@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { locateExactPassage, reviewFingerprint, hasCurrentReview, applyEditorialChange } from '../src/lib/caseReportReview';
+import { locateExactPassage, reviewFingerprint, hasCurrentReview, applyEditorialChange, validateEditorialFields } from '../src/lib/caseReportReview';
 import type { AdminCaseRecord } from '../src/data/caseIngestion';
 import { compileCaseReport } from '../src/lib/compileCaseReport';
 import { toPublishedCaseLaw, formatRatio } from '../src/data/caseIngestion';
@@ -10,6 +10,17 @@ const targets = [
   { pageNumber: 9, label: 'G', text: 'The court must hear', judge: 'JUDGE ONE, J.S.C.:' },
   { pageNumber: 10, label: 'A', text: 'both parties before deciding.', judge: 'JUDGE ONE, J.S.C.:' },
 ];
+test('editorial approval accepts dotted citations and rejects wrong court or undotted citations', () => {
+  const record = sampleRecord();
+  record.citation = '(2025) LDLR-124 (S.C)';
+  assert.deepEqual(validateEditorialFields(record), []);
+  record.citation = '(2025) LDLR-124 (C.A)';
+  assert.ok(validateEditorialFields(record).some(error => error.startsWith('Citation must')));
+  record.court = 'Court of Appeal';
+  assert.deepEqual(validateEditorialFields(record), []);
+  record.citation = '(2025) LDLR-124 (CA)';
+  assert.ok(validateEditorialFields(record).some(error => error.startsWith('Citation must')));
+});
 test('references cover the exact first and last labelled paragraphs across pages', () => {
   assert.deepEqual(locateExactPassage(targets, 'must hear both parties').location, { page: '9-10', paragraph: 'G-A' });
 });
@@ -45,7 +56,7 @@ export function sampleRecord(): AdminCaseRecord {
     sourceDocument: { fileName: 'test.docx', fileType: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document', size: 100, storageKey: 'ingested-test' },
     sourceExtraction: { text, sha256: 'fixture', textSha256: 'fixture', pages: 0, incomplete: false },
     fullJudgmentText: text, leadingJudgmentHeading: heading,
-    title: 'Test v. State', citation: '(2025) LDLR-124 (SC)', court: 'Supreme Court of Nigeria', year: 2025,
+    title: 'Test v. State', citation: '(2025) LDLR-124 (S.C)', court: 'Supreme Court of Nigeria', year: 2025,
     judicialDivision: '', dateDelivered: '1 January 2025', suitNumber: 'SC/TEST', presidingJudges: ['TEST JUSTICE, J.S.C.'],
     appearances: { appellant: '', respondent: '' }, areaOfLaw: 'Evidence', subject: 'Fair hearing',
     proceduralHistory: 'An appeal from a lower court.', factsSummary: 'The parties disputed a hearing.', issuesForDetermination: ['Whether the hearing was fair.'], decisionSummary: 'Appeal dismissed.',

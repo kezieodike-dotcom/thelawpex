@@ -102,3 +102,6 @@ on the public website for every visitor. Drafts and source files require an admi
 
 See [the setup and deployment guide](doc/admin-deployment.md) for database initialization,
 admin credentials, hosting/DNS settings, and transferring existing browser-only records.
+
+See [the case upload and editorial guide](doc/case-upload-guide.md) for preparing subsequent
+cases, preserving source judgments, verifying ratios and references, and completing publication review.

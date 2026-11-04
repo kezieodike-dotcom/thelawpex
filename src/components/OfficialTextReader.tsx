@@ -1,5 +1,7 @@
 import React, { useMemo } from 'react';
 import { ExternalLink, FileText } from 'lucide-react';
+import { LegalPageText } from './LegalPageText';
+import { useSourceLegalLayout } from '../lib/sourceLegalLayout';
 
 interface OfficialTextReaderProps {
   title: string;
@@ -9,9 +11,6 @@ interface OfficialTextReaderProps {
   documentLabel?: string;
 }
 
-const legalDocumentFont =
-  '"Book Antiqua", "Palatino Linotype", Palatino, Georgia, "Times New Roman", serif';
-
 export const OfficialTextReader: React.FC<OfficialTextReaderProps> = ({
   title,
   documentText,
@@ -19,9 +18,11 @@ export const OfficialTextReader: React.FC<OfficialTextReaderProps> = ({
   pageCount,
   documentLabel = 'Official Gazette',
 }) => {
+  const sourceLayout = useSourceLegalLayout(documentPath);
   const pages = useMemo(
     () =>
       documentText
+        .replace(/\r\n?/g, '\n')
         .split(/\n\n(?=## Page \d+\n\n?)/)
         .map((chunk) => {
           const match = chunk.match(/^## Page (\d+)\n\n?([\s\S]*)$/);
@@ -78,13 +79,7 @@ export const OfficialTextReader: React.FC<OfficialTextReaderProps> = ({
                   Page {page.pageNumber}
                 </p>
               )}
-              <div className="space-y-5 text-[16px] leading-[1.95] text-neutral-900 sm:text-[17px]" style={{ fontFamily: legalDocumentFont }}>
-                {page.rawText.split(/\n\s*\n/).map((block, blockIndex) => (
-                  <p key={`${page.pageNumber || 'page'}-block-${blockIndex}`} className="whitespace-pre-wrap break-words">
-                    {block.trim()}
-                  </p>
-                ))}
-              </div>
+              <LegalPageText text={page.rawText} pageNumber={Number(page.pageNumber) || index + 1} sourceLayout={sourceLayout?.pages[page.pageNumber]} />
             </article>
           ))}
         </div>

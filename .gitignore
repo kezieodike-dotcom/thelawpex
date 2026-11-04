@@ -11,3 +11,4 @@ coverage/
 *.crdownload
 .agents/
 tmp/
+__pycache__/

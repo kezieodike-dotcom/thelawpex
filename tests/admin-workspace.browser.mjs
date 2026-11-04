@@ -34,7 +34,7 @@ try {
   const fixture = {
     id: 'ingested-ui-test', status: 'Approved', createdAt: '2026-10-30T12:00:00Z', updatedAt: '2026-10-30T12:00:00Z',
     sourceDocument: { fileName: 'editorial-test.docx', fileType: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document', size: 100, storageKey: 'ui-test' },
-    title: 'Editorial test judgment', citation: '(2026) LDLR-999 (SC)', court: 'Supreme Court of Nigeria', year: 2026,
+    title: 'Editorial test judgment', citation: '(2026) LDLR-999 (S.C)', court: 'Supreme Court of Nigeria', year: 2026,
     judicialDivision: '', dateDelivered: '', suitNumber: '', presidingJudges: [], appearances: { appellant: '', respondent: '' },
     areaOfLaw: '', subject: 'Test', proceduralHistory: '', factsSummary: '', issuesForDetermination: [], decisionSummary: '',
     ratios: [{ heading: 'Test ratio', exactText: 'Unchanged judicial quotation.', attribution: 'Test judge', sourcePage: '7', sourceParagraph: 'C-D' }],
