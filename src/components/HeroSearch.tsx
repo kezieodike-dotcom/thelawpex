@@ -6,6 +6,7 @@ import {
   Search,
   Sparkles,
 } from 'lucide-react';
+import { LandmarkSearchPrompt } from './LandmarkSearchPrompt';
 
 interface VoiceRecognitionAlternative {
   transcript: string;
@@ -67,9 +68,11 @@ const METRICS = [
 
 export const HeroSearch: React.FC<HeroSearchProps> = ({ onSearch }) => {
   const [searchQuery, setSearchQuery] = useState('');
+  const [searchFocused, setSearchFocused] = useState(false);
   const [isListening, setIsListening] = useState(false);
   const [voiceMessage, setVoiceMessage] = useState('');
   const recognitionRef = useRef<VoiceRecognition | null>(null);
+  const showLandmarkPrompt = !searchQuery && !searchFocused;
 
   const submitSearch = (event: React.FormEvent) => {
     event.preventDefault();
@@ -193,8 +196,15 @@ export const HeroSearch: React.FC<HeroSearchProps> = ({ onSearch }) => {
               <input
                 value={searchQuery}
                 onChange={(event) => setSearchQuery(event.target.value)}
-                placeholder="Ask a legal question, search a citation, statute, rule or draft..."
+                onFocus={() => setSearchFocused(true)}
+                onBlur={() => setSearchFocused(false)}
+                placeholder={showLandmarkPrompt ? '' : 'Ask a legal question, search a citation, statute, rule or draft...'}
                 className="lawpex-focus-ring min-h-[52px] w-full rounded-xl border border-transparent bg-transparent py-3 pl-10 pr-2 text-base font-medium text-white placeholder:text-white/45 focus:border-white/10 focus:bg-white/5 focus:outline-none sm:min-h-[58px] sm:py-3.5 sm:pl-13 sm:pr-4"
+              />
+              <LandmarkSearchPrompt
+                visible={showLandmarkPrompt}
+                testId="home-search-landmark-prompt"
+                className="absolute inset-y-0 left-10 right-2 text-sm font-medium text-white/60 sm:left-13 sm:right-4 sm:text-base"
               />
             </label>
 

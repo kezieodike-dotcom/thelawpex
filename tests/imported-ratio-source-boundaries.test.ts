@@ -73,7 +73,7 @@ test('explicit ellipses require every quoted segment in source order', () => {
 for (const id of LANDMARK_CASES.map(judgment => judgment.id)) {
   test(`${id}: every citation uses the paragraphs actually rendered, and matches the full-case headnote`, () => {
     const judgment = loadCase(id);
-    const { targets, pages, correctedPages } = inspectRatioSources(judgment);
+    const { targets, pages, correctedPages, ratios: ratioPoints } = inspectRatioSources(judgment);
     const ratios = auditCaseRatioCitations(judgment);
     const html = renderToStaticMarkup(React.createElement(WholeCasePanel, { judgment }));
     const renderedTargets: Array<{ pageNumber: number; label: string; text: string }> = [];
@@ -93,12 +93,14 @@ for (const id of LANDMARK_CASES.map(judgment => judgment.id)) {
     });
     const leadIndex = pages.findIndex(p => p.blocks.some(b => b.startsLeadingJudgment));
     const headnote = correctedPages.slice(0, leadIndex).flatMap(p => p.blocks).map(b => b.text).join(' ').replace(/\s+/g, ' ');
+    const normalizedHeadnote = normalizeQuoteText(headnote);
     ratios.forEach((ratio, i) => {
       assert.ok(ratio.evidence, `${id} ratio ${i + 1} needs matched source text`);
       assert.ok(ratio.evidence.coverage >= 0.9);
       assert.ok(ratio.evidence.start.pageNumber >= leadIndex + 2);
       assert.ok(ratio.evidence.end.pageNumber >= ratio.evidence.start.pageNumber);
       assert.ok(headnote.includes(ratio.attribution.replace(/\s+/g, ' ')), `${id} ratio ${i + 1} differs in the full-case headnote: ${ratio.attribution}`);
+      assert.ok(normalizedHeadnote.includes(normalizeQuoteText(ratioPoints[i].body)), `${id} ratio ${i + 1}: the summary must contain the complete quotation shown in the ratio reader`);
     });
     assert.deepEqual(correctedPages.slice(leadIndex), pages.slice(leadIndex), 'citation corrections must not rewrite the judgment body');
   });

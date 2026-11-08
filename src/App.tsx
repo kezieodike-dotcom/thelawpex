@@ -16,6 +16,7 @@ import { MobileScrollNavigator } from './components/MobileScrollNavigator';
 import { HOME_ROUTE, pathForTab, routeForPath, tabForPath } from './routes';
 import { UserRole, SubscriptionTier, LegalDraft } from './types';
 import type { AuthMode } from './components/AuthModal';
+import { adminSiteUrl } from './lib/adminLocation';
 
 // Keep route-specific data and UI out of the initial shell. In particular,
 // this prevents the case-law corpus and large law/rule text assets from being
@@ -35,7 +36,7 @@ const LegalArticlesView = lazy(() => import('./components/modules/LegalArticlesV
 const ComplianceHubView = lazy(() => import('./components/modules/ComplianceHubView').then((module) => ({ default: module.ComplianceHubView })));
 const LearningCentreView = lazy(() => import('./components/modules/LearningCentreView').then((module) => ({ default: module.LearningCentreView })));
 const PricingView = lazy(() => import('./components/modules/PricingView').then((module) => ({ default: module.PricingView })));
-const AdminPanelView = lazy(() => import('./components/modules/AdminPanelView').then((module) => ({ default: module.AdminPanelView })));
+const LegacyAdminTransfer = lazy(() => import('./components/LegacyAdminTransfer').then((module) => ({ default: module.LegacyAdminTransfer })));
 
 const LegalDocumentRoute = lazy(() => import('./components/LegalDocumentRoute'));
 const CaseLawView = lazy(() => import('./components/modules/CaseLawView').then((module) => ({ default: module.CaseLawView })));
@@ -288,7 +289,8 @@ export function AppShell() {
     setBarNumber(scBarNum);
     setUserRole(role);
     setIsLoggedIn(true);
-    navigate(role === 'admin' ? '/admin' : pathForTab('dashboard'));
+    if (role === 'admin') window.location.assign(adminSiteUrl());
+    else navigate(pathForTab('dashboard'));
   };
 
   const handleLogout = () => {
@@ -443,7 +445,7 @@ export function AppShell() {
               <PricingView currentTier={subscription} onUpgrade={(tier) => setSubscription(tier)} />
             }
           />
-          <Route path="/admin" element={<AdminPanelView />} />
+          <Route path="/admin" element={<LegacyAdminTransfer />} />
 
           {/* Legacy / convenience aliases so old links keep working */}
           <Route path="/home" element={<Navigate to="/" replace />} />

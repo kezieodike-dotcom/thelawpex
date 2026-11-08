@@ -40,9 +40,9 @@ type DashboardTab =
   | 'team';
 
 const savedCases = [
-  { id: 'case-007', title: 'Tunde Adava & Anor v. The State', citation: '(2002) LDLR (CA) pt 357', savedAt: '2026-07-22' },
-  { id: 'case-006', title: 'Adeoye Adekunle v. The State', citation: '(2018) LDLR (CA) pt 1200', savedAt: '2026-07-20' },
-  { id: 'case-004', title: 'Adekunle v. State', citation: '(2006) LDLR (SC) pt 67', savedAt: '2026-07-18' },
+  { id: 'case-007', title: 'Tunde Adava & Anor v. The State', citation: '(2002) LDLR-357 (C.A)', savedAt: '2026-07-22' },
+  { id: 'case-006', title: 'Adeoye Adekunle v. The State', citation: '(2018) LDLR-1200 (C.A)', savedAt: '2026-07-20' },
+  { id: 'case-004', title: 'Adekunle v. State', citation: '(2006) LDLR-67 (S.C)', savedAt: '2026-07-18' },
 ];
 
 const savedDrafts = [

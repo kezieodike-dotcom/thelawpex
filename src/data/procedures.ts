@@ -279,7 +279,7 @@ export const COURTROOM_PROCEDURES: CourtroomProcedure[] = [
     governingRules: [
       'Constitution of the Federal Republic of Nigeria 1999 (as amended), section 35(4)',
       'Administration of Criminal Justice Act 2015, sections 158–172',
-      'Bamaiyi v. State (2001) LDLR-1020 (SC)',
+      'Bamaiyi v. State (2001) LDLR-1020 (S.C)',
     ],
     stages: [
       {
@@ -395,7 +395,7 @@ export const COURTROOM_PROCEDURES: CourtroomProcedure[] = [
     governingRules: [
       'Order 39, High Court of Lagos State (Civil Procedure) Rules 2019',
       'Constitution of the Federal Republic of Nigeria 1999 (as amended), section 36(1)',
-      'Kotoye v. CBN (1989) LDLR-1021 (SC)',
+      'Kotoye v. CBN (1989) LDLR-1021 (S.C)',
     ],
     stages: [
       {
@@ -505,7 +505,7 @@ export const COURTROOM_PROCEDURES: CourtroomProcedure[] = [
     typicalDuration: '5–15 minutes per document, longer if contested',
     governingRules: [
       'Evidence Act 2011, sections 83, 84, 85–90 and 102–105',
-      'Kubor v. Dickson (2013) LDLR-1005 (SC)',
+      'Kubor v. Dickson (2013) LDLR-1005 (S.C)',
     ],
     stages: [
       {

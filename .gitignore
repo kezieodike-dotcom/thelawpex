@@ -1,6 +1,7 @@
 node_modules/
 build/
 dist/
+dist-admin/
 coverage/
 .DS_Store
 *.log
@@ -10,3 +11,4 @@ coverage/
 *.crdownload
 .agents/
 tmp/
+__pycache__/

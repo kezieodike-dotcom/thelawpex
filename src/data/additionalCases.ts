@@ -24,7 +24,7 @@ export const ADDITIONAL_CASES: CaseLaw[] = [
     "practiceNotes": [
       "The supplied judgment contains differing dates for the trial decision. Those source dates are preserved; no replacement date has been inferred."
     ],
-    "citation": "(2000) LDLR-219 (CA)",
+    "citation": "(2000) LDLR-219 (C.A)",
     "year": 2000,
     "court": "Court of Appeal",
     "suitNumber": "CA/B/260/96",
@@ -75,7 +75,7 @@ export const ADDITIONAL_CASES: CaseLaw[] = [
     "statutesConsidered": [
       "Evidence Act 1990, section 46"
     ],
-    "citation": "(2006) LDLR-217 (SC)",
+    "citation": "(2006) LDLR-217 (S.C)",
     "year": 2006,
     "court": "Supreme Court of Nigeria",
     "suitNumber": "SC.385/2001",
@@ -152,7 +152,7 @@ export const ADDITIONAL_CASES: CaseLaw[] = [
       "Evidence Act, section 75",
       "Constitution of the Federal Republic of Nigeria 1999, section 233(2)"
     ],
-    "citation": "(2006) LDLR-212 (SC)",
+    "citation": "(2006) LDLR-212 (S.C)",
     "year": 2006,
     "court": "Supreme Court of Nigeria",
     "suitNumber": "SC.367/2002",
@@ -232,7 +232,7 @@ export const ADDITIONAL_CASES: CaseLaw[] = [
     "practiceNotes": [
       "The source summary refers to Rivers State, whereas the judgment identifies the High Court of Imo State, Owerri. The digest follows the judgment; the original source wording remains preserved."
     ],
-    "citation": "(2005) LDLR-213 (SC)",
+    "citation": "(2005) LDLR-213 (S.C)",
     "year": 2005,
     "court": "Supreme Court of Nigeria",
     "suitNumber": "SC.233/2000",
@@ -291,7 +291,7 @@ export const ADDITIONAL_CASES: CaseLaw[] = [
     "statutesConsidered": [
       "Court of Appeal Rules 1981, Order 3 rule 2"
     ],
-    "citation": "(2006) LDLR-216 (SC)",
+    "citation": "(2006) LDLR-216 (S.C)",
     "year": 2006,
     "court": "Supreme Court of Nigeria",
     "suitNumber": "SC.194/2001",
@@ -371,7 +371,7 @@ export const ADDITIONAL_CASES: CaseLaw[] = [
     "statutesConsidered": [
       "Evidence Act 1990, section 34"
     ],
-    "citation": "(2006) LDLR-218 (SC)",
+    "citation": "(2006) LDLR-218 (S.C)",
     "year": 2006,
     "court": "Supreme Court of Nigeria",
     "suitNumber": "SC.323/2001",

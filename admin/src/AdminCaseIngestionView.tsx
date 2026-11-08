@@ -15,25 +15,21 @@ import {
   Trash2,
   UploadCloud,
 } from 'lucide-react';
-import { LANDMARK_CASES } from '../../data/legalData';
+import { LANDMARK_CASES } from '../../src/data/legalData';
 import {
   AdminCaseRecord,
   CaseIngestionStatus,
-  getCaseIngestionRecords,
-  getSourceDocument,
   normaliseCaseText,
-  saveCaseIngestionRecords,
-  saveSourceDocument,
-  upsertCaseIngestionRecord,
-} from '../../data/caseIngestion';
-import { CaseLaw } from '../../types';
-import { applyEditorialChange, publicationGaps, hasCurrentReview, reviewFingerprint } from '../../lib/caseReportReview';
+} from '../../src/data/caseIngestion';
+import { getCaseIngestionRecords, getSourceDocument, saveCaseIngestionRecords, saveSourceDocument, upsertCaseIngestionRecord } from './storage';
+import { CaseLaw } from '../../src/types';
+import { applyEditorialChange, publicationGaps, hasCurrentReview, reviewFingerprint } from '../../src/lib/caseReportReview';
 import { ReportVerificationPanel } from './ReportVerificationPanel';
 
 const FIELD_CLASS = 'mt-1.5 w-full rounded-xl border border-amber-200 bg-white px-3 py-2.5 text-sm text-neutral-900 outline-none transition placeholder:text-neutral-400 focus:border-amber-500 focus:ring-2 focus:ring-amber-100';
 const TEXTAREA_CLASS = `${FIELD_CLASS} min-h-28 resize-y leading-6`;
 const STATUS_ORDER: CaseIngestionStatus[] = ['Draft', 'Under Review', 'Approved', 'Published'];
-const OriginalDocxPreview = React.lazy(() => import('../DocxPreview').then(module => ({ default: module.DocxPreview })));
+const OriginalDocxPreview = React.lazy(() => import('../../src/components/DocxPreview').then(module => ({ default: module.DocxPreview })));
 
 const emptyRecord = (file: File): AdminCaseRecord => {
   const now = new Date().toISOString();
@@ -115,9 +111,15 @@ export const AdminCaseIngestionView: React.FC<{ initialSelectedId?: string | nul
     if (selectedId) reviewRef.current?.scrollIntoView({ block: 'start', behavior: 'instant' });
   }, [selectedId]);
 
-  const refresh = (nextRecords: AdminCaseRecord[]) => {
-    saveCaseIngestionRecords(nextRecords);
+  useEffect(() => {
+    const refreshRecords = () => setRecords(getCaseIngestionRecords());
+    window.addEventListener('lawpex-case-ingestion-updated', refreshRecords);
+    return () => window.removeEventListener('lawpex-case-ingestion-updated', refreshRecords);
+  }, []);
+
+  const refresh = async (nextRecords: AdminCaseRecord[]) => {
     setRecords(nextRecords);
+    await saveCaseIngestionRecords(nextRecords);
   };
 
   const handleExtract = async () => {
@@ -156,7 +158,7 @@ export const AdminCaseIngestionView: React.FC<{ initialSelectedId?: string | nul
       const currentRecords = getCaseIngestionRecords();
       extracted.duplicateCandidates = findDuplicateCandidates(extracted, currentRecords);
       const nextRecords = [extracted, ...currentRecords];
-      refresh(nextRecords);
+      await refresh(nextRecords);
       setSelectedId(extracted.id);
       setFile(null);
       setTitle('');
@@ -166,7 +168,7 @@ export const AdminCaseIngestionView: React.FC<{ initialSelectedId?: string | nul
     } catch (error) {
       const fallback = { ...base, warnings: ['AI extraction was unavailable. Complete the record manually before review.'] };
       const nextRecords = [fallback, ...getCaseIngestionRecords()];
-      refresh(nextRecords);
+      try { await refresh(nextRecords); } catch { /* The shared save banner retains the failure and offers an export. */ }
       setSelectedId(fallback.id);
       setNotice(error instanceof Error ? `${error.message} A draft record was created for manual completion.` : 'A draft record was created for manual completion.');
     } finally {
@@ -205,9 +207,16 @@ export const AdminCaseIngestionView: React.FC<{ initialSelectedId?: string | nul
         if (JSON.stringify(current) !== JSON.stringify(selected)) { setNotice('The draft changed while saving its revision. Review the latest changes before approval.'); return; }
         updated.auditLog[updated.auditLog.length - 1] = { ...updated.auditLog[updated.auditLog.length - 1], snapshotKey };
       }
-      upsertCaseIngestionRecord(updated); setRecords(nextRecords);
+      if (!patch.status) setRecords(nextRecords);
+      await upsertCaseIngestionRecord(updated);
+      if (patch.status) {
+        const currentRecords = getCaseIngestionRecords();
+        setRecords(currentRecords);
+        const current = currentRecords.find(record => record.id === updated.id);
+        setNotice(current?.status !== patch.status ? 'The status was saved. More recent edits have returned this case to review.' : patch.status === 'Published' ? 'Published successfully. This case is now available on the main LAWPEX site.' : `Case saved as ${patch.status}.`);
+      }
     }
-    catch { setNotice('Changes could not be saved. Browser storage may be full; export an editorial backup before continuing.'); }
+    catch (error) { setNotice(error instanceof Error ? error.message : 'Changes could not be saved to the shared library. Export your edits before reloading.'); }
   };
 
   const handleValidate = async () => {
@@ -221,23 +230,25 @@ export const AdminCaseIngestionView: React.FC<{ initialSelectedId?: string | nul
       if (digest !== selected.sourceExtraction?.sha256) throw new Error('The preserved source does not match its extraction fingerprint. Reprocess the source.');
       const textDigest = Array.from(new Uint8Array(await crypto.subtle.digest('SHA-256', new TextEncoder().encode(selected.sourceExtraction.text))), byte => byte.toString(16).padStart(2, '0')).join('');
       if (textDigest !== selected.sourceExtraction.textSha256) throw new Error('The extracted text no longer matches its fingerprint. Reprocess the preserved source.');
-      const { compileCaseReport } = await import('../../lib/compileCaseReport');
+      const { compileCaseReport } = await import('../../src/lib/compileCaseReport');
       const checked = await compileCaseReport({ ...selected, duplicateCandidates: findDuplicateCandidates(selected, getCaseIngestionRecords().filter(record => record.id !== selected.id)), status: 'Under Review' });
       const latest = getCaseIngestionRecords();
       const current = latest.find(record => record.id === selected.id);
       if (!current || reviewFingerprint(current) !== reviewFingerprint(selected)) throw new Error('The draft changed during verification. Run verification again on the latest edits.');
       checked.auditLog = [...selected.auditLog, { at: new Date().toISOString(), action: checked.validation?.errors.length ? 'Report verification failed; publication blocked' : 'Report verified against canonical LAWPEX pages and paragraphs', status: checked.status }];
-      refresh(latest.map(record => record.id === checked.id ? checked : record));
+      await refresh(latest.map(record => record.id === checked.id ? checked : record));
       setNotice(checked.validation?.errors.length ? 'Verification found blocking issues. Review the report checks below.' : 'Source references verified. Compare the report with the original and complete all editorial signoffs.');
     } catch (error) { setNotice(error instanceof Error ? error.message : 'Verification failed.'); }
     finally { setValidating(false); }
   };
 
-  const removeRecord = (id: string) => {
+  const removeRecord = async (id: string) => {
     if (!window.confirm('Remove this draft from the editorial queue? Export a backup first if you need to retain its editorial work.')) return;
     const nextRecords = records.filter((record) => record.id !== id);
-    refresh(nextRecords);
-    if (selectedId === id) setSelectedId(null);
+    try {
+      await refresh(nextRecords);
+      if (selectedId === id) setSelectedId(null);
+    } catch (error) { setNotice((error as Error).message); }
   };
 
   const handleReprocess = async (record: AdminCaseRecord) => {
@@ -245,7 +256,7 @@ export const AdminCaseIngestionView: React.FC<{ initialSelectedId?: string | nul
     setNotice('Reprocessing the preserved source without replacing reviewed fields...');
     try {
       const source = await getSourceDocument(record.sourceDocument.storageKey);
-      if (!source) throw new Error('The preserved source document could not be found in this browser.');
+      if (!source) throw new Error('The preserved source document could not be found in shared storage.');
       const file = new File([source], record.sourceDocument.fileName, { type: record.sourceDocument.fileType });
       const body = new FormData();
       body.append('document', file);
@@ -292,7 +303,7 @@ export const AdminCaseIngestionView: React.FC<{ initialSelectedId?: string | nul
         auditLog: [...record.auditLog, { at: now, action: 'Source reprocessed; existing editorial values preserved', status: record.status === 'Published' ? 'Under Review' : record.status }],
       };
       const nextRecords = latest.map((item) => item.id === record.id ? merged : item);
-      refresh(nextRecords);
+      await refresh(nextRecords);
       setNotice('Reprocessing complete. Review any newly filled fields before approval.');
     } catch (error) {
       setNotice(error instanceof Error ? error.message : 'The source could not be reprocessed.');
@@ -303,7 +314,7 @@ export const AdminCaseIngestionView: React.FC<{ initialSelectedId?: string | nul
 
   return (
     <div className="admin-ingestion space-y-6">
-      <p className="border-l-2 border-amber-500 bg-amber-50 p-4 text-sm text-neutral-800">Local editorial workspace. Drafts, original files and publication are stored in this browser only; they are not shared with other administrators or visitors.</p>
+      <p className="border-l-2 border-amber-500 bg-amber-50 p-4 text-sm text-neutral-800">Shared editorial workspace. Drafts and original files are private. Verified cases become available on the main LAWPEX site after approval and publication.</p>
       <div className="grid gap-6 xl:grid-cols-[0.82fr_1.18fr]">
         <Panel title="Upload a judgment" subtitle="PDF and DOCX source documents">
           <div className="rounded-2xl border border-dashed border-amber-400 bg-amber-50/60 p-5 text-center">
@@ -319,7 +330,7 @@ export const AdminCaseIngestionView: React.FC<{ initialSelectedId?: string | nul
 
           <div className="mt-5 space-y-3">
             <label className="block text-xs font-black text-neutral-800">Case title<input value={title} onChange={(event) => setTitle(event.target.value)} className={FIELD_CLASS} placeholder="Adekunle v. State" /></label>
-            <label className="block text-xs font-black text-neutral-800">Citation<input value={citation} onChange={(event) => setCitation(event.target.value)} className={FIELD_CLASS} placeholder="(2025) LDLR-124 (SC)" /></label>
+            <label className="block text-xs font-black text-neutral-800">Citation<input value={citation} onChange={(event) => setCitation(event.target.value)} className={FIELD_CLASS} placeholder="(2025) LDLR-124 (S.C)" /></label>
             <div className="grid gap-3">
               <label className="block text-xs font-black text-neutral-800">Court<select value={court} onChange={(event) => setCourt(event.target.value as CaseLaw['court'])} className={FIELD_CLASS}><option>Supreme Court of Nigeria</option><option>Court of Appeal</option><option>Federal High Court</option><option>National Industrial Court</option><option>State High Court</option></select></label>
               <label className="block text-xs font-black text-neutral-800">Year<input type="number" value={year} onChange={(event) => setYear(event.target.value)} className={FIELD_CLASS} /></label>
@@ -330,7 +341,7 @@ export const AdminCaseIngestionView: React.FC<{ initialSelectedId?: string | nul
           </div>
         </Panel>
 
-        <Panel title="Editorial queue" subtitle={`${records.length} source records in this browser`}>
+        <Panel title="Editorial queue" subtitle={`${records.length} source records in shared storage`}>
           <label className="admin-search"><Search size={18} /><input aria-label="Search editorial queue" placeholder="Search case or source document" value={query} onChange={(event) => setQuery(event.target.value)} /></label>
           <div className="admin-queue-filters" aria-label="Filter queue by status">
             {['All', ...STATUS_ORDER, ...(records.some((record) => record.status === 'Rejected') ? ['Rejected'] : [])].map((status) => <button key={status} type="button" aria-pressed={statusFilter === status} onClick={() => setStatusFilter(status)}>{status} <span>({status === 'All' ? records.length : records.filter((record) => record.status === status).length})</span></button>)}
@@ -377,17 +388,20 @@ const ReviewEditor: React.FC<{ record: AdminCaseRecord; onChange: (patch: Partia
     let objectUrl = '';
     getSourceDocument(record.sourceDocument.storageKey).then((source) => {
       if (!active || !source) return;
-      objectUrl = URL.createObjectURL(source);
+      const type = record.sourceDocument.fileName.toLowerCase().endsWith('.pdf')
+        ? 'application/pdf'
+        : 'application/vnd.openxmlformats-officedocument.wordprocessingml.document';
+      objectUrl = URL.createObjectURL(new Blob([source], { type }));
       setSourceUrl(objectUrl);
     }).catch(() => setSourceUrl(''));
     return () => {
       active = false;
       if (objectUrl) URL.revokeObjectURL(objectUrl);
     };
-  }, [record.sourceDocument.storageKey]);
+  }, [record.sourceDocument.storageKey, record.sourceDocument.fileName]);
 
   return (
-    <Panel title="Editorial review" subtitle="Changes saved to this browser workspace">
+    <Panel title="Editorial review" subtitle="Changes saved to shared storage">
       <div className="flex flex-col gap-4 border-b border-amber-100 pb-5 lg:flex-row lg:items-start lg:justify-between">
         <div><div className="flex flex-wrap items-center gap-2"><StatusBadge status={record.status} /><span className="text-xs font-semibold text-neutral-500">Source preserved: {record.sourceDocument.fileName}</span></div><h3 className="mt-3 text-xl font-black text-neutral-950">{record.title || 'Untitled judgment'}</h3><p className="mt-1 text-xs text-neutral-500">Updated {new Date(record.updatedAt).toLocaleString()}</p></div>
         <div className="flex flex-wrap gap-2">
@@ -416,7 +430,7 @@ const ReviewEditor: React.FC<{ record: AdminCaseRecord; onChange: (patch: Partia
 
       <div hidden={section !== 'Case details'} className="mt-6 grid gap-5 lg:grid-cols-2">
         <label className="text-xs font-black text-neutral-800">Case title<input value={record.title} onChange={(event) => onChange({ title: event.target.value })} className={FIELD_CLASS} /></label>
-        <label className="text-xs font-black text-neutral-800">Citation<input value={record.citation} onChange={(event) => onChange({ citation: event.target.value })} className={FIELD_CLASS} placeholder="(2025) LDLR-124 (SC)" /></label>
+        <label className="text-xs font-black text-neutral-800">Citation<input value={record.citation} onChange={(event) => onChange({ citation: event.target.value })} className={FIELD_CLASS} placeholder="(2025) LDLR-124 (S.C)" /></label>
         <label className="text-xs font-black text-neutral-800">Court<select value={record.court} onChange={(event) => onChange({ court: event.target.value as CaseLaw['court'] })} className={FIELD_CLASS}><option>Supreme Court of Nigeria</option><option>Court of Appeal</option><option>Federal High Court</option><option>National Industrial Court</option><option>State High Court</option></select></label>
         <label className="text-xs font-black text-neutral-800">Subject<input value={record.subject} onChange={(event) => onChange({ subject: event.target.value })} className={FIELD_CLASS} /></label>
         {(['judicialDivision', 'dateDelivered', 'suitNumber', 'areaOfLaw'] as const).map(key => <label key={key} className="text-xs font-black text-neutral-800">{{ judicialDivision: 'Judicial division', dateDelivered: 'Date delivered', suitNumber: 'Suit number', areaOfLaw: 'Area of law' }[key]}<input value={record[key]} onChange={event => onChange({ [key]: event.target.value })} className={FIELD_CLASS} /></label>)}

@@ -48,6 +48,7 @@ test('Idundun contains only the two supplied ratios with their authoritative cit
   const caseStart = legalData.indexOf("id: 'case-001'");
   const caseEnd = legalData.indexOf("id: 'case-002'", caseStart);
   const caseBlock = legalData.slice(caseStart, caseEnd);
+  assert.match(caseBlock, /\(1976\) LDLR-1012 \(S\.C\)/);
   const fallbackMatch = caseBlock.match(/ratioDecidendi:\s*\[([\s\S]*?)\],\s*keyPrinciples:/);
   assert.ok(fallbackMatch, 'case-001 fallback ratios must be present');
   const fallbackRatios = fallbackMatch[1];

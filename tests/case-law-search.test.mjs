@@ -7,7 +7,7 @@ import { searchCaseLaws } from '../src/lib/caseSearch.ts';
 const makeCase = (overrides) => ({
   id: 'case-test',
   title: 'Sample v. State',
-  citation: '(2026) LDLR-9999 (SC)',
+  citation: '(2026) LDLR-9999 (S.C)',
   court: 'Supreme Court of Nigeria',
   year: 2026,
   areaOfLaw: 'Evidence',
@@ -26,14 +26,14 @@ const cases = [
   makeCase({
     id: 'case-dele',
     title: 'Dele Akinwale v. The State',
-    citation: '(2024) LDLR-1401 (CA)',
+    citation: '(2024) LDLR-1401 (C.A)',
     court: 'Court of Appeal',
     ratioDecidendi: ['Proof beyond reasonable doubt rests on credible evidence.'],
   }),
   makeCase({
     id: 'case-adekunle',
     title: 'Adeoye Adekunle v. The State',
-    citation: '(2018) LDLR-1200 (CA)',
+    citation: '(2018) LDLR-1200 (C.A)',
     court: 'Court of Appeal',
     catchwords: ['Criminal law', 'Confessional statement'],
     keyPrinciples: ['Jurisdiction must be resolved before the merits of an appeal.'],
@@ -41,10 +41,19 @@ const cases = [
   makeCase({
     id: 'case-evidence',
     title: 'Ola v. Commissioner of Police',
-    citation: '(2020) LDLR-811 (SC)',
+    citation: '(2020) LDLR-811 (S.C)',
     ratioDecidendi: ['Electronic evidence requires the statutory certificate where applicable.'],
   }),
 ];
+
+test('citation searches find dotted reports with either dotted or undotted court abbreviations', () => {
+  for (const court of ['CA', 'C.A']) {
+    assert.equal(searchCaseLaws(cases, `LDLR-1401 (${court})`)[0]?.judgment.id, 'case-dele');
+  }
+  for (const court of ['SC', 'S.C']) {
+    assert.equal(searchCaseLaws(cases, `LDLR-811 (${court})`)[0]?.judgment.id, 'case-evidence');
+  }
+});
 
 test('party-name prefixes are suggested from two characters', () => {
   const results = searchCaseLaws(cases, 'De', 6);
@@ -86,12 +95,28 @@ test('the public Case Laws page is a unified accessible search interface', async
   assert.match(source, /role="combobox"/);
   assert.match(source, /role="listbox"/);
   assert.match(source, /event\.key === 'Enter'/);
-  assert.match(source, /Search by party, keyword, principle or ratio/);
-  assert.match(source, /lawpex-case-motion relative z-20 overflow-visible/);
-  assert.match(source, /max-h-\[21rem\].*sm:max-h-\[26rem\]/);
+  assert.match(source, /Party, citation or keyword/);
+  assert.match(source, /aria-expanded=\{showSuggestions\}/);
+  assert.match(source, /aria-activedescendant=/);
   assert.match(source, /to=\{`\/case-law\/case\/\$\{suggestion\.judgment\.id\}`\}/);
+  assert.doesNotMatch(source, /All uploaded cases/);
+  assert.doesNotMatch(source, /Case library/);
   const detail = await readFile(new URL('../src/components/modules/CaseLawView.tsx', import.meta.url), 'utf8');
   assert.match(detail, /if \(courtSlug\) return <Navigate replace to="\/case-law"/);
   assert.doesNotMatch(source, /const CourtDirectory/);
   assert.doesNotMatch(source, /const CourtCaseList/);
+});
+
+test('the homepage hero and Case Laws search share the animated landmark prompt', async () => {
+  const [heroSearch, caseSearch, prompt] = await Promise.all([
+    readFile(new URL('../src/components/HeroSearch.tsx', import.meta.url), 'utf8'),
+    readFile(new URL('../src/components/modules/CaseLawSearchView.tsx', import.meta.url), 'utf8'),
+    readFile(new URL('../src/components/LandmarkSearchPrompt.tsx', import.meta.url), 'utf8'),
+  ]);
+
+  assert.match(heroSearch, /<LandmarkSearchPrompt/);
+  assert.match(heroSearch, /testId="home-search-landmark-prompt"/);
+  assert.match(caseSearch, /<LandmarkSearchPrompt/);
+  assert.match(prompt, /isLandmark/);
+  assert.match(prompt, /lawpex-case-search-prompt/);
 });

@@ -16,11 +16,13 @@ import {
   X,
 } from 'lucide-react';
 import { LANDMARK_CASES } from '../../data/legalData';
-import { getPublishedIngestedCases } from '../../data/caseIngestion';
+import { usePublishedCases } from '../../lib/publishedCases';
 import { CaseJudgmentDocument, loadCaseJudgmentDocument, mergeCaseJudgmentDocument } from '../../data/judgmentLoader';
 import { createQuoteIndex, locateReportQuote, normalizeQuoteText } from '../../lib/reportQuoteLocator';
 import { CaseLaw } from '../../types';
 import { DocumentActions } from '../DocumentActions';
+import { CitedCasesList } from '../CitedCasesList';
+import { createCaseAuthorityResolver, type CaseAuthorityReport } from '../../lib/caseAuthorities';
 import { buildWordDraft, buildWordList, buildWordSection } from '../../lib/copyToWord';
 
 interface CaseLawViewProps {
@@ -43,10 +45,14 @@ const STRUCTURED_IMPORT_CASE_IDS = new Set(['case-013', 'case-014', 'case-015', 
 const isSourceLinkedReport = (judgment: CaseLaw) => judgment.reportFormatVersion === 'lawpex-reviewed-v1' || SOURCE_LINKED_CASE_IDS.has(judgment.id);
 
 export const CaseLawView: React.FC<CaseLawViewProps> = ({ courtSlug, caseId }) => {
-  const caseLaws = [...LANDMARK_CASES, ...getPublishedIngestedCases()];
+  const { cases: publishedCases, loaded, error, refresh } = usePublishedCases();
+  const caseLaws = useMemo(() => [...LANDMARK_CASES, ...publishedCases], [publishedCases]);
   if (caseId) {
     const judgment = caseLaws.find((item) => item.id === caseId);
-    if (judgment) return <CaseDetail key={judgment.id} judgment={judgment} />;
+    if (judgment) return <CaseDetail key={judgment.id} judgment={judgment} availableCases={caseLaws} />;
+    if (caseId.startsWith('ingested-')) return <div className="mx-auto max-w-4xl px-6 py-16" role="status">
+      {!loaded ? <p>Loading published judgment...</p> : <><h1 className="text-2xl font-bold">{error ? 'The case library is unavailable' : 'This judgment is not currently published'}</h1><p className="mt-3">{error || 'It may have been withdrawn for editorial review.'}</p><button className="mt-4 underline" onClick={() => void refresh()}>Try again</button><Link className="ml-6 underline" to="/case-law">Browse case law</Link></>}
+    </div>;
   }
 
   if (courtSlug) return <Navigate replace to="/case-law" />;
@@ -57,7 +63,7 @@ export const CaseLawView: React.FC<CaseLawViewProps> = ({ courtSlug, caseId }) =
 
 type CaseDetailTab = 'ratio' | 'digest' | 'principles' | 'authorities' | 'whole';
 
-const CaseDetail: React.FC<{ judgment: CaseLaw }> = ({ judgment }) => {
+const CaseDetail: React.FC<{ judgment: CaseLaw; availableCases: CaseAuthorityReport[] }> = ({ judgment, availableCases }) => {
   const [document, setDocument] = useState<CaseJudgmentDocument | null>(null);
   const [documentStatus, setDocumentStatus] = useState<'idle' | 'loading' | 'ready' | 'error'>(
     judgment.hasFullJudgment && !judgment.fullJudgmentText ? 'idle' : 'ready',
@@ -198,7 +204,7 @@ const CaseDetail: React.FC<{ judgment: CaseLaw }> = ({ judgment }) => {
               )}
               {tab === 'digest' && <DigestPanel judgment={judgment} />}
               {tab === 'principles' && <PrinciplesPanel judgment={judgment} />}
-              {tab === 'authorities' && <AuthoritiesPanel judgment={judgment} />}
+              {tab === 'authorities' && <AuthoritiesPanel judgment={judgment} availableCases={availableCases} />}
               {tab === 'whole' && <WholeCasePanel judgment={fullJudgment} status={documentStatus} />}
             </section>
           </main>
@@ -498,14 +504,18 @@ const RatioHeadingText: React.FC<{ heading: string }> = ({ heading }) => {
   );
 };
 
-const AuthoritiesPanel: React.FC<{ judgment: CaseLaw }> = ({ judgment }) => {
+const AuthoritiesPanel: React.FC<{ judgment: CaseLaw; availableCases: CaseAuthorityReport[] }> = ({ judgment, availableCases }) => {
   const citation = `${judgment.title} ${judgment.citation}`;
+  const authorities = useMemo(() => {
+    const resolve = createCaseAuthorityResolver(availableCases);
+    return (judgment.authoritiesCited ?? []).map(resolve);
+  }, [availableCases, judgment.authoritiesCited]);
 
   return (
     <div className="space-y-5">
       {judgment.authoritiesCited && (
         <Section title="Cases cited" subtitle="Authorities referred to or useful alongside this report.">
-          <SimpleList items={judgment.authoritiesCited} />
+          <CitedCasesList items={authorities} />
         </Section>
       )}
 
@@ -522,7 +532,7 @@ const AuthoritiesPanel: React.FC<{ judgment: CaseLaw }> = ({ judgment }) => {
           <DocumentActions
             className="mt-4"
             html={[
-              buildWordList('Cases cited', citation, judgment.authoritiesCited ?? []),
+              buildWordList('Cases cited', citation, authorities.map(authority => authority.text)),
               buildWordList('Statutes considered', '', judgment.statutesConsidered ?? []),
               buildWordList('Practice notes', '', judgment.practiceNotes),
             ].join('')}

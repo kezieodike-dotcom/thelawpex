@@ -20,7 +20,7 @@ const fixture = {
   sourceDocument: { fileName: 'test.docx', fileType: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document', size: bytes.length, storageKey: 'ingested-verification-test' },
   sourceExtraction: { text, sha256: createHash('sha256').update(bytes).digest('hex'), textSha256: createHash('sha256').update(text).digest('hex'), pages: 0, incomplete: false },
   fullJudgmentText: text, leadingJudgmentHeading: heading,
-  title: 'Verification test v. State', citation: '(2025) LDLR-124 (SC)', court: 'Supreme Court of Nigeria', year: 2025,
+  title: 'Verification test v. State', citation: '(2025) LDLR-124 (S.C)', court: 'Supreme Court of Nigeria', year: 2025,
   judicialDivision: '', dateDelivered: '1 January 2025', suitNumber: 'SC/TEST', presidingJudges: ['TEST JUSTICE, J.S.C.'],
   appearances: { appellant: '', respondent: '' }, areaOfLaw: 'Evidence', subject: 'Fair hearing',
   proceduralHistory: 'An appeal from a lower court.', factsSummary: 'The parties disputed a hearing.', issuesForDetermination: ['Whether the hearing was fair.'], decisionSummary: 'Appeal dismissed.',

@@ -49,6 +49,7 @@ export const normalizeCaseSearchText = (value: string): string =>
     .normalize('NFKD')
     .replace(/[\u0300-\u036f]/g, '')
     .toLowerCase()
+    .replace(/\bs\s*\.\s*c\b|\bc\s*\.\s*a\b/g, abbreviation => abbreviation.replace(/[\s.]/g, ''))
     .replace(/\bversus\b|\bvs\.?\b/g, ' v ')
     .replace(/&/g, ' and ')
     .replace(/[^a-z0-9]+/g, ' ')

@@ -1,9 +1,9 @@
 import React, { lazy, Suspense, useMemo, useRef, useState } from 'react';
 import { CheckCircle2, ClipboardCheck, Download, FileSearch } from 'lucide-react';
-import { toPublishedCaseLaw, type AdminCaseRecord } from '../../data/caseIngestion';
-import { hasCurrentReview } from '../../lib/caseReportReview';
+import { toPublishedCaseLaw, type AdminCaseRecord } from '../../src/data/caseIngestion';
+import { hasCurrentReview } from '../../src/lib/caseReportReview';
 
-const ReportPreview = lazy(() => import('./CaseLawView').then(module => ({ default: module.WholeCasePanel })));
+const ReportPreview = lazy(() => import('../../src/components/modules/CaseLawView').then(module => ({ default: module.WholeCasePanel })));
 const fieldClass = 'mt-2 w-full rounded-lg border border-neutral-300 bg-white p-3 text-sm text-neutral-900';
 const blankReview = { reviewer: '', source: false, metadata: false, ratios: false, principles: false };
 

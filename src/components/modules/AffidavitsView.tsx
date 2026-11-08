@@ -154,6 +154,8 @@ AND
   },
 ];
 
+const STANDALONE_AFFIDAVITS = AFFIDAVITS.filter((affidavit) => !affidavit.courtHeadingRequired);
+
 export const AffidavitsView: React.FC<AffidavitsViewProps> = ({
   onCustomizeDraft,
   affidavitId,
@@ -169,7 +171,7 @@ export const AffidavitsView: React.FC<AffidavitsViewProps> = ({
 };
 
 // ---------------------------------------------------------------------------
-// Level 1 — the search space and every category of affidavit
+// The public directory contains standalone depositions, not litigation processes.
 // ---------------------------------------------------------------------------
 
 const AffidavitDirectory: React.FC<{ onCustomizeDraft: (draft: LegalDraft) => void }> = ({
@@ -177,7 +179,7 @@ const AffidavitDirectory: React.FC<{ onCustomizeDraft: (draft: LegalDraft) => vo
 }) => {
   const [query, setQuery] = useState('');
   const needle = query.trim();
-  const matches = useMemo(() => searchAffidavits(needle), [needle]);
+  const matches = useMemo(() => searchAffidavits(needle).filter((affidavit) => !affidavit.courtHeadingRequired), [needle]);
   const agreementMatches = useMemo(() => {
     const normalized = needle.toLowerCase();
     if (!normalized) return SAMPLE_AGREEMENTS;
@@ -217,7 +219,7 @@ const AffidavitDirectory: React.FC<{ onCustomizeDraft: (draft: LegalDraft) => vo
           </div>
 
           <p className="text-[11px] text-neutral-500 mt-3">
-            {SAMPLE_AGREEMENTS.length} sample agreements and {AFFIDAVITS.length} standalone affidavits.
+            {SAMPLE_AGREEMENTS.length} sample agreements and {STANDALONE_AFFIDAVITS.length} standalone affidavits.
           </p>
         </div>
 
@@ -268,9 +270,9 @@ const AffidavitDirectory: React.FC<{ onCustomizeDraft: (draft: LegalDraft) => vo
 
             <DirectoryColumn
               title="Affidavits"
-              subtitle={`${AFFIDAVITS.length} standalone affidavit templates`}
+              subtitle={`${STANDALONE_AFFIDAVITS.length} standalone affidavit templates`}
             >
-              {AFFIDAVITS.map((affidavit) => (
+              {STANDALONE_AFFIDAVITS.map((affidavit) => (
                 <AffidavitCard key={affidavit.id} affidavit={affidavit} />
               ))}
             </DirectoryColumn>
@@ -286,7 +288,7 @@ const DirectoryColumn: React.FC<{ title: string; subtitle: string; children: Rea
   subtitle,
   children,
 }) => (
-  <section className="rounded-2xl border border-neutral-200 bg-white p-4 shadow-sm sm:p-5">
+  <section className="min-w-0">
     <div className="mb-4 flex items-start justify-between gap-3 border-b border-neutral-200 pb-3">
       <div>
         <h2 className="text-base font-black font-serif text-neutral-900">{title}</h2>
@@ -394,26 +396,16 @@ const AgreementDetail: React.FC<{
 const AffidavitCard: React.FC<{ affidavit: AffidavitTemplate }> = ({ affidavit }) => (
   <Link
     to={`/affidavits/deposition/${affidavit.id}`}
-    className="bg-yellow-100 border border-neutral-200 hover:border-yellow-500/50 rounded-2xl p-5 transition shadow-lg group flex flex-col justify-between"
+    className="bg-yellow-100 border border-neutral-200 hover:border-yellow-500/50 rounded-lg p-4 transition shadow-sm group flex items-start justify-between gap-3"
   >
     <div>
-      <div className="flex items-start justify-between gap-2">
-        <h3 className="text-sm font-black font-serif text-neutral-900 group-hover:text-yellow-700 transition">
-          {affidavit.title}
-        </h3>
-        <ChevronRight className="w-4 h-4 text-yellow-700 shrink-0 mt-0.5" />
-      </div>
+      <h3 className="text-sm font-black font-serif text-neutral-900 group-hover:text-yellow-700 transition">
+        {affidavit.title}
+      </h3>
       <p className="text-[11px] text-neutral-600 mt-1.5 leading-relaxed">{affidavit.description}</p>
     </div>
 
-    <div className="mt-4 pt-3 border-t border-neutral-200 flex flex-wrap items-center gap-2">
-      <span className="bg-white border border-neutral-200 text-neutral-600 text-[10px] px-2 py-0.5 rounded">
-        {affidavit.courtHeadingRequired ? 'Filed under a court heading' : 'Standalone deposition'}
-      </span>
-      <span className="bg-white border border-neutral-200 text-neutral-600 text-[10px] px-2 py-0.5 rounded">
-        Deponent: {affidavit.deponent}
-      </span>
-    </div>
+    <ChevronRight className="w-4 h-4 text-yellow-700 shrink-0 mt-0.5" />
   </Link>
 );
 

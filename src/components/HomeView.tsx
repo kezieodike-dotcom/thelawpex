@@ -16,7 +16,7 @@ import {
 import { HeroSearch } from './HeroSearch';
 import { TestimonialsSection } from './ui/testimonial-v2';
 import { LANDMARK_CASES } from '../data/legalData';
-import { getPublishedIngestedCases } from '../data/caseIngestion';
+import { usePublishedCases } from '../lib/publishedCases';
 
 interface HomeViewProps {
   setActiveTab: (tab: string) => void;
@@ -123,7 +123,8 @@ const moduleClass = (tone: string, index: number) => {
 };
 
 export const HomeView: React.FC<HomeViewProps> = ({ setActiveTab, onOpenSearch, onOpenCase, onOpenViewer }) => {
-  const caseLaws = [...LANDMARK_CASES, ...getPublishedIngestedCases()];
+  const { cases: publishedCases } = usePublishedCases();
+  const caseLaws = [...LANDMARK_CASES, ...publishedCases];
   const latestCases = [...caseLaws].sort((a, b) => b.year - a.year).slice(0, 5);
   const primaryCase = latestCases[0];
   const secondaryCases = latestCases.slice(1);

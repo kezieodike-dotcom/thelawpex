@@ -1,19 +1,19 @@
 import assert from 'node:assert/strict';
-import { readFile } from 'node:fs/promises';
 import test from 'node:test';
-
-const projectFile = (path) => new URL(`../${path}`, import.meta.url);
+import React from 'react';
+import { renderToStaticMarkup } from 'react-dom/server';
+import { OfficialTextReader } from '../src/components/OfficialTextReader.tsx';
 
 test('official text reader keeps raw text while using a more readable legal-document layout', async () => {
-  const reader = await readFile(projectFile('src/components/OfficialTextReader.tsx'), 'utf8');
-
-  assert.match(reader, /fontFamily: legalDocumentFont/);
-  assert.match(reader, /const legalDocumentFont =/);
-  assert.match(reader, /max-w-5xl/);
-  assert.match(reader, /leading-\[1\.9\]/);
-  assert.match(reader, /text-\[16px\]/);
-  assert.match(reader, /sm:text-\[17px\]/);
-  assert.match(reader, /whitespace-pre-wrap/);
-  assert.match(reader, /page.rawText/);
-  assert.match(reader, /Page \{page\.pageNumber\}/);
+  const html = renderToStaticMarkup(React.createElement(OfficialTextReader, {
+    title: 'Sample Act',
+    documentText: '## Page 1\n\n1. This provision continues\nonto the next extracted line.\n\n2. This is a separate provision.',
+  }));
+  assert.match(html, /1\. This provision continues onto the next extracted line\./);
+  assert.match(html, /2\. This is a separate provision\./);
+  assert.equal((html.match(/data-legal-paragraph=/g) ?? []).length, 2);
+  assert.match(html, /space-y-6/);
+  assert.match(html, /font-size:17px/);
+  assert.match(html, /leading-\[1\.85\]/);
+  assert.match(html, /Page 1/);
 });

@@ -621,6 +621,36 @@ select {
   }
 }
 
+@keyframes lawpex-case-search-prompt-cycle {
+  0% {
+    opacity: 0;
+    transform: translateY(0.35rem);
+  }
+
+  12%,
+  80% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  100% {
+    opacity: 0;
+    transform: translateY(-0.35rem);
+  }
+}
+
+.lawpex-case-search-prompt {
+  animation: lawpex-case-search-prompt-cycle 3.8s cubic-bezier(0.22, 1, 0.36, 1) both;
+  will-change: opacity, transform;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .lawpex-case-search-prompt {
+    animation: none;
+    will-change: auto;
+  }
+}
+
 @keyframes lawpex-hero-aurora {
   0% {
     opacity: 0.78;

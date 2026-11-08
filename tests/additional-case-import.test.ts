@@ -6,12 +6,12 @@ import { LANDMARK_CASES } from '../src/data/legalData.ts';
 import { auditCaseRatioCitations } from '../src/components/modules/CaseLawView.tsx';
 
 const expected = [
-  ['case-013', '(2000) LDLR-219 (CA)', 1],
-  ['case-014', '(2006) LDLR-217 (SC)', 10],
-  ['case-015', '(2006) LDLR-212 (SC)', 16],
-  ['case-016', '(2005) LDLR-213 (SC)', 2],
-  ['case-017', '(2006) LDLR-216 (SC)', 13],
-  ['case-018', '(2006) LDLR-218 (SC)', 8],
+  ['case-013', '(2000) LDLR-219 (C.A)', 1],
+  ['case-014', '(2006) LDLR-217 (S.C)', 10],
+  ['case-015', '(2006) LDLR-212 (S.C)', 16],
+  ['case-016', '(2005) LDLR-213 (S.C)', 2],
+  ['case-017', '(2006) LDLR-216 (S.C)', 13],
+  ['case-018', '(2006) LDLR-218 (S.C)', 8],
 ] as const;
 
 for (const [id, citation, count] of expected) {
