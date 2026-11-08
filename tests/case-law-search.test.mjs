@@ -101,6 +101,7 @@ test('the public Case Laws page is a unified accessible search interface', async
   assert.match(source, /to=\{`\/case-law\/case\/\$\{suggestion\.judgment\.id\}`\}/);
   assert.doesNotMatch(source, /All uploaded cases/);
   assert.doesNotMatch(source, /Case library/);
+  assert.doesNotMatch(source, /Newly published cases could not be loaded/);
   const detail = await readFile(new URL('../src/components/modules/CaseLawView.tsx', import.meta.url), 'utf8');
   assert.match(detail, /if \(courtSlug\) return <Navigate replace to="\/case-law"/);
   assert.doesNotMatch(source, /const CourtDirectory/);

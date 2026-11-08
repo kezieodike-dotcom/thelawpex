@@ -31,7 +31,7 @@ export const CaseLawSearchView: React.FC = () => {
   const suggestionsRef = useRef<HTMLDivElement>(null);
   const resultsRef = useRef<HTMLElement>(null);
   const navigate = useNavigate();
-  const { cases: publishedCases, error: libraryError, refresh: refreshLibrary } = usePublishedCases();
+  const { cases: publishedCases } = usePublishedCases();
   const [fullCases, setFullCases] = useState<SearchCase[] | null>(null);
   const [searchStatus, setSearchStatus] = useState<'idle' | 'loading' | 'ready' | 'error'>('idle');
   const [retry, setRetry] = useState(0);
@@ -130,7 +130,6 @@ export const CaseLawSearchView: React.FC = () => {
 
   return (
     <div className={`${CASE_PAGE_BG} min-h-screen py-7 text-neutral-900 sm:py-12`}>
-      {libraryError && <p role="status" className="mx-auto max-w-7xl px-4 text-sm text-amber-900">Newly published cases could not be loaded. The existing collection is available. <button onClick={() => void refreshLibrary()} className="underline">Retry</button></p>}
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div ref={searchRef}>
           <header className="lawpex-module-hero lawpex-case-motion rounded-2xl border-b border-amber-200 p-4 sm:p-8">
