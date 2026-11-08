@@ -95,9 +95,9 @@ test('the public Case Laws page is a unified accessible search interface', async
   assert.match(source, /role="combobox"/);
   assert.match(source, /role="listbox"/);
   assert.match(source, /event\.key === 'Enter'/);
-  assert.match(source, /Search by party, keyword, principle or ratio/);
-  assert.match(source, /lawpex-case-motion relative z-20 overflow-visible/);
-  assert.match(source, /max-h-\[21rem\].*sm:max-h-\[26rem\]/);
+  assert.match(source, /Party, citation or keyword/);
+  assert.match(source, /aria-expanded=\{showSuggestions\}/);
+  assert.match(source, /aria-activedescendant=/);
   assert.match(source, /to=\{`\/case-law\/case\/\$\{suggestion\.judgment\.id\}`\}/);
   const detail = await readFile(new URL('../src/components/modules/CaseLawView.tsx', import.meta.url), 'utf8');
   assert.match(detail, /if \(courtSlug\) return <Navigate replace to="\/case-law"/);
