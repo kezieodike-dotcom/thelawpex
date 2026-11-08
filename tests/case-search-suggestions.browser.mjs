@@ -11,12 +11,36 @@ const errors = [];
 page.on('pageerror', error => errors.push(error.message));
 try {
   await mkdir('tmp/case-search-suggestions', { recursive: true });
+  for (const viewport of [{ width: 390, height: 844 }, { width: 1440, height: 1000 }]) {
+    await page.setViewportSize(viewport);
+    await page.goto(`${process.env.TEST_BASE_URL || 'http://127.0.0.1:3000'}/`, { waitUntil: 'domcontentloaded', timeout: 90000 });
+    const heroSearch = page.getByLabel('Search LAWPEX').first();
+    const heroPrompt = page.getByTestId('home-search-landmark-prompt');
+    await heroPrompt.waitFor({ timeout: 3000 });
+    assert.match(await heroPrompt.textContent(), /Mojekwu v\. Mojekwu|Amaechi v\. INEC & Ors/);
+    assert.equal(await heroPrompt.getAttribute('aria-hidden'), 'true');
+    assert.equal(await heroPrompt.evaluate(element => getComputedStyle(element).pointerEvents), 'none');
+    await page.waitForFunction(
+      () => Number(getComputedStyle(document.querySelector('[data-testid="home-search-landmark-prompt"]')).opacity) > 0.9,
+    );
+    await page.screenshot({ path: `tmp/case-search-suggestions/home-${viewport.width}.png` });
+    await heroSearch.focus();
+    await heroPrompt.waitFor({ state: 'hidden' });
+    assert.equal(await heroSearch.getAttribute('placeholder'), 'Ask a legal question, search a citation, statute, rule or draft...');
+    await heroSearch.fill('Evidence');
+    assert.equal(await heroPrompt.isVisible(), false);
+    await heroSearch.fill('');
+    await heroSearch.blur();
+    await heroPrompt.waitFor();
+  }
   for (const viewport of [{ width: 320, height: 560 }, { width: 390, height: 844 }, { width: 768, height: 900 }, { width: 1440, height: 1000 }]) {
     await page.setViewportSize(viewport);
     await page.goto(`${process.env.TEST_BASE_URL || 'http://127.0.0.1:3000'}/case-law`, { waitUntil: 'domcontentloaded', timeout: 90000 });
     const search = page.getByRole('combobox');
     const landmarkPrompt = page.getByTestId('case-search-landmark-prompt');
     await landmarkPrompt.waitFor();
+    assert.equal(await page.getByRole('region', { name: 'Case law search results' }).count(), 0);
+    assert.equal(await page.locator('a[href^="/case-law/case/"]').count(), 0);
     assert.match(await landmarkPrompt.textContent(), /Mojekwu v\. Mojekwu|Amaechi v\. INEC & Ors/);
     assert.equal(await landmarkPrompt.getAttribute('aria-hidden'), 'true');
     assert.equal(await landmarkPrompt.evaluate(element => getComputedStyle(element).pointerEvents), 'none');
@@ -39,14 +63,12 @@ try {
     await list.getByRole('option').first().waitFor();
     const layout = await list.evaluate(element => {
       const form = document.querySelector('form[role="search"]');
-      const stats = [...document.querySelectorAll('header p, header span')].find(node => /^\d+ verified reports$/.test(node.textContent.trim()));
       const results = document.querySelector('[aria-label="Case law search results"]');
       const row = element.querySelector('[role="option"]');
       const [title, citation] = row.firstElementChild.children;
       const listBox = element.getBoundingClientRect();
       return {
         formBottom: form.getBoundingClientRect().bottom,
-        statsBottom: stats.getBoundingClientRect().bottom,
         listTop: listBox.top,
         listBottom: listBox.bottom,
         resultsTop: results.getBoundingClientRect().top,
@@ -57,7 +79,6 @@ try {
       };
     });
     assert.ok(layout.formBottom <= layout.listTop, 'quick matches begin below the input');
-    assert.ok(layout.statsBottom <= layout.listTop, 'quick matches never overlap the report count');
     assert.ok(layout.listBottom <= layout.resultsTop, 'quick matches never cover the full results');
     assert.ok(layout.titleBottom <= layout.citationTop, 'the case name and citation have separate lines');
     assert.equal(layout.rowOverflow, false);
@@ -76,6 +97,8 @@ try {
       await page.getByRole('button', { name: 'Clear case search' }).tap();
       assert.equal(await search.inputValue(), '');
       assert.equal(await search.evaluate(element => element === document.activeElement), true);
+      assert.equal(await page.getByRole('region', { name: 'Case law search results' }).count(), 0);
+      assert.equal(await page.locator('a[href^="/case-law/case/"]').count(), 0);
       await search.fill('Evidence');
       await list.waitFor();
     }

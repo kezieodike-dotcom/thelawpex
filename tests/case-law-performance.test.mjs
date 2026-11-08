@@ -41,6 +41,9 @@ test('the case search animation never hides the search interface', async () => {
   const rule = css.match(/\.lawpex-case-motion\s*\{([^}]+)\}/)?.[1];
   assert.ok(rule);
   assert.doesNotMatch(rule, /opacity:\s*0/);
-  const animation = css.slice(css.indexOf('@keyframes lawpex-case-rise'), css.indexOf('@keyframes lawpex-hero-aurora'));
+  const animation = css.slice(
+    css.indexOf('@keyframes lawpex-case-rise'),
+    css.indexOf('@keyframes lawpex-case-search-prompt-cycle'),
+  );
   assert.doesNotMatch(animation, /opacity:\s*0/);
 });

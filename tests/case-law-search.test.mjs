@@ -99,8 +99,24 @@ test('the public Case Laws page is a unified accessible search interface', async
   assert.match(source, /aria-expanded=\{showSuggestions\}/);
   assert.match(source, /aria-activedescendant=/);
   assert.match(source, /to=\{`\/case-law\/case\/\$\{suggestion\.judgment\.id\}`\}/);
+  assert.doesNotMatch(source, /All uploaded cases/);
+  assert.doesNotMatch(source, /Case library/);
   const detail = await readFile(new URL('../src/components/modules/CaseLawView.tsx', import.meta.url), 'utf8');
   assert.match(detail, /if \(courtSlug\) return <Navigate replace to="\/case-law"/);
   assert.doesNotMatch(source, /const CourtDirectory/);
   assert.doesNotMatch(source, /const CourtCaseList/);
+});
+
+test('the homepage hero and Case Laws search share the animated landmark prompt', async () => {
+  const [heroSearch, caseSearch, prompt] = await Promise.all([
+    readFile(new URL('../src/components/HeroSearch.tsx', import.meta.url), 'utf8'),
+    readFile(new URL('../src/components/modules/CaseLawSearchView.tsx', import.meta.url), 'utf8'),
+    readFile(new URL('../src/components/LandmarkSearchPrompt.tsx', import.meta.url), 'utf8'),
+  ]);
+
+  assert.match(heroSearch, /<LandmarkSearchPrompt/);
+  assert.match(heroSearch, /testId="home-search-landmark-prompt"/);
+  assert.match(caseSearch, /<LandmarkSearchPrompt/);
+  assert.match(prompt, /isLandmark/);
+  assert.match(prompt, /lawpex-case-search-prompt/);
 });
