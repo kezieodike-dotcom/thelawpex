@@ -99,6 +99,9 @@ test('the public Case Laws page is a unified accessible search interface', async
   assert.match(source, /aria-expanded=\{showSuggestions\}/);
   assert.match(source, /aria-activedescendant=/);
   assert.match(source, /to=\{`\/case-law\/case\/\$\{suggestion\.judgment\.id\}`\}/);
+  assert.match(source, /Recently Added Cases/);
+  assert.match(source, /const RECENT_CASE_COUNT = 13/);
+  assert.match(source, /aria-label="Recently added cases"/);
   assert.doesNotMatch(source, /All uploaded cases/);
   assert.doesNotMatch(source, /Case library/);
   assert.doesNotMatch(source, /Newly published cases could not be loaded/);

@@ -38,9 +38,10 @@ try {
     await page.goto(`${process.env.TEST_BASE_URL || 'http://127.0.0.1:3000'}/case-law`, { waitUntil: 'domcontentloaded', timeout: 90000 });
     const search = page.getByRole('combobox');
     const landmarkPrompt = page.getByTestId('case-search-landmark-prompt');
+    const recentCases = page.getByRole('region', { name: 'Recently added cases' });
     await landmarkPrompt.waitFor();
     assert.equal(await page.getByRole('region', { name: 'Case law search results' }).count(), 0);
-    assert.equal(await page.locator('a[href^="/case-law/case/"]').count(), 0);
+    assert.equal(await recentCases.getByRole('link').count(), 13);
     assert.match(await landmarkPrompt.textContent(), /Mojekwu v\. Mojekwu|Amaechi v\. INEC & Ors/);
     assert.equal(await landmarkPrompt.getAttribute('aria-hidden'), 'true');
     assert.equal(await landmarkPrompt.evaluate(element => getComputedStyle(element).pointerEvents), 'none');
@@ -59,6 +60,7 @@ try {
     await search.focus();
     await landmarkPrompt.waitFor({ state: 'hidden' });
     await search.fill('Evidence');
+    await recentCases.waitFor({ state: 'hidden' });
     const list = page.getByRole('listbox');
     await list.getByRole('option').first().waitFor();
     const layout = await list.evaluate(element => {
@@ -98,7 +100,8 @@ try {
       assert.equal(await search.inputValue(), '');
       assert.equal(await search.evaluate(element => element === document.activeElement), true);
       assert.equal(await page.getByRole('region', { name: 'Case law search results' }).count(), 0);
-      assert.equal(await page.locator('a[href^="/case-law/case/"]').count(), 0);
+      await recentCases.waitFor();
+      assert.equal(await recentCases.getByRole('link').count(), 13);
       await search.fill('Evidence');
       await list.waitFor();
     }

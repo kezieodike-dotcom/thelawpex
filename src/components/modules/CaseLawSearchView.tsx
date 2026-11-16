@@ -7,6 +7,7 @@ import { searchCaseLaws, type CaseSearchDocument } from '../../lib/caseSearch';
 import { LandmarkSearchPrompt } from '../LandmarkSearchPrompt';
 
 type SearchCase = CaseSearchDocument & { isLandmark?: boolean };
+const RECENT_CASE_COUNT = 13;
 const CASE_PAGE_BG =
   'bg-[radial-gradient(circle_at_12%_0%,rgba(250,204,21,0.22),transparent_30rem),linear-gradient(180deg,#fffdf6,#ffffff_24rem)]';
 
@@ -36,6 +37,14 @@ export const CaseLawSearchView: React.FC = () => {
   const [searchStatus, setSearchStatus] = useState<'idle' | 'loading' | 'ready' | 'error'>('idle');
   const [retry, setRetry] = useState(0);
   const caseLaws = useMemo(() => [...(fullCases ?? caseCatalog), ...publishedCases], [fullCases, publishedCases]);
+  const recentCases = useMemo(() => {
+    const unique = new Map<string, SearchCase>();
+    [...publishedCases].reverse().forEach((judgment) => unique.set(judgment.id, judgment));
+    [...caseCatalog].reverse().forEach((judgment) => {
+      if (!unique.has(judgment.id)) unique.set(judgment.id, judgment);
+    });
+    return [...unique.values()].slice(0, RECENT_CASE_COUNT);
+  }, [publishedCases]);
   const trimmedQuery = query.trim();
   const showLandmarkPrompt = !query && !searchFocused;
   const needsFullSearch = trimmedQuery.length >= 3;
@@ -259,6 +268,57 @@ export const CaseLawSearchView: React.FC = () => {
             </div>
           )}
         </div>
+
+        {!trimmedQuery && (
+          <section className="mt-8 sm:mt-10" aria-label="Recently added cases">
+            <div className="flex flex-wrap items-end justify-between gap-3 border-b border-neutral-300 pb-4">
+              <div>
+                <p className="text-xs font-black uppercase text-amber-700">New in the library</p>
+                <h2 className="mt-1 text-2xl font-bold text-neutral-950 sm:text-3xl">Recently Added Cases</h2>
+              </div>
+              <p className="text-sm font-semibold tabular-nums text-neutral-600">
+                {recentCases.length} recent reports
+              </p>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2">
+              {recentCases.map((judgment, index) => (
+                <Link
+                  key={judgment.id}
+                  to={`/case-law/case/${judgment.id}`}
+                  className="lawpex-case-motion lawpex-focus-ring group grid min-w-0 grid-cols-[2rem_minmax(0,1fr)_1rem] gap-3 border-b border-amber-200 bg-white px-3 py-5 transition-colors hover:bg-amber-50 sm:odd:border-r sm:px-5 sm:py-6"
+                  style={{ '--case-delay': `${Math.min(index, 5) * 35}ms` } as React.CSSProperties}
+                >
+                  <span className="pt-0.5 text-xs font-black tabular-nums text-amber-700">
+                    {String(index + 1).padStart(2, '0')}
+                  </span>
+                  <span className="min-w-0">
+                    <span className="flex flex-wrap items-center gap-2">
+                      <span className="border border-amber-300 bg-amber-50 px-2 py-1 text-[11px] font-black text-amber-800">
+                        {courtLabel(judgment.court)}
+                      </span>
+                      {judgment.isLandmark && (
+                        <span className="inline-flex items-center gap-1 bg-[#facc15] px-2 py-1 text-[11px] font-black text-neutral-950">
+                          <Award className="h-3 w-3" /> Landmark
+                        </span>
+                      )}
+                    </span>
+                    <span className="mt-3 block break-words text-base font-bold leading-snug text-neutral-950 transition-colors group-hover:text-amber-800 sm:text-lg">
+                      {judgment.title}
+                    </span>
+                    <span className="mt-1 block break-words text-sm font-semibold text-amber-800">
+                      {judgment.citation}
+                    </span>
+                    <span className="mt-2 block break-words text-sm leading-6 text-neutral-600">
+                      {judgment.subject}
+                    </span>
+                  </span>
+                  <ChevronRight aria-hidden="true" className="h-4 w-4 self-center text-neutral-500 transition-colors group-hover:text-amber-800" />
+                </Link>
+              ))}
+            </div>
+          </section>
+        )}
 
         {trimmedQuery && (
           <section ref={resultsRef} tabIndex={-1} className="mt-8 scroll-mt-28 outline-none sm:mt-10" aria-label="Case law search results">
