@@ -1,0 +1,105 @@
+[
+  {
+    "file": "AROWOLO V", "id": "case-019", "title": "Arowolo v. Akapo & Ors", "ratioCount": 1,
+    "subject": "Substitution of an interested party after the death of an appellant", "areaOfLaw": "Appeals, Civil Procedure",
+    "proceduralHistory": "The application arose in a pending Supreme Court appeal after the original appellant died. Chief Gafaru Arowolo sought substitution for the deceased on behalf of the Olaforikanre Ruling House.",
+    "keyPrinciples": ["Substitution after a party's death depends on a demonstrable legal interest in the subject matter and the justice of continuing the proceeding through the proposed substitute.", "A chieftaincy contest may concern the collective interest of the relevant ruling house even where the original contestant was named personally."],
+    "authoritiesCited": ["Mbanu v. Mbanu (1961) 2 SCNLR 305", "Osanugha v. Military Governor of Ekiti State (2001) 18 WRN 1", "In Re Adeosun (2001) 8 NWLR (Pt.714) 200", "Aderogba v. Olaopa (1961) All NLR 679"],
+    "statutesConsidered": ["Supreme Court Rules, Order 8 rule 9(2)", "Constitution of the Federation 1960, section 110(6)(a)"],
+    "practiceNotes": ["The source does not state a suit number or delivery date. The date mentioned in the ruling is the hearing date and has not been presented as the delivery date."]
+  },
+  {
+    "file": "AUTO IMPORT EXPORT V", "id": "case-020", "title": "Auto Import Export v. Adebayo & Ors", "ratioCount": 19,
+    "subject": "Waiver, bills of exchange, guarantees and the binding effect of pleadings", "areaOfLaw": "Commercial Law, Evidence, Civil Procedure",
+    "proceduralHistory": "A Romanian seller obtained judgment in the High Court for the unpaid balance on vehicles, spare parts and machinery. The Court of Appeal struck out the defendants' appeal and dismissed the seller's cross-appeal. The seller appealed to the Supreme Court.",
+    "keyPrinciples": ["Waiver requires knowledge of an existing right and conduct plainly inconsistent with an intention to enforce it.", "Rights arising under a bill of exchange are governed by the Bills of Exchange Act and may be renounced only in the manner recognised by that legislation.", "A pleading must state the material facts relied upon, and a general denial does not answer a specific material allegation.", "Counsel's address cannot supply evidence absent from the record.", "A court must resolve the dispute made by the parties and cannot construct a different case for them.", "A surety may remain liable where the contractual undertaking makes the surety directly responsible for the guaranteed debt.", "A defence of waiver must be distinctly pleaded so that the opposing party has fair notice of it."],
+    "authoritiesCited": ["Ariori v. Elemo", "Nwadiaro v. Shell Development Co.", "Caribbean Trading v. NNPC", "Adesanya v. Otuewu", "Royal Exchange Assurance v. Aswani Textiles"],
+    "statutesConsidered": ["Bills of Exchange Act, sections 16, 30, 38 and 59-64"],
+    "practiceNotes": ["The supplied document labels the report LPELR-693. It is normalised to the platform's required LDLR-693 citation while the original DOCX remains preserved."]
+  },
+  {
+    "file": "AWOYOOLU", "id": "case-021", "title": "Awoyoolu & Anor v. Aro & Anor", "ratioCount": 8,
+    "subject": "Traditional history, survey plans and appellate review of findings of fact", "areaOfLaw": "Land & Property Law, Evidence, Appeals",
+    "proceduralHistory": "The land dispute began in the Lagos State High Court, where the respondents succeeded on their claim founded substantially on traditional history. The Court of Appeal affirmed the decision, and the appellants appealed to the Supreme Court.",
+    "keyPrinciples": ["Traditional history is a recognised method of proving title to land when the evidence is credible and accepted.", "A survey plan is unnecessary where the identity and extent of the disputed land are otherwise certain and common to the parties.", "Evaluation of oral evidence and findings depending on credibility belong primarily to the trial court.", "An appellate court may interfere where the trial court failed to evaluate material evidence or reached a conclusion unsupported by the record.", "Concurrent findings are not displaced without a demonstrated error, perversity or miscarriage of justice."],
+    "authoritiesCited": ["UAC Nigeria Ltd v. Fasheyitan", "Vanderpuye v. Gbadebo", "Onibudo v. Akibu", "Ayoola v. Adebayo", "Woluchem v. Gudi"],
+    "statutesConsidered": ["Evidence Act, section 146"]
+  },
+  {
+    "file": "BHOJSONS PLC V", "id": "case-022", "title": "Bhojsons Plc v. Kalio", "ratioCount": 10,
+    "subject": "Grounds of appeal, unappealed findings and issues raised by an appellate court", "areaOfLaw": "Appeals, Civil Procedure",
+    "proceduralHistory": "The High Court dismissed the appellant's claims arising from execution against its premises. The Court of Appeal granted relief on wrongful execution but declined to assess damages because no ground of appeal challenged the trial court's refusal. The appellant appealed further.",
+    "keyPrinciples": ["An appellate court's jurisdiction is activated by competent grounds of appeal directed at the decision complained of.", "A finding not challenged by an appeal remains binding on the parties and the appellate court.", "An appellant must identify the particular error said to justify reversal rather than invite a general reconsideration of the case.", "A court that raises a decisive issue on its own initiative must hear the parties before deciding it.", "Courts are confined to the issues placed before them and cannot grant appellate relief on an unchallenged point."],
+    "authoritiesCited": ["Management Enterprises v. Otusanya", "Alli v. Alesinloye", "Adeyemi v. Olakunri", "Kuti v. Balogun", "Olusanya v. Olusanya"],
+    "statutesConsidered": ["Constitution of the Federal Republic of Nigeria", "Court of Appeal Rules", "Evidence Act, section 149(d)"]
+  },
+  {
+    "file": "BONIFACE ANYIKA", "id": "case-023", "title": "Boniface Anyika & Company Lagos Nig. Ltd. v. Uzor", "ratioCount": 10,
+    "subject": "Pleadings, proof and the tort of conversion", "areaOfLaw": "Tort, Evidence, Civil Procedure",
+    "proceduralHistory": "The Lagos State High Court found the respondent liable in conversion. The Court of Appeal reversed that judgment and dismissed the claim. The appellant appealed to the Supreme Court.",
+    "keyPrinciples": ["Contested averments in a statement of claim require admissible evidence before they can establish liability.", "Parties are bound by their pleaded facts, and an unpleaded factual case cannot be supplied through argument.", "Counsel may submit on the law but cannot give evidence from the Bar.", "Conversion requires an unjustified exercise of dominion over another person's chattel that is inconsistent with the owner's rights.", "Adverse detention is ordinarily proved by a demand for delivery followed by refusal or neglect to comply.", "A cause of action in conversion accrues when the defendant performs the unequivocal act inconsistent with the owner's right."],
+    "authoritiesCited": ["Ihenacho v. Uzochukwu", "Ojini v. Ogo Oluwa Motors (Nig.) Ltd.", "Adejumo v. Ayantegbe", "Anyanwu v. Iwuchukwu", "Owena Bank v. Nigerian Sweets"],
+    "statutesConsidered": ["Constitution of the Federal Republic of Nigeria 1999, section 233(3)"]
+  },
+  {
+    "file": "CHIGBU V", "id": "case-024", "title": "Chigbu v. Tonimas Nig. Ltd. & Anor", "ratioCount": 9,
+    "subject": "Limitation periods, detinue and the application of Nigerian law", "areaOfLaw": "Limitation Law, Tort, Statutory Interpretation",
+    "proceduralHistory": "The High Court dismissed the appellant's claims following termination of a dealership relationship. The Court of Appeal affirmed. The appellant appealed to the Supreme Court.",
+    "keyPrinciples": ["Clear statutory language is applied according to its ordinary meaning unless that result would defeat the legislation.", "A limitation statute removes the judicial remedy after the prescribed period, subject to any applicable exception.", "The limitation period is calculated from the date the cause of action accrued.", "Nigerian courts must apply an available Nigerian enactment rather than displace it with foreign law.", "Detinue is founded on wrongful detention and ordinarily accrues upon demand and refusal.", "A claimant in detinue must establish a present right to possession and the defendant's adverse detention of the chattel."],
+    "practiceNotes": ["The source states an impossible Court of Appeal date of 29 February 1998. That source statement is preserved and flagged rather than silently altered."]
+  },
+  {
+    "file": "COTECNA INT", "id": "case-025", "title": "Cotecna Int'l Ltd. v. Ivory Merchant Bank Ltd", "ratioCount": 5,
+    "subject": "Pre-shipment inspection, statutory interpretation and court competence", "areaOfLaw": "Commercial Law, Statutory Interpretation, Jurisdiction",
+    "proceduralHistory": "A third-party dispute arising from a pre-shipment inspection transaction was determined in the High Court and reviewed by the Court of Appeal. Cotecna appealed and the respondent cross-appealed to the Supreme Court.",
+    "keyPrinciples": ["The jurisdictional bar in section 9(2) of the Pre-shipment Inspection of Imports Act must be applied according to its express scope.", "Clear and unambiguous statutory words receive their ordinary meaning because legislative intention is found primarily in the enacted text.", "Jurisdiction is a threshold condition for valid adjudication and must be resolved when raised.", "A court is competent only where it is properly constituted, the subject matter is within jurisdiction, and the action was initiated by due process after satisfaction of conditions precedent."],
+    "statutesConsidered": ["Pre-shipment Inspection of Imports Act 1985, section 9(2)"],
+    "practiceNotes": ["The final competence passage was truncated in the supplied headnote. The import restores its concluding Madukolu citation from the judicial opinion."]
+  },
+  {
+    "file": "DADA V", "id": "case-026", "title": "Dada v. Dosunmu", "ratioCount": 17,
+    "subject": "Preliminary objections, reply briefs, pleadings and identification of land", "areaOfLaw": "Appeals, Evidence, Land & Property Law",
+    "proceduralHistory": "The Ogun State High Court dismissed the respondent's land claim. The Court of Appeal reversed that judgment. The defendants appealed to the Supreme Court, which allowed the appeal by a majority.",
+    "keyPrinciples": ["A preliminary objection must be raised through the procedure prescribed by the applicable appellate rules.", "A reply brief answers new points in the respondent's brief and is unnecessary where no new issue requires a response.", "An issue for determination is incompetent when it does not arise from a valid ground of appeal.", "The parties and the court are bound by the pleaded cases, and unpleaded facts cannot ground judgment.", "A claimant seeking a declaration of title succeeds on the strength of the claimant's own credible evidence, subject to supportive evidence from the defence.", "The land claimed must be identified with sufficient certainty to permit an enforceable declaration and order.", "Substantial justice does not authorise a court to disregard the governing pleadings, evidence or appellate process."],
+    "practiceNotes": ["The last six supplied headnote propositions are drawn from Mahmud Mohammed J.S.C.'s dissent and are retained with that attribution; they must not be treated as the majority's binding holding."]
+  },
+  {
+    "file": "DAGAYYA V", "id": "case-027", "title": "Dagayya v. State", "ratioCount": 20,
+    "subject": "Child witnesses, corroboration, contradictions and alibi", "areaOfLaw": "Criminal Law & Procedure, Evidence",
+    "proceduralHistory": "The Jigawa State High Court convicted the appellant of culpable homicide punishable with death. The Court of Appeal, Kaduna Division, affirmed the conviction, and the appellant appealed to the Supreme Court.",
+    "keyPrinciples": ["A child who understands the nature of an oath may give sworn evidence, while unsworn child evidence attracts the statutory corroboration requirement.", "Competence to testify and understanding the religious or moral nature of an oath are separate questions for the trial court.", "A trial court's opinion on witness competence is judicial and remains reviewable for legal error.", "Only material contradictions capable of affecting the substance of the prosecution case justify rejection of the evidence.", "Corroboration must be independent evidence connecting the accused with a material aspect of the offence.", "An accused relying on alibi must provide timely and sufficient particulars to permit investigation.", "The prosecution must investigate a properly raised alibi, although credible evidence fixing the accused at the scene may displace it.", "Appellate courts ordinarily defer to trial findings founded on the credibility and demeanour of witnesses."],
+    "statutesConsidered": ["Evidence Act, sections 149(d), 155(1), 180, 182 and 183(1)-(3)", "Penal Code, section 221(b)", "Criminal Procedure Code of Jigawa State, section 229(2)", "Oaths Act"],
+    "practiceNotes": ["The supplied document labels the report LPELR-700. It is normalised to LDLR-700. The first supplied attribution is corrected from Niki Tobi J.S.C. to Ikechi Francis Ogbuagu J.S.C. after source verification."]
+  },
+  {
+    "file": "DUKE V", "id": "case-028", "title": "Duke v. Akpabuyo L.G.", "ratioCount": 13,
+    "subject": "Procedural irregularity, defective service and undefended-list judgment", "areaOfLaw": "Civil Procedure, Judgment and Orders",
+    "proceduralHistory": "The High Court entered judgment for the appellant under the undefended list. The respondent later challenged the judgment because service occurred six rather than eight clear days before the hearing. The Court of Appeal set the judgment aside, and the appellant appealed.",
+    "keyPrinciples": ["Rules of court are subsidiary instruments intended to regulate the fair and orderly conduct of proceedings.", "A procedural defect that does not go to jurisdiction is ordinarily an irregularity capable of waiver.", "A party who knowingly participates without promptly objecting may lose the right to complain of the irregular procedure.", "Defective service of a valid originating process is distinguishable from the absence of any originating process.", "A challenge to issuance or service should be made promptly and before taking a fresh step after knowledge of the defect.", "An innocent litigant should not ordinarily bear the consequence of a registry's error.", "A judgment under the undefended list is a judgment on the merits and is not set aside as though it were a default judgment.", "Technical rules should be applied to advance rather than defeat substantial justice."],
+    "authoritiesCited": ["Adegoke Motors v. Adesanya", "Saude v. Abdullahi", "Ariori v. Elemo", "Long-John v. Blakk", "Owena Bank v. Akintuyi"],
+    "statutesConsidered": ["Cross River State High Court Civil Procedure Rules, Order 2 rule 2(1) and Order 23"]
+  },
+  {
+    "file": "EBHOTA", "id": "case-029", "title": "Ebhota & Ors v. Plateau Investment and Property Development Co. Ltd", "ratioCount": 3,
+    "subject": "Pleadings, statutory conditions and privity of contract", "areaOfLaw": "Contract, Civil Procedure, Statutory Interpretation",
+    "proceduralHistory": "Representative tenants obtained relief in the Jos High Court concerning ownership, rent increases and an asserted option to purchase housing units. The Court of Appeal reversed the decision, and the tenants appealed to the Supreme Court.",
+    "keyPrinciples": ["A court may draw a legal inference reasonably arising from pleaded facts even where the inference itself was not stated as a separate pleading.", "The expression 'subject to' ordinarily makes the provision in which it appears subordinate to the specified controlling condition.", "A person who is not a party to a contract cannot enforce it merely because performance would have benefited that person."],
+    "practiceNotes": ["Dennis Onyejife Edozie J.S.C. delivered a supporting opinion but is omitted from the source front-matter coram; the original discrepancy is recorded."]
+  },
+  {
+    "file": "EBRE", "id": "case-030", "title": "Ebre & Ors v. State", "ratioCount": 9,
+    "subject": "Alibi, circumstantial evidence and proof of murder", "areaOfLaw": "Criminal Law & Procedure, Evidence",
+    "proceduralHistory": "The Akwa Ibom State High Court convicted the appellants of murder and imposed the death sentence. The Court of Appeal, Calabar Division, affirmed the convictions. The appellants appealed to the Supreme Court.",
+    "keyPrinciples": ["An alibi asserts that the accused was elsewhere and must be considered whenever it arises properly from the evidence.", "The accused must supply timely particulars of the claimed location and persons capable of supporting the alibi.", "The prosecution bears the burden of disproving a sufficiently particularised alibi.", "Failure to investigate an alibi affects the conviction where it leaves a reasonable doubt or otherwise causes a miscarriage of justice.", "Circumstantial evidence can sustain conviction only when the proved facts form a cogent and complete chain pointing irresistibly to guilt.", "The absence of an eyewitness is not fatal where the circumstantial evidence excludes other rational explanations."],
+    "authoritiesCited": ["Commissioner of Police v. Alao", "Abudu v. State", "Gachi v. State", "Okosi v. State", "Igho v. State"],
+    "practiceNotes": ["The supplied document labels the report LPELR-222. It is normalised to the required LDLR-222 citation."]
+  },
+  {
+    "file": "NWANKWOALA", "id": "case-031", "title": "Nwankwoala & Anor v. State", "ratioCount": 7,
+    "subject": "Co-accused evidence, accomplices, common intention and criminal burden of proof", "areaOfLaw": "Criminal Law & Procedure, Evidence",
+    "proceduralHistory": "Three police officers were convicted of culpable homicide by the Benue State High Court. One died before the Court of Appeal hearing. The Court of Appeal, Jos Division, dismissed the remaining appeals, which then proceeded to the Supreme Court.",
+    "keyPrinciples": ["Materially contradictory prior statements make a witness unreliable unless the contradiction is satisfactorily explained.", "Evidence given by one accused against another is admissible but must be approached with the caution appropriate to its source.", "A conviction may legally rest on uncorroborated accomplice evidence, although corroboration is the safer course.", "Participants are responsible for an offence committed in furtherance of a shared criminal purpose.", "Common intention may be inferred from conduct and the surrounding circumstances rather than proved only by direct evidence.", "The prosecution's criminal burden remains fixed except where a recognised rule of law places a particular evidential burden on the accused.", "A court must consider every defence reasonably disclosed by the evidence, whether or not counsel presented it elaborately."],
+    "authoritiesCited": ["Duru v. State", "Onubogu v. State", "Agwu v. State", "Igbi v. State", "Adekunle v. State"],
+    "statutesConsidered": ["Evidence Act, sections 27(3), 178(1) and 178(2)", "Penal Code, sections 79 and 221"]
+  }
+]

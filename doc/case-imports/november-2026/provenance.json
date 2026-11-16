@@ -1,0 +1,119 @@
+[
+  {
+    "id": "case-019",
+    "sourceFile": "AROWOLO V.docx",
+    "sha256": "66b5d7cde254f9f427cdadcd3d0532a3cb33ab74a012e82955f647e6563162bd",
+    "sourceParagraphs": 423,
+    "ratios": 1,
+    "judgmentCharacters": 23271,
+    "bodyStartsAtParagraph": 26
+  },
+  {
+    "id": "case-020",
+    "sourceFile": "AUTO IMPORT EXPORT V.docx",
+    "sha256": "f47088616bd50114ab89445fbec4ade4ef1ceba88293852e0bb1ad8f94a1a3b0",
+    "sourceParagraphs": 2702,
+    "ratios": 19,
+    "judgmentCharacters": 149054,
+    "bodyStartsAtParagraph": 81
+  },
+  {
+    "id": "case-021",
+    "sourceFile": "AWOYOOLU.docx",
+    "sha256": "b1d81f8123bc5358e104c7c09a47bcf34d48a4eaf53588ae3b3bcb48ef33c890",
+    "sourceParagraphs": 642,
+    "ratios": 8,
+    "judgmentCharacters": 38319,
+    "bodyStartsAtParagraph": 39
+  },
+  {
+    "id": "case-022",
+    "sourceFile": "BHOJSONS PLC V.docx",
+    "sha256": "720574da97e94eed93a8219852de20e2ab14ba0831e0b05e3920830d2c69754c",
+    "sourceParagraphs": 957,
+    "ratios": 10,
+    "judgmentCharacters": 54366,
+    "bodyStartsAtParagraph": 44
+  },
+  {
+    "id": "case-023",
+    "sourceFile": "BONIFACE ANYIKA.docx",
+    "sha256": "fb57d9870c08f6d8848c3dc438d468e414466781a087aa5c11f31ac4c1b1bf50",
+    "sourceParagraphs": 652,
+    "ratios": 10,
+    "judgmentCharacters": 42867,
+    "bodyStartsAtParagraph": 47
+  },
+  {
+    "id": "case-024",
+    "sourceFile": "CHIGBU V.docx",
+    "sha256": "8102ece18dbdec185304afd174b82c3fba0f87c8795cc6b77653c6c1537118eb",
+    "sourceParagraphs": 74,
+    "ratios": 9,
+    "judgmentCharacters": 46057,
+    "bodyStartsAtParagraph": 58
+  },
+  {
+    "id": "case-025",
+    "sourceFile": "COTECNA INT.docx",
+    "sha256": "6651eb2c37501a377b3545ef9e7ad78eb1fd936f549c9070dfbbcc5166d72521",
+    "sourceParagraphs": 693,
+    "ratios": 5,
+    "judgmentCharacters": 40250,
+    "bodyStartsAtParagraph": 31
+  },
+  {
+    "id": "case-026",
+    "sourceFile": "DADA V.docx",
+    "sha256": "9eac5cf8df667ad116907d4f4e516e1b0bacc51941e607818a546a49243f2a78",
+    "sourceParagraphs": 77,
+    "ratios": 17,
+    "judgmentCharacters": 112323,
+    "bodyStartsAtParagraph": 63
+  },
+  {
+    "id": "case-027",
+    "sourceFile": "DAGAYYA V.docx",
+    "sha256": "5e271840b9bf64c547f34be3a3745ed3e030b8c5dc0e21d0b74cf175376aa901",
+    "sourceParagraphs": 1676,
+    "ratios": 20,
+    "judgmentCharacters": 102848,
+    "bodyStartsAtParagraph": 83
+  },
+  {
+    "id": "case-028",
+    "sourceFile": "DUKE V.docx",
+    "sha256": "ee8a32c94e5175b0c7f6dd9b70937bb3fec16686330801eee3d9e067c1f075c3",
+    "sourceParagraphs": 831,
+    "ratios": 13,
+    "judgmentCharacters": 52066,
+    "bodyStartsAtParagraph": 55
+  },
+  {
+    "id": "case-029",
+    "sourceFile": "EBHOTA.docx",
+    "sha256": "c0bb1f3ad0cef9156e9496692ca14c775d7e05a27f794f7d4c13bf6837453c06",
+    "sourceParagraphs": 829,
+    "ratios": 3,
+    "judgmentCharacters": 44130,
+    "bodyStartsAtParagraph": 36
+  },
+  {
+    "id": "case-030",
+    "sourceFile": "EBRE.docx",
+    "sha256": "ac309cf1aa81a86fa76143542ec7e7b093d963af9665b0787d294ced7b97d4f6",
+    "sourceParagraphs": 773,
+    "ratios": 9,
+    "judgmentCharacters": 51770,
+    "bodyStartsAtParagraph": 54
+  },
+  {
+    "id": "case-031",
+    "sourceFile": "NWANKWOALA.docx",
+    "sha256": "f0343bc1a2f4662d4bda3b656bd544f968eac08a3817505609b6d10774486f3f",
+    "sourceParagraphs": 828,
+    "ratios": 7,
+    "judgmentCharacters": 46580,
+    "bodyStartsAtParagraph": 36
+  }
+]

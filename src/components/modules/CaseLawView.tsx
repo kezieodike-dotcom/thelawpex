@@ -39,9 +39,15 @@ const SOURCE_LINKED_CASE_IDS = new Set([
   'case-001', 'case-002', 'case-003', 'case-004', 'case-005', 'case-006',
   'case-007', 'case-008', 'case-009', 'case-010', 'case-011', 'case-012',
   'case-013', 'case-014', 'case-015', 'case-016', 'case-017', 'case-018',
+  'case-019', 'case-020', 'case-021', 'case-022', 'case-023', 'case-024',
+  'case-025', 'case-026', 'case-027', 'case-028', 'case-029', 'case-030', 'case-031',
 ]);
 
-const STRUCTURED_IMPORT_CASE_IDS = new Set(['case-013', 'case-014', 'case-015', 'case-016', 'case-017', 'case-018']);
+const STRUCTURED_IMPORT_CASE_IDS = new Set([
+  'case-013', 'case-014', 'case-015', 'case-016', 'case-017', 'case-018',
+  'case-019', 'case-020', 'case-021', 'case-022', 'case-023', 'case-024',
+  'case-025', 'case-026', 'case-027', 'case-028', 'case-029', 'case-030', 'case-031',
+]);
 const isSourceLinkedReport = (judgment: CaseLaw) => judgment.reportFormatVersion === 'lawpex-reviewed-v1' || SOURCE_LINKED_CASE_IDS.has(judgment.id);
 
 export const CaseLawView: React.FC<CaseLawViewProps> = ({ courtSlug, caseId }) => {
@@ -618,7 +624,7 @@ const getDisplayJudgmentPages = (judgment: CaseLaw): NonNullable<CaseLaw['judgme
   judgment.judgmentPages?.filter((page) => page.page.toLowerCase() !== 'headnote') ?? [];
 
 const JUDGE_JUDGMENT_HEADING =
-  String.raw`(?:[A-Z][A-Z\s.'-]+,?\s+(?:J\s*\.?\s*(?:S\s*\.?\s*C|C\s*\.?\s*A)|F\s*\.?\s*J|C\s*\.?\s*J\s*\.?\s*F)\s*\.?(?:\s*\((?:[^)]*(?:Leading|Lead)\s+(?:Judgment|Ruling)[^)]*|Dissenting)\))?\s*:)`;
+  String.raw`(?:[A-Z][A-Z\s.'-]+,?\s+(?:J\s*\.?\s*(?:S\s*\.?\s*C|C\s*\.?\s*A)|F\s*\.?\s*J|C\s*\.?\s*J\s*\.?\s*F)\s*\.?(?:\s*\((?:[^)]*(?:Leading|Lead)\s+(?:Judgment|Ruling)[^)]*|Dissenting|Dissented)\))?\s*:)`;
 const LEADING_JUDGMENT_HEADING = new RegExp(String.raw`^(?:[A-G]\s+)?${JUDGE_JUDGMENT_HEADING}`, 'i');
 const INLINE_LEADING_JUDGMENT_HEADING = new RegExp(String.raw`(\s+)((?:[A-G]\s+)?${JUDGE_JUDGMENT_HEADING})`, 'gi');
 
@@ -1161,7 +1167,12 @@ const getSourceRatioPoints = (judgment: CaseLaw): RatioPoint[] => {
 
 const getExactRatioPoints = (judgment: CaseLaw): RatioPoint[] => {
   if (judgment.reportFormatVersion) return (judgment.ratioDecidendi ?? []).map(ratioPointFromText);
-  const importedReportIds = new Set(['case-008', 'case-009', 'case-010', 'case-011', 'case-012', 'case-013', 'case-014', 'case-015', 'case-016', 'case-017', 'case-018']);
+  const importedReportIds = new Set([
+    'case-008', 'case-009', 'case-010', 'case-011', 'case-012',
+    'case-013', 'case-014', 'case-015', 'case-016', 'case-017', 'case-018',
+    'case-019', 'case-020', 'case-021', 'case-022', 'case-023', 'case-024',
+    'case-025', 'case-026', 'case-027', 'case-028', 'case-029', 'case-030', 'case-031',
+  ]);
   if (importedReportIds.has(judgment.id) && judgment.ratioDecidendi?.length) {
     return judgment.ratioDecidendi.map(ratioPointFromText);
   }
@@ -1177,7 +1188,12 @@ const getExactPrincipleItems = (judgment: CaseLaw) => {
   // The imported reports carry their source headnote propositions in
   // keyPrinciples. Keep those concise propositions in the Principles tab;
   // the verbatim ratio text remains available in the separate Ratio tab.
-  const importedReportIds = new Set(['case-008', 'case-009', 'case-010', 'case-011', 'case-012', 'case-013', 'case-014', 'case-015', 'case-016', 'case-017', 'case-018']);
+  const importedReportIds = new Set([
+    'case-008', 'case-009', 'case-010', 'case-011', 'case-012',
+    'case-013', 'case-014', 'case-015', 'case-016', 'case-017', 'case-018',
+    'case-019', 'case-020', 'case-021', 'case-022', 'case-023', 'case-024',
+    'case-025', 'case-026', 'case-027', 'case-028', 'case-029', 'case-030', 'case-031',
+  ]);
   if (importedReportIds.has(judgment.id) && judgment.keyPrinciples?.length) {
     return judgment.keyPrinciples;
   }
@@ -2093,7 +2109,8 @@ const locateSourceLinkedRatio = (judgment: CaseLaw, point: RatioPoint) => {
     const alternative = locateReportQuote(complete, point.body ?? '');
     // Correct an erroneous headnote author only when the complete quotation
     // matches uniquely and lies within one identified judicial opinion.
-    if (alternative?.coverage === 1 && alternative.boundaryEdits === 0 && alternative.start.judge === alternative.end.judge) evidence = alternative;
+    const staysWithinOneOpinion = alternative?.start.judge === alternative?.end.judge || (!alternative?.start.judge && !alternative?.end.judge);
+    if (alternative?.coverage === 1 && alternative.boundaryEdits === 0 && staysWithinOneOpinion) evidence = alternative;
   }
   matches.set(key, evidence);
   sourceQuoteMatches.set(judgment, matches);
@@ -2191,7 +2208,6 @@ const withCurrentSourcePageCitations = (
 };
 
 const withCurrentRatioCitation = (judgment: CaseLaw, point: RatioPoint): RatioPoint => {
-  if (judgment.reportFormatVersion) return point;
   const { citation: currentCitation, resolved } = resolveRatioReportCitation(judgment, point);
   if (!resolved || !currentCitation) {
     const attribution = normalizeRawReportCitationGrammar(point.attribution ?? '');
