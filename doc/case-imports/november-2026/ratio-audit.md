@@ -51,7 +51,7 @@ Every reference below is generated from the current LAWPEX pages and A-G paragra
 | 7 | Per IKECHI FRANCIS OGBUAGU ,JSC (P. 19, para. C) | 100.0% | VERIFIED |
 | 8 | Per IKECHI FRANCIS OGBUAGU ,JSC (P. 21, paras. A-B) | 100.0% | VERIFIED |
 
-## Bhojsons Plc v. Kalio (2006) LDLR-695 (S.C)
+## Bhojsons Plc v. Kalio (2006) LDLR-303 (S.C)
 
 31 LAWPEX pages; 10 supplied ratio passages.
 

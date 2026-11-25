@@ -26,7 +26,7 @@
     "statutesConsidered": ["Evidence Act, section 146"]
   },
   {
-    "file": "BHOJSONS PLC V", "id": "case-022", "title": "Bhojsons Plc v. Kalio", "ratioCount": 10,
+    "file": "BHOJSONS PLC V", "id": "case-022", "title": "Bhojsons Plc v. Kalio", "citationNumber": "303", "ratioCount": 10,
     "subject": "Grounds of appeal, unappealed findings and issues raised by an appellate court", "areaOfLaw": "Appeals, Civil Procedure",
     "proceduralHistory": "The High Court dismissed the appellant's claims arising from execution against its premises. The Court of Appeal granted relief on wrongful execution but declined to assess damages because no ground of appeal challenged the trial court's refusal. The appellant appealed further.",
     "keyPrinciples": ["An appellate court's jurisdiction is activated by competent grounds of appeal directed at the decision complained of.", "A finding not challenged by an appeal remains binding on the parties and the appellate court.", "An appellant must identify the particular error said to justify reversal rather than invite a general reconsideration of the case.", "A court that raises a decisive issue on its own initiative must hear the parties before deciding it.", "Courts are confined to the issues placed before them and cannot grant appellate relief on an unchallenged point."],

@@ -680,6 +680,12 @@ select {
   page-break-after: auto;
 }
 
+/* Exact ratio links need stable measurements for every preceding report page. */
+.lawpex-source-navigation-active .lawpex-report-page {
+  content-visibility: visible !important;
+  contain-intrinsic-size: none !important;
+}
+
 @media (prefers-reduced-motion: reduce) {
   .lawpex-hero-image,
   .lawpex-hero-wash,

@@ -24,6 +24,7 @@ import { DocumentActions } from '../DocumentActions';
 import { CitedCasesList } from '../CitedCasesList';
 import { createCaseAuthorityResolver, type CaseAuthorityReport } from '../../lib/caseAuthorities';
 import { buildWordDraft, buildWordList, buildWordSection } from '../../lib/copyToWord';
+import { ratioSourceReferenceFromText } from '../../lib/ratioSourceReference';
 
 interface CaseLawViewProps {
   /** Court taken from the URL (`/case-law/:courtSlug`). */
@@ -77,15 +78,70 @@ const CaseDetail: React.FC<{ judgment: CaseLaw; availableCases: CaseAuthorityRep
   const fullJudgment = useMemo(() => mergeCaseJudgmentDocument(judgment, document), [document, judgment]);
   const [tab, setTab] = useState<CaseDetailTab>('ratio');
   const [sourceDestination, setSourceDestination] = useState<{ page: number; paragraph: string } | null>(null);
+  const [sourceLayoutExpanded, setSourceLayoutExpanded] = useState(false);
   useEffect(() => {
     if (tab !== 'whole' || documentStatus !== 'ready' || !sourceDestination) return;
-    const frame = requestAnimationFrame(() => {
-      const page = window.document.querySelector(`[data-case-report-id="${judgment.id}"] [data-report-page-number="${sourceDestination.page}"]`);
-      const passage = page?.querySelector(`[data-paragraph-label="${sourceDestination.paragraph}"]`);
-      (passage ?? page)?.scrollIntoView({ block: 'center' });
-      setSourceDestination(null);
+    let cancelled = false;
+    let frame = 0;
+    let attempts = 0;
+    let stableFrames = 0;
+    let alignedFrames = 0;
+    let previousHeight = -1;
+
+    const alignSourcePassage = () => {
+      if (cancelled) return;
+      const report = window.document.querySelector<HTMLElement>(`[data-case-report-id="${judgment.id}"]`);
+      const page = report?.querySelector<HTMLElement>(`[data-report-page-number="${sourceDestination.page}"]`);
+      const passage = page?.querySelector<HTMLElement>(`[data-paragraph-label="${sourceDestination.paragraph}"]`);
+      const target = passage ?? page;
+      attempts += 1;
+      if (!report || !target) {
+        if (attempts < 120) frame = requestAnimationFrame(alignSourcePassage);
+        return;
+      }
+
+      const reportHeight = report.getBoundingClientRect().height;
+      stableFrames = Math.abs(reportHeight - previousHeight) < 1 ? stableFrames + 1 : 0;
+      previousHeight = reportHeight;
+      if (stableFrames < 2 && attempts < 120) {
+        frame = requestAnimationFrame(alignSourcePassage);
+        return;
+      }
+
+      const targetBox = target.getBoundingClientRect();
+      const targetTop = window.scrollY + targetBox.top;
+      const viewportOffset = Math.max(104, (window.innerHeight - Math.min(targetBox.height, window.innerHeight * 0.6)) / 2);
+      const root = window.document.documentElement;
+      const previousScrollBehavior = root.style.scrollBehavior;
+      root.style.scrollBehavior = 'auto';
+      window.scrollTo(0, Math.max(0, targetTop - viewportOffset));
+      root.style.scrollBehavior = previousScrollBehavior;
+      frame = requestAnimationFrame(() => {
+        if (cancelled) return;
+        const box = target.getBoundingClientRect();
+        if (box.top >= 0 && box.top < window.innerHeight * 0.75) {
+          alignedFrames += 1;
+          if (alignedFrames >= 60) {
+            setSourceDestination(null);
+            return;
+          }
+          frame = requestAnimationFrame(alignSourcePassage);
+          return;
+        }
+        alignedFrames = 0;
+        stableFrames = 0;
+        frame = requestAnimationFrame(alignSourcePassage);
+      });
+    };
+
+    void window.document.fonts.ready.then(() => {
+      if (!cancelled) frame = requestAnimationFrame(alignSourcePassage);
     });
-    return () => cancelAnimationFrame(frame);
+
+    return () => {
+      cancelled = true;
+      cancelAnimationFrame(frame);
+    };
   }, [tab, documentStatus, sourceDestination, judgment.id]);
 
   const loadFullJudgment = useCallback(() => {
@@ -205,13 +261,23 @@ const CaseDetail: React.FC<{ judgment: CaseLaw; availableCases: CaseAuthorityRep
                   isSourceReady={!judgment.hasFullJudgment || documentStatus === 'ready'}
                   onOpenRatio={loadFullJudgment}
                   onReadFullJudgment={() => selectCaseSection('whole')}
-                  onOpenSource={(reference) => { selectCaseSection('whole'); setSourceDestination(reference); }}
+                  onOpenSource={(reference) => {
+                    setSourceLayoutExpanded(true);
+                    setSourceDestination(reference);
+                    setTab('whole');
+                  }}
                 />
               )}
               {tab === 'digest' && <DigestPanel judgment={judgment} />}
               {tab === 'principles' && <PrinciplesPanel judgment={judgment} />}
               {tab === 'authorities' && <AuthoritiesPanel judgment={judgment} availableCases={availableCases} />}
-              {tab === 'whole' && <WholeCasePanel judgment={fullJudgment} status={documentStatus} />}
+              {tab === 'whole' && (
+                <WholeCasePanel
+                  judgment={fullJudgment}
+                  status={documentStatus}
+                  revealAllPages={sourceLayoutExpanded}
+                />
+              )}
             </section>
           </main>
         </div>
@@ -366,6 +432,12 @@ const RatioPanel: React.FC<{
     const point = ratioPoints[activeRatioIndex];
     return point && isSourceReady ? withCurrentRatioCitation(judgment, point) : point;
   }, [activeRatioIndex, isSourceReady, judgment, ratioPoints]);
+  const activeSourceReference = useMemo(() => {
+    if (activeRatioIndex === null) return undefined;
+    return judgment.ratioSourceReferences?.[activeRatioIndex]
+      ?? ratioSourceReferenceFromText(judgment.ratioDecidendi?.[activeRatioIndex])
+      ?? ratioSourceReferenceFromText(activeRatio?.attribution ?? activeRatio?.fullText);
+  }, [activeRatio, activeRatioIndex, judgment.ratioDecidendi, judgment.ratioSourceReferences]);
 
   useEffect(() => {
     setActiveRatioIndex(null);
@@ -455,7 +527,7 @@ const RatioPanel: React.FC<{
             <p className="text-xs font-black uppercase tracking-[0.16em] text-amber-800">
               Ratio {activeRatioIndex + 1} of {ratioPoints.length}
             </p>
-            <h3 className="mt-4 max-w-6xl text-2xl font-black leading-tight tracking-tight text-neutral-950 sm:text-3xl sm:leading-tight">
+            <h3 className="mt-4 max-w-6xl break-words [overflow-wrap:anywhere] text-2xl font-black leading-tight tracking-tight text-neutral-950 sm:text-3xl sm:leading-tight">
               {activeRatio.heading}
             </h3>
             {activeRatio.body && (
@@ -466,7 +538,15 @@ const RatioPanel: React.FC<{
             {isSourceReady && activeRatio.attribution ? (
               <p className="mt-8 text-base font-black leading-7 text-amber-800 sm:text-lg">
                 {activeRatio.attribution}
-                {judgment.ratioSourceReferences?.[activeRatioIndex!] && <button type="button" onClick={() => onOpenSource(judgment.ratioSourceReferences![activeRatioIndex!])} className="ml-3 underline underline-offset-4">Open source passage</button>}
+                {activeSourceReference && (
+                  <button
+                    type="button"
+                    onClick={() => onOpenSource(activeSourceReference)}
+                    className="ml-3 underline underline-offset-4"
+                  >
+                    Open source passage
+                  </button>
+                )}
               </p>
             ) : (
               <p className="mt-8 text-sm font-bold text-amber-800">Preparing the verified page and paragraph reference...</p>
@@ -2272,7 +2352,8 @@ export const getReportCitationTargets = currentReportCitationTargets;
 export const WholeCasePanel: React.FC<{
   judgment: CaseLaw;
   status?: 'idle' | 'loading' | 'ready' | 'error';
-}> = ({ judgment, status = 'ready' }) => {
+  revealAllPages?: boolean;
+}> = ({ judgment, status = 'ready', revealAllPages = false }) => {
   const citation = `${judgment.title} ${judgment.citation}`;
   const judgmentText = useMemo(() => getJudgmentTextForCopy(judgment), [judgment]);
   const isLoading = status === 'idle' || status === 'loading';
@@ -2313,7 +2394,7 @@ export const WholeCasePanel: React.FC<{
             The full judgment could not be loaded. Please refresh and try again.
           </div>
         ) : (judgment.verbatimWholeCase || judgment.preserveSourceFormatting) && judgment.fullJudgmentText ? (
-          <div className="overflow-visible bg-white" data-case-report-id={judgment.id}>
+          <div className={`overflow-visible bg-white ${revealAllPages ? 'lawpex-source-navigation-active' : ''}`} data-case-report-id={judgment.id}>
             <ReportPageTracker judgment={judgment} totalPages={totalPages} />
             <CaseOpeningPage judgment={judgment} />
             {sourcePagesWithCurrentCitations.map((page, pageIndex) => {
@@ -2336,7 +2417,7 @@ export const WholeCasePanel: React.FC<{
             })}
           </div>
         ) : bodyPages.length ? (
-          <div className="overflow-visible bg-white" data-case-report-id={judgment.id}>
+          <div className={`overflow-visible bg-white ${revealAllPages ? 'lawpex-source-navigation-active' : ''}`} data-case-report-id={judgment.id}>
             <ReportPageTracker judgment={judgment} totalPages={totalPages} />
             <CaseOpeningPage judgment={judgment} />
             {bodyPages.map((page, pageIndex) => {
@@ -2401,7 +2482,7 @@ export const WholeCasePanel: React.FC<{
             })}
           </div>
         ) : (
-          <div className="overflow-visible bg-white" data-case-report-id={judgment.id}>
+          <div className={`overflow-visible bg-white ${revealAllPages ? 'lawpex-source-navigation-active' : ''}`} data-case-report-id={judgment.id}>
             <ReportPageTracker judgment={judgment} totalPages={totalPages} />
             <CaseOpeningPage judgment={judgment} />
             {judgment.fullJudgmentText ? (

@@ -10,7 +10,7 @@ const expected = [
   ['case-019', 'Arowolo v. Akapo & Ors', '(2006) LDLR-591 (S.C)', 1],
   ['case-020', 'Auto Import Export v. Adebayo & Ors', '(2005) LDLR-693 (S.C)', 19],
   ['case-021', 'Awoyoolu & Anor v. Aro & Anor', '(2006) LDLR-694 (S.C)', 8],
-  ['case-022', 'Bhojsons Plc v. Kalio', '(2006) LDLR-695 (S.C)', 10],
+  ['case-022', 'Bhojsons Plc v. Kalio', '(2006) LDLR-303 (S.C)', 10],
   ['case-023', 'Boniface Anyika & Company Lagos Nig. Ltd. v. Uzor', '(2006) LDLR-695 (S.C)', 10],
   ['case-024', 'Chigbu v. Tonimas Nig. Ltd. & Anor', '(2006) LDLR-696 (S.C)', 9],
   ['case-025', "Cotecna Int'l Ltd. v. Ivory Merchant Bank Ltd", '(2006) LDLR-697 (S.C)', 5],

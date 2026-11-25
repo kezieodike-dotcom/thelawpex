@@ -134,7 +134,7 @@ for (const entry of editorial) {
   cases.push({
     id: entry.id,
     title: entry.title,
-    citation: `(${citation[1]}) LDLR-${citation[2]} (${courtCode.split('').join('.')})`,
+    citation: `(${citation[1]}) LDLR-${entry.citationNumber ?? citation[2]} (${courtCode.split('').join('.')})`,
     sourceUrl: `/documents/cases/${entry.id}.docx`,
     suitNumber,
     court: courtCode === 'SC' ? 'Supreme Court of Nigeria' : 'Court of Appeal',
