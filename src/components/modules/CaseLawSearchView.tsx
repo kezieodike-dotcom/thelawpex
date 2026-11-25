@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Search, ChevronRight, ArrowDown, Award, X } from 'lucide-react';
+import { Search, ChevronRight, ArrowDown, Award, Library, X } from 'lucide-react';
 import caseCatalog from '../../data/caseCatalog.json';
 import { usePublishedCases } from '../../lib/publishedCases';
 import { searchCaseLaws, type CaseSearchDocument } from '../../lib/caseSearch';
@@ -37,6 +37,10 @@ export const CaseLawSearchView: React.FC = () => {
   const [searchStatus, setSearchStatus] = useState<'idle' | 'loading' | 'ready' | 'error'>('idle');
   const [retry, setRetry] = useState(0);
   const caseLaws = useMemo(() => [...(fullCases ?? caseCatalog), ...publishedCases], [fullCases, publishedCases]);
+  const totalCaseCount = useMemo(
+    () => new Set(caseLaws.map((judgment) => judgment.id)).size,
+    [caseLaws],
+  );
   const recentCases = useMemo(() => {
     const unique = new Map<string, SearchCase>();
     [...publishedCases].reverse().forEach((judgment) => unique.set(judgment.id, judgment));
@@ -152,6 +156,13 @@ export const CaseLawSearchView: React.FC = () => {
               <p className="mt-3 max-w-3xl text-sm leading-6 text-neutral-700 sm:text-base sm:leading-7">
                 Find the authority you need by party, citation, keyword, legal principle or ratio decidendi.
               </p>
+              <div className="mt-4 inline-flex items-center gap-2.5 rounded-lg border border-amber-200 bg-white/90 px-3 py-2 text-sm text-neutral-700 shadow-sm sm:px-4">
+                <Library aria-hidden="true" className="h-4 w-4 shrink-0 text-amber-700" />
+                <span className="tabular-nums">
+                  <strong className="font-black text-neutral-950">{totalCaseCount}</strong>{' '}
+                  verified {totalCaseCount === 1 ? 'case report' : 'case reports'} in the library
+                </span>
+              </div>
             </div>
 
             <form className="lawpex-no-reveal mt-5" onSubmit={handleSubmit} role="search">
