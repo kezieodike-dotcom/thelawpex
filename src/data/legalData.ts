@@ -13,6 +13,7 @@ import {
 import { IMPORTED_LANDMARK_CASES } from './importedLandmarkCases';
 import { ADDITIONAL_CASES } from './additionalCases';
 import { NOVEMBER_CASES } from './novemberCases';
+import { DECEMBER_CASES } from './decemberCases';
 
 export const AREAS_OF_LAW: AreaOfLaw[] = [
   {
@@ -895,7 +896,8 @@ Per BOLOUKUROMO MOSES UGO JCA (Pp. 9-10, paras. F-A)`
   },
   ...IMPORTED_LANDMARK_CASES,
   ...ADDITIONAL_CASES,
-  ...NOVEMBER_CASES
+  ...NOVEMBER_CASES,
+  ...DECEMBER_CASES
 ];
 
 export const COURT_RULES_DATA: CourtRule[] = [

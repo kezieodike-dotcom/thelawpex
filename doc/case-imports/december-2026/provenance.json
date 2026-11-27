@@ -1,0 +1,137 @@
+[
+  {
+    "id": "case-032",
+    "sourceFile": "ECHERE.docx",
+    "sha256": "5eaf0998253e9165304cd94a16e1853400e58fed9382b280e2ac888a30efa760",
+    "sourceParagraphs": 656,
+    "ratios": 12,
+    "judgmentCharacters": 40692,
+    "bodyStartsAtParagraph": 53
+  },
+  {
+    "id": "case-033",
+    "sourceFile": "ELABANJO.docx",
+    "sha256": "0fef4509a678ed2a21c75bea79c9e303f7373ee5d7dbd25ec4553db585c36579",
+    "sourceParagraphs": 2350,
+    "ratios": 11,
+    "judgmentCharacters": 128179,
+    "bodyStartsAtParagraph": 49
+  },
+  {
+    "id": "case-034",
+    "sourceFile": "ELEGUSHI.docx",
+    "sha256": "3228e08534e9bb3d3269aa155364876142b7cd9c380d3c7702444a666e159aaf",
+    "sourceParagraphs": 926,
+    "ratios": 8,
+    "judgmentCharacters": 50044,
+    "bodyStartsAtParagraph": 49
+  },
+  {
+    "id": "case-035",
+    "sourceFile": "EMESPO J.docx",
+    "sha256": "676544a6375cac3414f222c4b4611054b19256fa71086d63027488f525c622c1",
+    "sourceParagraphs": 516,
+    "ratios": 6,
+    "judgmentCharacters": 29014,
+    "bodyStartsAtParagraph": 31
+  },
+  {
+    "id": "case-036",
+    "sourceFile": "FAGBENRO V.docx",
+    "sha256": "5080114729ba3db910447f90c0ab9e318a1b885dc16d7598d3d1a1b0b89fb770",
+    "sourceParagraphs": 46,
+    "ratios": 7,
+    "judgmentCharacters": 50329,
+    "bodyStartsAtParagraph": 38
+  },
+  {
+    "id": "case-037",
+    "sourceFile": "FASAKIN FOODS.docx",
+    "sha256": "b6279366f155b962cfbd545c2bd719294e22ead6cfbf08ccee79a0728f9e4199",
+    "sourceParagraphs": 1545,
+    "ratios": 14,
+    "judgmentCharacters": 88609,
+    "bodyStartsAtParagraph": 55
+  },
+  {
+    "id": "case-038",
+    "sourceFile": "GBADAMOSI.docx",
+    "sha256": "e0f78fa36219f0d3525e9f8067f99c78b9b81c388e9db33b078393454ee8c109",
+    "sourceParagraphs": 414,
+    "ratios": 2,
+    "judgmentCharacters": 22582,
+    "bodyStartsAtParagraph": 33
+  },
+  {
+    "id": "case-039",
+    "sourceFile": "HELP.docx",
+    "sha256": "96f15b40bb285b8ad384e65736a921e56aa9eccddc6a7c3398f6684a8fe7d447",
+    "sourceParagraphs": 887,
+    "ratios": 6,
+    "judgmentCharacters": 50488,
+    "bodyStartsAtParagraph": 30
+  },
+  {
+    "id": "case-040",
+    "sourceFile": "IBAMA V.docx",
+    "sha256": "08323e5643f77c34b030c4f3efb192222f514d2ecd1596c929d852a37034a60b",
+    "sourceParagraphs": 982,
+    "ratios": 6,
+    "judgmentCharacters": 53404,
+    "bodyStartsAtParagraph": 35
+  },
+  {
+    "id": "case-041",
+    "sourceFile": "IBIYEYE V.docx",
+    "sha256": "d4743adb7944c6ba75a735e664e416f47089b6daa236f5054fb02ec7b73fcd05",
+    "sourceParagraphs": 666,
+    "ratios": 2,
+    "judgmentCharacters": 35207,
+    "bodyStartsAtParagraph": 21
+  },
+  {
+    "id": "case-042",
+    "sourceFile": "IDEOZU.docx",
+    "sha256": "5e95c4c8a074399dd22f142beb70416ac9d4e13874f628ab9dd233d5c355e19d",
+    "sourceParagraphs": 1032,
+    "ratios": 4,
+    "judgmentCharacters": 56130,
+    "bodyStartsAtParagraph": 47
+  },
+  {
+    "id": "case-043",
+    "sourceFile": "IDERIMA V.docx",
+    "sha256": "aaa9fdbb6f17c989fc1fb26e278a13738dab18fcc9bb73c54393913bbc89f2a6",
+    "sourceParagraphs": 1304,
+    "ratios": 3,
+    "judgmentCharacters": 67766,
+    "bodyStartsAtParagraph": 23
+  },
+  {
+    "id": "case-044",
+    "sourceFile": "IFETA V.docx",
+    "sha256": "2667719ae53978a758f9eca5a1e3276cf9e071c220a90ee03fd6cb0f518ba683",
+    "sourceParagraphs": 1225,
+    "ratios": 9,
+    "judgmentCharacters": 68074,
+    "bodyStartsAtParagraph": 41
+  },
+  {
+    "id": "case-045",
+    "sourceFile": "IGABELE V.docx",
+    "sha256": "1a0acb131d41d3f9559cf8cdd83644141709a19e558b779dff96e3ef5c9ccc7e",
+    "sourceParagraphs": 1309,
+    "ratios": 15,
+    "judgmentCharacters": 75457,
+    "bodyStartsAtParagraph": 57
+  },
+  {
+    "id": "case-046",
+    "sourceFile": "UGOJI V.docx",
+    "sha256": "c97061b24ca1e2c7c7ca86c2f43070f24edbf381972c98bbb8ff1bda485a21c8",
+    "sourceParagraphs": 38,
+    "ratios": 4,
+    "judgmentCharacters": 37071,
+    "bodyStartsAtParagraph": 30
+  }
+]

@@ -1,0 +1,122 @@
+[
+  {
+    "file": "ECHERE", "id": "case-032", "title": "Echere & Ors v. Ezirike & Ors", "ratioCount": 12,
+    "subject": "Trespass to land, possession and appellate interference with findings of fact", "areaOfLaw": "Land & Property Law, Evidence, Appeals",
+    "proceduralHistory": "The Imo State High Court granted the appellants declarations of title, damages for trespass and injunctive relief over five parcels of land. The Court of Appeal reversed the judgment and dismissed the claims. The appellants appealed to the Supreme Court.",
+    "keyPrinciples": ["An appellate court may interfere with findings of fact where the trial court failed to evaluate the evidence properly or reached a conclusion unsupported by the record.", "Trespass protects possession rather than title and is actionable at the suit of the person in actual or constructive possession.", "Proof of possession may sustain a trespass claim even where declaration of title is not established.", "A trespasser cannot rely on possession wrongfully obtained to defeat the person lawfully entitled to possession."],
+    "authoritiesCited": ["Mogaji v. Odofin", "Woluchem v. Gudi", "Amakor v. Obiefuna", "Aromire v. Awoyemi"],
+    "practiceNotes": ["The supplied document labels the report LPELR-223. It is normalised to the platform citation LDLR-223 while the original DOCX remains preserved."],
+    "ratioBodyOverrides": {
+      "1": "\"An appellate court will not interfere with the judgment of the learned trial Judge unless such judgment is shown to be perverse. There is absolutely nothing to show that the findings of the learned trial Judge in the instant case are perverse to warrant the setting aside of the judgment by the Court of Appeal. I am therefore in complete agreement that the findings of the learned trial Judge was based on the evidence adduced before him and therefore the Court of Appeal was in grave error to reverse them.\""
+    }
+  },
+  {
+    "file": "ELABANJO", "id": "case-033", "title": "Elabanjo & Anor v. Dawodu", "ratioCount": 11,
+    "subject": "Jurisdiction, limitation of actions and preliminary objections", "areaOfLaw": "Jurisdiction, Limitation Law, Civil Procedure",
+    "proceduralHistory": "The appellants sought possession, damages for trespass and an injunction in the Lagos State High Court. The respondent raised a preliminary objection that the action was statute-barred before filing a defence. The High Court rejected the objection, but the Court of Appeal allowed the respondent's appeal and dismissed the action. The appellants appealed to the Supreme Court.",
+    "keyPrinciples": ["An objection to jurisdiction may be raised at any stage and does not depend upon the prior filing of a statement of defence.", "Whether an action is statute-barred is determined from the originating process and the facts showing when the cause of action accrued.", "A limitation statute bars the remedy after the prescribed period unless a recognised exception applies.", "Rules of court and practice directions cannot override substantive legislation governing jurisdiction or limitation."],
+    "statutesConsidered": ["Limitation Law of Lagos State, section 16", "High Court of Lagos State (Civil Procedure) Rules 1994, Order 23 rules 1-3"]
+  },
+  {
+    "file": "ELEGUSHI", "id": "case-034", "title": "Elegushi & Ors v. Oseni & Ors", "ratioCount": 8,
+    "subject": "Proof of title by traditional history and admissibility of evidence", "areaOfLaw": "Land & Property Law, Evidence",
+    "proceduralHistory": "The Lagos State High Court entered judgment for the appellants on claims concerning customary tenancy, forfeiture, possession and trespass. The Court of Appeal set that judgment aside and dismissed the action. The appellants appealed to the Supreme Court.",
+    "keyPrinciples": ["Title to land may be proved by traditional evidence, production of title documents, acts of ownership, long possession, or possession of connected land in circumstances making ownership probable.", "A party relying on traditional history must plead and prove the founder, the mode of acquisition and the chain of devolution to the claimant.", "Where traditional histories conflict, recent acts of ownership and possession may be used to test which account is more probable.", "Pleadings define the dispute but do not constitute evidence of the facts pleaded.", "Unchallenged evidence must still be credible, relevant and sufficient before a court acts upon it."],
+    "authoritiesCited": ["Idundun v. Okumagba", "Kojo II v. Bonsie", "Piaro v. Tenalo"],
+    "ratioBodyOverrides": {
+      "2": "\"Thus, the law is settled that where traditional evidence of the parties in a land matter is in conflict or inconclusive as in the case in hand, the Court should not go by the credibility of witnesses, but should examine the acts of ownership or possession done by either party in recent times in relation to the land in dispute. See this Court's decision in Idundun v. Okumagba (1976) 1 NMLR 200; (1976) 9-10 SC 227; Kenon v. Tekam (2001) FWLR (Pt. 70) 1660 SC; (2001) 14 NWLR (Pt. 732) 12; Kyari v. Alkali (2001) FWLR (Pt. 60) 1481 SC; (2001) 11 NWLR (Pt. 724) 412, and Jules v. Ajani (2001) FWLR (Pt. 45) 763 SC.\""
+    }
+  },
+  {
+    "file": "EMESPO J", "id": "case-035", "title": "Emespo J. Continental Ltd. v. Corona Shifah-Rtsgesellschaft Mbh & Co. (Owners of M.V. Concordia)", "ratioCount": 6,
+    "subject": "Misnomer, joinder and formulation of issues on appeal", "areaOfLaw": "Admiralty, Civil Procedure, Appeals",
+    "proceduralHistory": "The Federal High Court permitted the joinder of the respondent in a cargo-shortage action. The Court of Appeal reversed the joinder after holding that the appellant had not established a correctable misnomer. The appellant appealed to the Supreme Court.",
+    "keyPrinciples": ["A misnomer occurs where the correct party is before the court under an inaccurate name; it cannot be used to substitute a different legal person for the party originally sued.", "Words placed in brackets may explain or qualify the name used but do not cure the absence of the proper legal person.", "Every issue for determination on appeal must arise from a competent ground of appeal.", "A respondent may formulate issues from the appellant's grounds but cannot introduce an unrelated complaint without a cross-appeal or respondent's notice.", "A ground of appeal from which no issue is formulated is treated as abandoned."],
+    "practiceNotes": ["The spelling of the respondent's corporate name follows the supplied law-report document and the original DOCX is preserved."]
+  },
+  {
+    "file": "FAGBENRO V", "id": "case-036", "title": "Fagbenro v. Arobadi & Ors", "ratioCount": 7,
+    "subject": "Burden of proof, documentary evidence and the binding effect of pleadings", "areaOfLaw": "Land & Property Law, Evidence, Civil Procedure",
+    "proceduralHistory": "The Lagos State High Court dismissed the respondents' claims for declaration of title, trespass and injunction. The Court of Appeal allowed their appeal. The appellant appealed to the Supreme Court.",
+    "keyPrinciples": ["A court must decide the case presented by the parties and cannot construct a materially different case for either side.", "A party who admits another's original ownership but asserts a later purchase bears the burden of proving the transaction relied upon.", "Parties are bound by their pleadings and evidence outside the pleaded case cannot determine the dispute.", "Documentary evidence is a permanent and reliable means of testing oral testimony.", "Oral testimony cannot be used to contradict or vary the clear contents of a document except as permitted by law."],
+    "statutesConsidered": ["Evidence Act"]
+  },
+  {
+    "file": "FASAKIN FOODS", "id": "case-037", "title": "Fasakin Foods (Nig.) Ltd. v. Shosanya", "ratioCount": 14,
+    "subject": "Transfer of proceedings, constitutional supremacy and statutory interpretation", "areaOfLaw": "Constitutional Law, Jurisdiction, Statutory Interpretation",
+    "proceduralHistory": "The Lagos State High Court held that substantial parts of the appellant's claim fell within Federal High Court jurisdiction and transferred the action. The Court of Appeal set aside the transfer and struck out the suit. The appellant appealed to the Supreme Court.",
+    "keyPrinciples": ["Clear statutory language is applied according to its ordinary meaning unless that construction produces an absurdity inconsistent with the enactment.", "The Constitution is supreme and any legislation inconsistent with it is void to the extent of the inconsistency.", "A court without subject-matter jurisdiction must make the order authorised by the governing law and cannot assume powers withheld by the Constitution.", "A statutory transfer power cannot validate a transfer that the Constitution or the competent legislature does not authorise.", "Where a court lacks jurisdiction and no valid transfer mechanism applies, the proper order is to strike out the action.", "An existing law continues subject to the modifications required to bring it into conformity with the Constitution."],
+    "statutesConsidered": ["Constitution of the Federal Republic of Nigeria 1979, sections 239 and 274", "Federal High Court Act, section 22(3)-(4)"]
+  },
+  {
+    "file": "GBADAMOSI", "id": "case-038", "title": "Gbadamosi & Anor v. Governor of Oyo State & Ors", "ratioCount": 2,
+    "subject": "Evaluation of evidence and concurrent findings in a customary chieftaincy dispute", "areaOfLaw": "Chieftaincy Law, Evidence, Appeals",
+    "proceduralHistory": "The Oyo State High Court dismissed the appellants' representative claims concerning the family entitled under customary law to produce the Baale of Egbeda. The Court of Appeal affirmed the dismissal. The appellants appealed to the Supreme Court.",
+    "keyPrinciples": ["Evaluation of oral evidence is primarily the responsibility of the trial court that heard and observed the witnesses.", "An appellate court may interfere where the trial court failed to evaluate material evidence, acted on a wrong principle or reached a perverse conclusion.", "Concurrent findings of the trial court and Court of Appeal are not disturbed without a demonstrated error causing a miscarriage of justice."]
+  },
+  {
+    "file": "HELP", "id": "case-039", "title": "Help (Nig.) Ltd. v. Silver Anchor (Nig.) Ltd.", "ratioCount": 6,
+    "subject": "Specific performance of a contract for sale of land", "areaOfLaw": "Contract, Equity, Land & Property Law",
+    "proceduralHistory": "The Lagos State High Court dismissed the appellant's claims arising from a proposed property sale but ordered repayment of its deposit with interest. The Court of Appeal allowed the appeal while declining specific performance and damages. The appellant appealed and the respondent cross-appealed to the Supreme Court.",
+    "keyPrinciples": ["Specific performance is an equitable and discretionary remedy requiring a concluded, certain and enforceable contract.", "The remedy is withheld where damages are adequate, the terms are uncertain, or enforcement would be inequitable.", "A claimant seeking specific performance must show readiness and willingness to perform the claimant's own obligations.", "Pleadings state the parties' cases but do not prove the facts asserted in them."],
+    "practiceNotes": ["The court dismissed the appeal and struck out the cross-appeal."]
+  },
+  {
+    "file": "IBAMA V", "id": "case-040", "title": "Ibama v. S.P.D.C. (Nig.) Ltd.", "ratioCount": 6,
+    "subject": "Termination of employment and proof of contractual terms", "areaOfLaw": "Labour & Employment Law, Contract",
+    "proceduralHistory": "The Rivers State High Court dismissed the appellant's challenge to the termination of his employment shortly before retirement. The Court of Appeal affirmed the decision. The appellant appealed to the Supreme Court.",
+    "keyPrinciples": ["An employee alleging wrongful termination must plead and prove the contractual terms governing the employment and identify the term breached.", "The rights and liabilities arising from private employment are determined primarily by the contract of service.", "Courts enforce the agreement made by the parties and do not rewrite an employment contract for them.", "Employment with statutory flavour is distinguishable from an ordinary master-and-servant relationship and attracts different remedies.", "Damages for wrongful termination are ordinarily measured by the remuneration due during the contractual notice period."],
+    "practiceNotes": ["The supplied source places the report at LDLR-302 and that citation is retained."],
+    "ratioBodyOverrides": {
+      "5": "\"In UBN Ltd. v. Ogboh (1995) 2 NWLR (Pt. 380) 647 at 664 this court stated the law as regards employment governed by statute or employment with statutory flavour and an ordinary master servant relationship as follows: Except in employment governed by statute wherein the procedures for employment and discipline (including dismissal) of an employee are clearly spelt out, any other employment outside the statute is governed by the terms under which the parties agreed to be master and servant. Employment with statutory backing must be terminated in the way and manner prescribed by that statute, and any other manner of termination inconsistent with the relevant statute is null and void and of no effect ... In other cases governed only by agreement of parties and not by statute removal by way of termination of appointment of dismissal will be in the form agreed to; any other form connotes only wrongful termination or dismissal but not to declare such dismissal null and void, the only remedy is a claim for damages for that wrongful dismissal. This is based on the notion that no servant can be imposed by the court on an unwilling master even where the master's behaviour is wrong. For his wrongful act, he is only liable in damages and nothing more.\""
+    }
+  },
+  {
+    "file": "IBIYEYE V", "id": "case-041", "title": "Ibiyeye v. Fojule & Ors", "ratioCount": 2,
+    "subject": "Grounds of appeal and validity of a mortgagee's auction sale", "areaOfLaw": "Land & Property Law, Appeals",
+    "proceduralHistory": "The Kwara State High Court dismissed the first respondent's challenge to the amount owed and to the auction sale of mortgaged property. The Court of Appeal allowed the appeal in part and declared the sale void. The purchaser appealed to the Supreme Court.",
+    "keyPrinciples": ["A ground of appeal is one of law where the complaint can be resolved without examining disputed facts; it is mixed law and fact where legal consequences depend on the evaluation of facts.", "Failure to comply with a statutory auction notice requirement does not invariably render a mortgage sale void; the legal consequence depends on the governing enactment and the nature of the defect."],
+    "statutesConsidered": ["Auctioneers Law, section 19", "Conveyancing and Law of Property Act 1881"]
+  },
+  {
+    "file": "IDEOZU", "id": "case-042", "title": "Ideozu & Ors v. Ochoma & Ors", "ratioCount": 4,
+    "subject": "Interlocutory injunctions and appellate review of judicial discretion", "areaOfLaw": "Civil Procedure, Equity, Chieftaincy Law",
+    "proceduralHistory": "The Rivers State High Court made an interlocutory order in a customary leadership dispute. The Court of Appeal intervened in the exercise of discretion, and the appellants appealed to the Supreme Court.",
+    "keyPrinciples": ["An interlocutory injunction is preventive and cannot restrain an act already completed before the application is determined.", "Interlocutory relief should preserve the subject matter without deciding the substantive dispute in advance.", "Judicial discretion must be exercised judicially and judiciously on relevant facts and settled principles.", "An appellate court interferes with discretion only where the lower court acted on a wrong principle, considered irrelevant matters, omitted relevant matters or reached an unjust conclusion."],
+    "practiceNotes": ["The supplied document labels the report LPELR-305. It is normalised to LDLR-305 while preserving the original document."]
+  },
+  {
+    "file": "IDERIMA V", "id": "case-043", "title": "Iderima v. Rivers State Civil Service Commission", "ratioCount": 3,
+    "subject": "Dismissal from public service and employment with statutory flavour", "areaOfLaw": "Labour & Employment Law, Administrative Law",
+    "proceduralHistory": "The Rivers State High Court dismissed the appellant's challenge to his dismissal from the civil service following an inquiry into missing public funds. The Court of Appeal affirmed the judgment. The appellant appealed to the Supreme Court.",
+    "keyPrinciples": ["Employment governed by statute or statutory regulations has statutory flavour and must be terminated in the manner prescribed by that framework.", "A disciplinary authority must comply with applicable civil service rules and afford the officer the procedural protections they require.", "A dismissal made in breach of mandatory statutory procedure is null and void rather than merely wrongful.", "Where a statutory dismissal is void, reinstatement and restoration of the employment status may follow."],
+    "statutesConsidered": ["Rivers State Civil Service Rules", "Rivers State Financial Instructions and Regulations"]
+  },
+  {
+    "file": "IFETA V", "id": "case-044", "title": "Ifeta v. S.P.D.C. Nig. Ltd.", "ratioCount": 9, "ratioStartHeading": "ACTION - PLEADINGS",
+    "subject": "Wrongful termination, pleadings and damages in private employment", "areaOfLaw": "Labour & Employment Law, Contract, Civil Procedure",
+    "proceduralHistory": "The Delta State High Court granted the appellant declarations, reinstatement and substantial monetary relief after the respondent called no evidence. The Court of Appeal allowed the respondent's appeal. The appellant appealed to the Supreme Court.",
+    "keyPrinciples": ["A party's failure to call evidence does not relieve the claimant of the burden of proving the pleaded case by credible evidence.", "Specific performance and reinstatement are generally unavailable in an ordinary master-and-servant relationship.", "Wrongful termination does not keep a private employment contract alive beyond the date of termination.", "Damages for wrongful dismissal are ordinarily confined to the remuneration and benefits due during the applicable notice period.", "Parties and the court are bound by the material facts pleaded, and relief cannot rest on an unpleaded case.", "An appellate court may interfere where findings are unsupported by the evidence or result from a wrong legal approach."],
+    "practiceNotes": ["The supplied document proceeds directly from the judgment summary to the ratio headings without a separate Ratio Decidendi label. The importer preserves that source structure and identifies the ratio block by its first heading."],
+    "ratioBodyOverrides": {
+      "7": "\"The measure of damages where a master brings the contract of employment to an end without giving the requisite notice as stimulated in the parties' contract is the salary the employee would have earned had the employment been determined as stipulated in the contract of employment - see Nigerian Produce Marketing Board v. Adewunmi (1972) 11 SC 111 at 117.\""
+    }
+  },
+  {
+    "file": "IGABELE V", "id": "case-045", "title": "Igabele v. State", "ratioCount": 15,
+    "subject": "Proof of murder by circumstantial evidence and the last-seen doctrine", "areaOfLaw": "Criminal Law & Procedure, Evidence",
+    "proceduralHistory": "The Enugu State High Court convicted the appellant of murder after the deceased, who worked with him, disappeared and was later found dead. The Court of Appeal affirmed the conviction. The appellant appealed to the Supreme Court.",
+    "keyPrinciples": ["The prosecution bears the burden of proving every ingredient of murder beyond reasonable doubt.", "Circumstantial evidence must be cogent, complete and incompatible with any reasonable hypothesis other than the accused's guilt.", "A conviction does not require an eyewitness where reliable circumstantial evidence proves the offence.", "Material contradictions may weaken a prosecution case, but immaterial discrepancies do not displace otherwise credible evidence.", "The right to silence does not remove the evidential consequence that may arise where facts peculiarly within the accused's knowledge call for an explanation.", "Where an accused was last seen with the deceased in circumstances closely connected with the death, the court may require a credible explanation consistent with innocence.", "Courts must decide on evidence and legitimate inference, not speculation."],
+    "statutesConsidered": ["Criminal Code, provisions on murder", "Evidence Act"],
+    "ratioBodyOverrides": {
+      "5": "\"Now in Alonge v. Inspector General of Police (1959) SCNLR 516, (1959) 4 FSC 203, Ademola C.J.F. discussing the nature of the burden of proof on the prosecution in a criminal case said: Now, the commission of a crime by a party must be proved beyond reasonable doubts. The burden of proving that any person is guilty of a crime rests on the person who assets it and this is the law as laid down in Section 137 of the Evidence Ordinance, Cap. 62. The burden of proof lies on the prosecution and it never shifts; and if on the whole evidence the court is left in a state of doubt, the prosecution would have failed to discharge the onus of proof which the law lays upon it and the prisoner is entitled to an acquittal. But this does not mean, as argued before us, that the prosecution must call every available piece of evidence to prove its case; it is enough if sufficient evidence is called to discharge the onus which the law lays upon the prosecution.\""
+    }
+  },
+  {
+    "file": "UGOJI V", "id": "case-046", "title": "Ugoji v. Onukogu", "ratioCount": 4,
+    "subject": "Proof of title, allocation documents and trespass", "areaOfLaw": "Land & Property Law, Evidence, Civil Procedure",
+    "proceduralHistory": "The Imo State High Court granted the respondent declarations concerning Plot 287 at Ikenegbu Layout, damages for trespass and related relief. The Court of Appeal affirmed the judgment. The appellant appealed to the Supreme Court.",
+    "keyPrinciples": ["Parties are bound by their pleadings and a court must determine the dispute on the cases they presented.", "A claimant seeking declaration of title must establish a valid root of title and connect the relied-upon grant or allocation to the land in dispute.", "A claimant succeeds on the strength of the claimant's own case, although evidence from the defence may support that case.", "A person alleging trespass must establish possession or an immediate right to possession of the land."],
+    "statutesConsidered": ["Land Use Act"]
+  }
+]

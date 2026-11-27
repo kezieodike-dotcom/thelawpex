@@ -844,7 +844,7 @@ const getFormalCaseParties = (judgment: CaseLaw) => {
     };
   }
 
-  const stopPattern = /^(summary of judgment|judgment summary|ratio decidendi|law principles|issues:|introduction:|facts:)/i;
+  const stopPattern = /^(summary of judgment|judgment summ(?:ary|arry)|ratio decidendi|law principles|issues:|introduction:|facts:)/i;
   const appellantLines = lines.slice(betweenIndex + 1, andIndex).map(cleanPartyLine).filter(Boolean);
   const respondents: string[] = [];
 
@@ -872,7 +872,7 @@ const getSourceCaseBodyText = (text: string) => {
 
   const courtIndex = working.search(/\bIn The (?:Supreme Court Of Nigeria|Court Of Appeal)\b/i);
   const candidate = courtIndex > -1 ? working.slice(courtIndex) : working;
-  const summaryIndex = candidate.search(/\b(?:SUMMARY OF JUDGMENT|JUDGMENT SUMMARY)\b/i);
+  const summaryIndex = candidate.search(/\b(?:SUMMARY OF JUDGMENT|JUDGMENT SUMM(?:ARY|ARRY))\b/i);
   if (summaryIndex > -1) return candidate.slice(summaryIndex).trim();
 
   const leadingJudgmentMatch = candidate.match(new RegExp(JUDGE_JUDGMENT_HEADING, 'i'));
@@ -922,14 +922,14 @@ const getSourceJudgmentBlocks = (text: string, strictHeadings = false): SourceJu
       const isHeading =
         block.length < 96 &&
         (/^[A-Z][A-Z0-9\s.,'():;/&-]+$/.test(block) ||
-          /^(SUMMARY OF JUDGMENT|INTRODUCTION:|FACTS:?|ISSUES:?|DECISION\/HELD:|RATIO DECIDENDI)$/i.test(block));
+          /^(SUMMARY OF JUDGMENT|JUDGMENT SUMM(?:ARY|ARRY)|INTRODUCTION:|FACTS:?|ISSUES:?|DECISION\/HELD:|RATIO(?:\(S\))? DECIDENDI)$/i.test(block));
       const sourceLabel = explicitSourceLabel?.[1];
       const sourceText = explicitSourceLabel?.[2]?.replace(/\s+/g, ' ').trim();
 
       return {
         text: block,
         isHeading,
-        isRatioHeading: /^RATIO DECIDENDI$/i.test(block),
+        isRatioHeading: /^RATIO(?:\(S\))? DECIDENDI$/i.test(block),
         startsLeadingJudgment: isLeadingJudgmentStart(sourceText ?? block),
         sourceLabel,
         sourceText,
@@ -2163,7 +2163,9 @@ const sourceQuoteIndexes = new WeakMap<CaseLaw, Map<string, ReturnType<typeof cr
 const sourceQuoteMatches = new WeakMap<CaseLaw, Map<string, ReturnType<typeof locateReportQuote>>>();
 const citationJudgeName = (text: string) => normalizeQuoteText(text).replace(/^per/, '').split(/jsc|jca|cjf|fj/)[0]
   // The Idundun source spells this judge's name differently in its headnotes.
-  .replace('fataiwilliams', 'fatayiwilliams');
+  .replace('fataiwilliams', 'fatayiwilliams')
+  // Some source opinion headings transpose the first two consonants.
+  .replace('kastinaalu', 'katsinaalu');
 const sameCitationJudge = (left: string, right: string) => Boolean(left && right) && (left === right || left.endsWith(right) || right.endsWith(left));
 
 const locateSourceLinkedRatio = (judgment: CaseLaw, point: RatioPoint) => {
